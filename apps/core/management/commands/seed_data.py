@@ -16,6 +16,8 @@ class Command(BaseCommand):
         from apps.careers.models import JobPosting
         from apps.seo.models import SEOPage
         from apps.logs.models import SystemLog
+        from apps.education.models import Course
+        from apps.events.models import Event
 
         if Partner.objects.exists():
             self.stdout.write("DB already has data — skipping seed.")
@@ -202,6 +204,52 @@ class Command(BaseCommand):
             dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
             SystemLog.objects.create(action=action, user=user, role=role, ip_address=ip, level=level, module=module, timestamp=dt)
 
+        # Courses
+        import decimal
+        for c in [
+            {"slug": "react-frontend-uz", "title": "React bilan Frontend Dasturlash", "instructor": "Jasur Mirzayev", "category": "frontend", "level": "beginner", "duration": "3 oy", "lessons": 72, "price": 0, "is_free": True, "lang": "uz", "enrolled_count": 1200, "rating": "4.8", "accent": "cyan", "tags": ["React", "JavaScript", "HTML", "CSS", "Bepul"], "description": "React asoslaridan boshlab professional frontend dasturlashni o'rganing. Loyiha asosida amaliy kurs.", "status": "active"},
+            {"slug": "python-ai-uz", "title": "Python va Sun'iy Intellekt", "instructor": "Dilnoza Yusupova", "category": "ai", "level": "intermediate", "duration": "4 oy", "lessons": 96, "price": 1200000, "is_free": False, "lang": "uz", "enrolled_count": 840, "rating": "4.9", "accent": "violet", "tags": ["Python", "AI", "ML", "TensorFlow"], "description": "Machine learning va deep learning asoslari. NumPy, Pandas, Scikit-learn, TensorFlow bilan amaliy loyihalar.", "status": "active"},
+            {"slug": "flutter-mobile-uz", "title": "Flutter bilan Mobil Dasturlash", "instructor": "Sherzod Tursunov", "category": "mobile", "level": "beginner", "duration": "3 oy", "lessons": 68, "price": 900000, "is_free": False, "lang": "uz", "enrolled_count": 620, "rating": "4.7", "accent": "emerald", "tags": ["Flutter", "Dart", "iOS", "Android", "Firebase"], "description": "iOS va Android uchun bitta kod bazasida professional mobil ilovalar yaratish.", "status": "active"},
+            {"slug": "nodejs-backend-uz", "title": "Node.js Backend Dasturlash", "instructor": "Otabek Rahimov", "category": "backend", "level": "intermediate", "duration": "3 oy", "lessons": 80, "price": 1100000, "is_free": False, "lang": "uz", "enrolled_count": 510, "rating": "4.6", "accent": "cyan", "tags": ["Node.js", "Express", "REST API", "JWT"], "description": "Node.js va Express bilan microservislar va REST API yaratish. JWT autentifikatsiya va PostgreSQL.", "status": "active"},
+            {"slug": "uiux-figma-uz", "title": "UI/UX Dizayn — Figma Pro", "instructor": "Malika Sharipova", "category": "design", "level": "beginner", "duration": "2 oy", "lessons": 48, "price": 750000, "is_free": False, "lang": "uz", "enrolled_count": 730, "rating": "4.8", "accent": "violet", "tags": ["Figma", "UX", "Prototip"], "description": "Figma'da professional interfeys dizayni: komponentlar, auto-layout, prototiplash va foydalanuvchi tadqiqoti.", "status": "active"},
+            {"slug": "data-science-uz", "title": "Ma'lumotlar Fani va Tahlil", "instructor": "Bobur Xasanov", "category": "data", "level": "intermediate", "duration": "4 oy", "lessons": 88, "price": 1300000, "is_free": False, "lang": "uz", "enrolled_count": 390, "rating": "4.7", "accent": "emerald", "tags": ["Python", "Pandas", "Tableau", "SQL"], "description": "Ma'lumotlar tahlili, vizualizatsiya va statistik modellashtirish. Python, Pandas, Tableau, SQL.", "status": "active"},
+            {"slug": "cybersecurity-uz", "title": "Kiberxavfsizlik Asoslari", "instructor": "Sanjar Nazarov", "category": "security", "level": "beginner", "duration": "2 oy", "lessons": 52, "price": 850000, "is_free": False, "lang": "uz", "enrolled_count": 290, "rating": "4.6", "accent": "cyan", "tags": ["Xavfsizlik", "Linux", "Tarmoq", "Kriptografiya"], "description": "Tarmoq xavfsizligi, kriptografiya va etik xakerlik asoslari. CompTIA Security+ tayyorlovi.", "status": "active"},
+            {"slug": "nextjs-advanced-en", "title": "Next.js — Advanced Full-Stack", "instructor": "Alisher Qodirov", "category": "frontend", "level": "advanced", "duration": "3 oy", "lessons": 76, "price": 1500000, "is_free": False, "lang": "en", "enrolled_count": 180, "rating": "4.9", "accent": "violet", "tags": ["Next.js", "TypeScript", "Prisma", "Vercel"], "description": "Advanced Next.js App Router, TypeScript, Prisma ORM, Server Actions va Vercel deployment.", "status": "active"},
+            {"slug": "devops-docker-uz", "title": "DevOps: Docker va CI/CD", "instructor": "Firdavs Umarov", "category": "devops", "level": "intermediate", "duration": "3 oy", "lessons": 60, "price": 1000000, "is_free": False, "lang": "uz", "enrolled_count": 310, "rating": "4.7", "accent": "cyan", "tags": ["Docker", "CI/CD", "GitHub Actions", "Linux"], "description": "Docker, Kubernetes, GitHub Actions bilan CI/CD pipeline va cloud deployment.", "status": "active"},
+            {"slug": "postgresql-backend-uz", "title": "PostgreSQL va Ma'lumotlar Bazasi", "instructor": "Nodir Ergashev", "category": "backend", "level": "intermediate", "duration": "2 oy", "lessons": 44, "price": 700000, "is_free": False, "lang": "uz", "enrolled_count": 420, "rating": "4.5", "accent": "emerald", "tags": ["PostgreSQL", "SQL", "Indexing"], "description": "PostgreSQL da murakkab so'rovlar, indexlar, tranzaksiyalar va optimizatsiya.", "status": "active"},
+        ]:
+            Course.objects.create(
+                slug=c["slug"], title=c["title"], instructor=c["instructor"],
+                category=c["category"], level=c["level"], duration=c["duration"],
+                lessons=c["lessons"], price=c["price"], is_free=c["is_free"],
+                lang=c["lang"], enrolled_count=c["enrolled_count"],
+                rating=decimal.Decimal(c["rating"]),
+                accent=c["accent"], tags=c["tags"],
+                description=c["description"], status=c["status"],
+            )
+
+        # Events
+        import datetime as dt_module
+        for e in [
+            {"slug": "hackathon-2026", "title": "Uychi IT Hackathon 2026", "event_type": "Hackathon", "date": "2026-07-12", "end_date": "2026-07-13", "location": "Uychi IT Hub, Asosiy bino", "description": "48 soatlik hackathon musobaqasida AI, agrotex va fintech yo'nalishlari bo'yicha innovatsion yechimlar yarating. G'oliblar jami 5,000,000 UZS mukofot fondidan ulush oladi.", "prize": "5,000,000 UZS", "seats": 200, "registered_count": 134, "accent": "cyan", "tags": ["AI", "AgriTech", "FinTech", "Musobaqa"], "status": "upcoming"},
+            {"slug": "python-bootcamp-2026", "title": "Python AI Bootcamp — Iyul oqimi", "event_type": "Bootcamp", "date": "2026-07-07", "end_date": "2026-08-30", "location": "Uychi IT Hub, Lab-1 va Lab-2", "description": "8 haftalik intensiv Python va sun'iy intellekt bootcamp. NumPy, Pandas, Scikit-learn, TensorFlow asoslaridan tortib real loyihalar yaratishgacha.", "speaker": "Uychi IT Hub o'qituvchilar jamoasi", "seats": 30, "registered_count": 22, "accent": "violet", "tags": ["Python", "AI", "ML", "Intensiv"], "status": "upcoming"},
+            {"slug": "ai-conference-2026", "title": "CentralAsia AI Conference 2026", "event_type": "Conference", "date": "2026-09-15", "end_date": "2026-09-16", "location": "Namangan, Davlat universiteti", "description": "Markaziy Osiyo miqyosidagi AI konferentsiyasi. 30+ ma'ruzachi, 500+ ishtirokchi, startap pitching va investorlar bilan uchrashuvlar.", "speaker": "Xalqaro AI tadqiqotchilari", "seats": 500, "registered_count": 287, "accent": "cyan", "tags": ["AI", "Konferentsiya", "Networking", "Startap"], "status": "upcoming"},
+            {"slug": "startup-demo-day-2026", "title": "Uychi Hub Demo Day — Q3 2026", "event_type": "Meetup", "date": "2026-08-22", "location": "Uychi IT Hub, Asosiy auditoriya", "description": "Hubning joriy rezident startaplari o'z mahsulotlari va natijalari bilan chiqish qiladi. Mahalliy va xalqaro investorlar taklif etilgan.", "seats": 150, "registered_count": 98, "accent": "emerald", "tags": ["Startap", "Demo Day", "Investitsiya", "Pitching"], "status": "upcoming"},
+            {"slug": "cybersecurity-workshop-2026", "title": "Kiberxavfsizlik Amaliy Ustaxonasi", "event_type": "Workshop", "date": "2026-06-28", "location": "Uychi IT Hub, Lab-3", "description": "Etik xakerlik, penetratsion test va tarmoq xavfsizligi bo'yicha bir kunlik amaliy ustaxona. CTF topshiriqlari va sertifikat.", "speaker": "CloudNet Uychi — Kiberxavfsizlik bo'limi", "seats": 40, "registered_count": 31, "accent": "violet", "tags": ["Kiberxavfsizlik", "CTF", "Ethical Hacking"], "status": "upcoming"},
+            {"slug": "flutter-training-2026", "title": "Flutter Mobil Dasturlash Treningi", "event_type": "Training", "date": "2026-07-19", "end_date": "2026-07-20", "location": "Uychi IT Hub, Kichik konferens-zal", "description": "Ikki kunlik Flutter treningi — UI komponentlar, state management, API integratsiyasi va store'ga chiqarish.", "speaker": "AlgoSoft — Flutter jamoasi", "seats": 25, "registered_count": 19, "accent": "cyan", "tags": ["Flutter", "Dart", "Mobil", "iOS"], "status": "upcoming"},
+            {"slug": "google-io-watch-2026", "title": "Google I/O Watch Party — Uychi", "event_type": "Meetup", "date": "2026-05-20", "location": "Uychi IT Hub, Konferens-zal", "description": "Google I/O 2026 asosiy taqdimotini birga tomosha qilamiz. Yangi texnologiyalar va developer vositalari muhokamasi.", "speaker": "Google Developer Groups Uzbekistan", "seats": 80, "registered_count": 80, "accent": "emerald", "tags": ["Google", "AI", "Networking", "Bepul"], "status": "past"},
+            {"slug": "ux-design-workshop-2026", "title": "Figma UX/UI Dizayn Ustaxonasi", "event_type": "Workshop", "date": "2026-04-14", "location": "Uychi IT Hub, Kreativ zona", "description": "Figma'da professional interfeys dizayni: komponentlar, auto-layout, prototiplash va foydalanuvchi tadqiqoti usullari.", "speaker": "PixelStudio — Senior UX Designer", "seats": 20, "registered_count": 20, "accent": "emerald", "tags": ["Figma", "UI/UX", "Dizayn", "Prototip"], "status": "past"},
+        ]:
+            Event.objects.create(
+                slug=e["slug"], title=e["title"], event_type=e["event_type"],
+                date=e["date"],
+                end_date=e.get("end_date") or None,
+                location=e["location"], description=e["description"],
+                speaker=e.get("speaker", ""), prize=e.get("prize", ""),
+                seats=e["seats"], registered_count=e["registered_count"],
+                accent=e["accent"], tags=e["tags"], status=e["status"],
+            )
+
         self.stdout.write(self.style.SUCCESS(
             f"\n✓ Seed yakunlandi!\n"
             f"  Partners: {Partner.objects.count()}\n"
@@ -209,5 +257,7 @@ class Command(BaseCommand):
             f"  Jobs: {JobPosting.objects.count()}\n"
             f"  Startups: {StartupApplication.objects.count()}\n"
             f"  Investors: {Investor.objects.count()}\n"
+            f"  Courses: {Course.objects.count()}\n"
+            f"  Events: {Event.objects.count()}\n"
             f"  Admin: admin / admin123"
         ))

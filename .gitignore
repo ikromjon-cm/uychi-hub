@@ -41,7 +41,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 staticfiles/
-media/
+/media/
 *.sqlite3
 
 # Keep example

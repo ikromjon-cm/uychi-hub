@@ -1,0 +1,130 @@
+"use client";
+
+import { useState } from "react";
+import { Zap } from "lucide-react";
+
+const SECTORS = ["AI / ML", "FinTech", "MedTech", "AgriTech", "EdTech", "CleanTech", "Kiberxavfsizlik", "SaaS", "E-Commerce", "Logistika", "Boshqa"];
+const STAGES = ["G'oya / Pre-seed", "MVP / Seed", "Dastlabki Daromad", "Series A", "O'sish Bosqichi"];
+const FUNDING = ["< $100K", "$100K – $500K", "$500K – $2M", "$2M – $5M", "$5M+"];
+
+export default function StartupApplyPage() {
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSending(true);
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    try {
+      await fetch("/api/startups/startup-applications/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(fd)),
+      });
+    } catch {}
+    setSending(false);
+    setSent(true);
+  }
+
+  return (
+    <div className="min-h-screen px-6 py-16">
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-12 text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-violet-400/15 bg-violet-400/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-violet-400">
+            <Zap className="h-3 w-3" />
+            Startap Arizasi
+          </div>
+          <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold leading-tight tracking-tight text-white">
+            Inkubatorga Qo&apos;shiling
+          </h1>
+          <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-zinc-500">
+            Uychi Hub startap inkubatsiya dasturiga ariza bering. Moliyalashtirish,
+            mentorlik, ofis maydoni va global tarmoqqa kirish imkoniyatiga ega bo&apos;ling.
+          </p>
+        </div>
+
+        {sent ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-400/5 p-16 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-violet-400/20 bg-violet-400/10 text-2xl text-violet-400">✓</div>
+            <h2 className="text-xl font-bold text-white">Ariza Qabul Qilindi!</h2>
+            <p className="mt-2 text-[14px] text-zinc-500">Inkubatsiya jamoamiz 5 ish kuni ichida siz bilan bog&apos;lanadi.</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-6">
+              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-zinc-500">Asoschi Ma&apos;lumotlari</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  { name: "founder_name", label: "Ism Familya", placeholder: "To'liq ismingiz" },
+                  { name: "email", label: "Elektron Pochta", type: "email", placeholder: "asoschi@startap.com" },
+                  { name: "phone", label: "Telefon Raqam", type: "tel", placeholder: "+998 XX XXX XX XX" },
+                  { name: "country", label: "Mamlakat", placeholder: "Kelib chiqqan davlat" },
+                ].map((f) => (
+                  <div key={f.name}>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">{f.label}</label>
+                    <input name={f.name} type={f.type ?? "text"} required placeholder={f.placeholder} className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-6">
+              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-zinc-500">Startap Ma&apos;lumotlari</h2>
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Startap Nomi</label>
+                    <input name="startup_name" type="text" required placeholder="Startapingiz nomi" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Veb-sayt</label>
+                    <input name="website" type="url" placeholder="https://startapingiz.com" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Soha</label>
+                    <select name="sector" required className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-violet-400/40">
+                      <option value="">Soha</option>
+                      {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Bosqich</label>
+                    <select name="stage" required className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-violet-400/40">
+                      <option value="">Bosqich</option>
+                      {STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Jamoa Soni</label>
+                    <input name="team_size" type="number" min="1" placeholder="mas. 5" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Kerakli Moliyalashtirish</label>
+                  <select name="funding_needed" className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-violet-400/40">
+                    <option value="">Moliyalashtirish hajmini tanlang</option>
+                    {FUNDING.map((f) => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Texnologiya Steki</label>
+                  <input name="tech_stack" type="text" placeholder="mas. Python, TensorFlow, React, PostgreSQL" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Startap Tavsifi</label>
+                  <textarea name="description" required rows={4} placeholder="Mahsulotingizni, qanday muammoni yechayotganingizni, natijalariingizni va nima uchun Uychi Hubga qo'shilmoqchi ekanligingizni yozing..." className="w-full resize-none rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" disabled={sending} className="group w-full rounded-full bg-violet-400 py-4 text-[14px] font-bold text-black transition-all hover:bg-violet-300 hover:shadow-[0_0_35px_-5px_rgba(167,139,250,0.5)] disabled:opacity-60">
+              {sending ? "Yuborilmoqda..." : <>Ariza Yuborish <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span></>}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}

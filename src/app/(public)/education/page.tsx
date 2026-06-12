@@ -1,0 +1,252 @@
+"use client";
+
+import { useState } from "react";
+
+type CourseLevel = 'beginner' | 'intermediate' | 'advanced';
+type CourseLang = 'uz' | 'ru' | 'en';
+interface Course {
+  id: string; title: string; instructor: string; category: string; level: CourseLevel;
+  duration: string; lessons: number; price: number; isFree: boolean; lang: CourseLang;
+  enrolled: number; rating: number; accent: "cyan" | "violet" | "emerald"; tags: string[];
+}
+
+const COURSES: Course[] = [
+  { id: 'react-frontend-uz', title: 'React bilan Frontend Dasturlash', instructor: 'Jasur Mirzayev', category: 'frontend', level: 'beginner', duration: '3 oy', lessons: 72, price: 0, isFree: true, lang: 'uz', enrolled: 1200, rating: 4.8, accent: 'cyan', tags: ['React', 'JavaScript', 'HTML', 'CSS', 'Bepul'] },
+  { id: 'python-ai-uz', title: 'Python va Sun\'iy Intellekt', instructor: 'Dilnoza Yusupova', category: 'ai', level: 'intermediate', duration: '4 oy', lessons: 96, price: 1200000, isFree: false, lang: 'uz', enrolled: 840, rating: 4.9, accent: 'violet', tags: ['Python', 'AI', 'ML', 'TensorFlow'] },
+  { id: 'flutter-mobile-uz', title: 'Flutter bilan Mobil Dasturlash', instructor: 'Sherzod Tursunov', category: 'mobile', level: 'beginner', duration: '3 oy', lessons: 68, price: 900000, isFree: false, lang: 'uz', enrolled: 620, rating: 4.7, accent: 'emerald', tags: ['Flutter', 'Dart', 'iOS', 'Android', 'Firebase'] },
+  { id: 'nodejs-backend-uz', title: 'Node.js Backend Dasturlash', instructor: 'Otabek Rahimov', category: 'backend', level: 'intermediate', duration: '3 oy', lessons: 80, price: 1100000, isFree: false, lang: 'uz', enrolled: 510, rating: 4.6, accent: 'cyan', tags: ['Node.js', 'Express', 'REST API', 'JWT'] },
+  { id: 'uiux-figma-uz', title: 'UI/UX Dizayn — Figma Pro', instructor: 'Malika Sharipova', category: 'design', level: 'beginner', duration: '2 oy', lessons: 48, price: 750000, isFree: false, lang: 'uz', enrolled: 730, rating: 4.8, accent: 'violet', tags: ['Figma', 'UX', 'Prototip'] },
+  { id: 'data-science-uz', title: 'Ma\'lumotlar Fani va Tahlil', instructor: 'Bobur Xasanov', category: 'data', level: 'intermediate', duration: '4 oy', lessons: 88, price: 1300000, isFree: false, lang: 'uz', enrolled: 390, rating: 4.7, accent: 'emerald', tags: ['Python', 'Pandas', 'Tableau', 'SQL'] },
+  { id: 'cybersecurity-uz', title: 'Kiberxavfsizlik Asoslari', instructor: 'Sanjar Nazarov', category: 'security', level: 'beginner', duration: '2 oy', lessons: 52, price: 850000, isFree: false, lang: 'uz', enrolled: 290, rating: 4.6, accent: 'cyan', tags: ['Xavfsizlik', 'Linux', 'Tarmoq', 'Kriptografiya'] },
+  { id: 'nextjs-advanced-en', title: 'Next.js — Advanced Full-Stack', instructor: 'Alisher Qodirov', category: 'frontend', level: 'advanced', duration: '3 oy', lessons: 76, price: 1500000, isFree: false, lang: 'en', enrolled: 180, rating: 4.9, accent: 'violet', tags: ['Next.js', 'TypeScript', 'Prisma', 'Vercel'] },
+  { id: 'postgresql-backend-uz', title: 'PostgreSQL va Ma\'lumotlar Bazasi', instructor: 'Nodir Ergashev', category: 'backend', level: 'intermediate', duration: '2 oy', lessons: 44, price: 700000, isFree: false, lang: 'uz', enrolled: 420, rating: 4.5, accent: 'emerald', tags: ['PostgreSQL', 'SQL', 'Indexing'] },
+  { id: 'devops-docker-uz', title: 'DevOps: Docker va CI/CD', instructor: 'Firdavs Umarov', category: 'devops', level: 'intermediate', duration: '3 oy', lessons: 60, price: 1000000, isFree: false, lang: 'uz', enrolled: 310, rating: 4.7, accent: 'cyan', tags: ['Docker', 'CI/CD', 'GitHub Actions', 'Linux'] },
+];
+
+type AccentKey = "cyan" | "violet" | "emerald";
+const A: Record<AccentKey, { border: string; badge: string; text: string; star: string }> = {
+  cyan:    { border: "border-cyan-500/20 hover:border-cyan-500/40",    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",    text: "text-cyan-400",    star: "text-cyan-400" },
+  violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  star: "text-violet-400" },
+  emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", star: "text-emerald-400" },
+};
+
+const CATEGORIES: { key: string; label: string }[] = [
+  { key: "all", label: "Barchasi" },
+  { key: "frontend", label: "Frontend" },
+  { key: "backend", label: "Backend" },
+  { key: "mobile", label: "Mobil" },
+  { key: "ai", label: "AI & ML" },
+  { key: "design", label: "Dizayn" },
+  { key: "data", label: "Data Science" },
+  { key: "security", label: "Kiberxavfsizlik" },
+  { key: "devops", label: "DevOps" },
+];
+
+const LEVELS: { key: string; label: string }[] = [
+  { key: "all", label: "Barcha daraja" },
+  { key: "beginner", label: "Boshlang'ich" },
+  { key: "intermediate", label: "O'rta" },
+  { key: "advanced", label: "Yuqori" },
+];
+
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: "Boshlang'ich",
+  intermediate: "O'rta daraja",
+  advanced: "Yuqori daraja",
+};
+
+const LANG_LABELS: Record<string, string> = { uz: "O'zbekcha", ru: "Ruscha", en: "English" };
+const LANG_FLAGS: Record<string, string> = { uz: "🇺🇿", ru: "🇷🇺", en: "🇺🇸" };
+
+function formatNum(n: number): string {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatPrice(price: number, isFree: boolean): string {
+  if (isFree) return "Bepul";
+  return formatNum(price) + " UZS";
+}
+
+export default function EducationPage() {
+  const [category, setCategory] = useState("all");
+  const [level, setLevel] = useState("all");
+  const [freeOnly, setFreeOnly] = useState(false);
+
+  const filtered: Course[] = COURSES.filter((c) => {
+    const matchCat = category === "all" || c.category === category;
+    const matchLvl = level === "all" || c.level === level;
+    const matchFree = !freeOnly || c.isFree;
+    return matchCat && matchLvl && matchFree;
+  });
+
+  const totalEnrolled = COURSES.reduce((sum, c) => sum + c.enrolled, 0);
+
+  return (
+    <div className="min-h-screen bg-[#030303]">
+      {/* Header */}
+      <section className="relative border-b border-white/4 px-6 py-16">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.05)_0%,transparent_60%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-400">/ Ta'lim Markazi</p>
+          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-white">
+            IT Kurslar &<br />
+            <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">Dasturlash Ta'limi</span>
+          </h1>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-500">
+            Uychi IT Hub ta'lim markazida professional dasturchilar, dizaynerlar va IT mutaxassislar tayyorlanadi.
+          </p>
+
+          {/* Stats */}
+          <div className="mt-8 flex flex-wrap gap-4">
+            {[
+              { label: "Kurslar", value: String(COURSES.length), color: "text-cyan-400" },
+              { label: "Jami o'quvchi", value: formatNum(totalEnrolled) + "+", color: "text-violet-400" },
+              { label: "O'qituvchilar", value: "15+", color: "text-emerald-400" },
+              { label: "Sertifikatlar berilgan", value: "2,400+", color: "text-cyan-400" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-xl border border-white/5 bg-white/2 px-5 py-3 text-center">
+                <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-zinc-600">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-6 py-10">
+        {/* Filters */}
+        <div className="mb-8 flex flex-col gap-4">
+          {/* Category tabs */}
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setCategory(cat.key)}
+                className={`rounded-full border px-4 py-1.5 text-[12px] font-semibold transition-all ${
+                  category === cat.key
+                    ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-400"
+                    : "border-white/8 bg-white/3 text-zinc-500 hover:border-white/15 hover:text-zinc-300"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Level + Free filter */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex gap-2">
+              {LEVELS.map((l) => (
+                <button
+                  key={l.key}
+                  onClick={() => setLevel(l.key)}
+                  className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition-all ${
+                    level === l.key
+                      ? "border-violet-400/40 bg-violet-500/10 text-violet-400"
+                      : "border-white/8 bg-white/3 text-zinc-600 hover:text-zinc-300"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setFreeOnly(!freeOnly)}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all ${
+                freeOnly
+                  ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400"
+                  : "border-white/8 bg-white/3 text-zinc-600 hover:text-zinc-300"
+              }`}
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${freeOnly ? "bg-emerald-400" : "bg-zinc-600"}`} />
+              Faqat bepul kurslar
+            </button>
+          </div>
+        </div>
+
+        {/* Course grid */}
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center py-20 text-center">
+            <p className="text-[15px] text-zinc-500">Kurs topilmadi</p>
+            <button onClick={() => { setCategory("all"); setLevel("all"); setFreeOnly(false); }} className="mt-3 text-[13px] text-cyan-400 hover:underline">Filtrni tozalash</button>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((course) => {
+              const c = A[course.accent as AccentKey];
+              return (
+                <div key={course.id} className={`group flex flex-col rounded-2xl border bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
+                  {/* Top row */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${c.badge}`}>
+                        {CATEGORIES.find((x) => x.key === course.category)?.label || course.category}
+                      </span>
+                      {course.isFree && (
+                        <span className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">BEPUL</span>
+                      )}
+                    </div>
+                    <span className="flex items-center gap-0.5 text-[11px] font-semibold text-amber-400">
+                      ★ {course.rating}
+                    </span>
+                  </div>
+
+                  <h3 className={`mt-4 text-[15px] font-bold leading-snug ${c.text}`}>{course.title}</h3>
+                  <p className="mt-1 text-[12px] text-zinc-500">O'qituvchi: {course.instructor}</p>
+
+                  {/* Course info */}
+                  <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl border border-white/4 bg-white/2 p-3 text-center text-[11px]">
+                    <div>
+                      <p className="font-bold text-white">{course.duration}</p>
+                      <p className="text-zinc-600">Davomiylik</p>
+                    </div>
+                    <div>
+                      <p className="font-bold text-white">{course.lessons}</p>
+                      <p className="text-zinc-600">Darslar</p>
+                    </div>
+                    <div>
+                      <p className="font-bold text-white">{LEVEL_LABELS[course.level].split(" ")[0]}</p>
+                      <p className="text-zinc-600">Daraja</p>
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {course.tags.slice(0, 4).map((tag) => (
+                      <span key={tag} className="rounded bg-white/4 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500">{tag}</span>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto flex items-center justify-between pt-5">
+                    <div>
+                      <p className={`text-[15px] font-bold ${c.text}`}>{formatPrice(course.price, course.isFree)}</p>
+                      <p className="text-[11px] text-zinc-600">{formatNum(course.enrolled)} o'quvchi · {LANG_FLAGS[course.lang]} {LANG_LABELS[course.lang]}</p>
+                    </div>
+                    <button className={`rounded-xl border px-4 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                      Ro'yxatdan o't
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Bottom CTA */}
+        <div className="mt-16 grid gap-5 sm:grid-cols-3">
+          {[
+            { title: "O'quv dasturlari", desc: "Frontend, Backend, AI, Mobile va boshqa yo'nalishlar bo'yicha sertifikatli kurslar.", accent: "cyan", icon: "📚" },
+            { title: "Sertifikat tizimi", desc: "Kurs yakunida IT Park Uzbekistan va Uychi IT Hub birgalikdagi sertifikati beriladi.", accent: "violet", icon: "🏆" },
+            { title: "Career Center", desc: "Kurs bitirganlarni ishga joylashtirish bo'yicha yordam va IT kompaniyalarga tavsiya.", accent: "emerald", icon: "💼" },
+          ].map((item) => (
+            <div key={item.title} className={`rounded-2xl border p-6 ${item.accent === "cyan" ? "border-cyan-500/15 bg-cyan-500/5" : item.accent === "violet" ? "border-violet-400/15 bg-violet-500/5" : "border-emerald-400/15 bg-emerald-500/5"}`}>
+              <div className="mb-3 text-3xl">{item.icon}</div>
+              <h3 className="text-[15px] font-bold text-white">{item.title}</h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

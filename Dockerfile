@@ -11,6 +11,8 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY . .
 
+ENV PYTHONPATH=/app/backend
+
 RUN python manage.py collectstatic --noinput || true
 
 EXPOSE 8000

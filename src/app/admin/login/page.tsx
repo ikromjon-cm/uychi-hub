@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/api";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -35,9 +36,9 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <a href="/" className="text-2xl font-bold tracking-[0.2em] text-white">
+          <Link href="/" className="text-2xl font-bold tracking-[0.2em] text-white">
             UYCHI<span className="text-cyan-400">.</span>ADMIN
-          </a>
+          </Link>
           <p className="mt-2 text-[13px] text-zinc-600">Boshqaruv paneliga kirish</p>
         </div>
 
@@ -102,7 +103,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="mt-6 text-center text-[12px] text-zinc-700">
-          <a href="/" className="hover:text-zinc-500">← Saytga qaytish</a>
+          <Link href="/" className="hover:text-zinc-500">← Saytga qaytish</Link>
         </p>
       </div>
     </div>

@@ -16,7 +16,7 @@ const LANGUAGES: { code: Lang; flag: string }[] = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
   const { lang, setLang, t } = useLang();
 
   const isActive = (href: string) =>
@@ -79,13 +79,14 @@ export function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
+            suppressHydrationWarning
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-all hover:text-foreground"
           >
-            {theme === "dark" ? (
+            {themeMounted && (theme === "dark" ? (
               <Sun className="h-3.5 w-3.5" />
             ) : (
               <Moon className="h-3.5 w-3.5" />
-            )}
+            ))}
           </button>
 
           <Link
@@ -108,9 +109,10 @@ export function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Tema"
+            suppressHydrationWarning
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted"
           >
-            {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+            {themeMounted && (theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />)}
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

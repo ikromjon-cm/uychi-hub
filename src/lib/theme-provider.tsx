@@ -6,24 +6,31 @@ type Theme = "dark" | "light";
 
 interface ThemeContextValue {
   theme: Theme;
+  mounted: boolean;
   toggle: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "light",
+  theme: "dark",
+  mounted: false,
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
-    const stored = localStorage.getItem("uychi-theme") as Theme | null;
-    return stored === "light" || stored === "dark" ? stored : "light";
-  });
+  const [theme, setTheme] = useState<Theme>("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("light", theme === "light");
-  }, [theme]);
+    const stored = localStorage.getItem("uychi-theme") as Theme | null;
+    const resolved = stored === "light" || stored === "dark" ? stored : "dark";
+    setTheme(resolved);
+    document.documentElement.classList.toggle("light", resolved === "light");
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) document.documentElement.classList.toggle("light", theme === "light");
+  }, [theme, mounted]);
 
   const toggle = () => {
     const next: Theme = theme === "dark" ? "light" : "dark";
@@ -33,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <ThemeContext.Provider value={{ theme, mounted, toggle }}>
       {children}
     </ThemeContext.Provider>
   );

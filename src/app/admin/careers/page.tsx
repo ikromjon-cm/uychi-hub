@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useApi, apiPost, apiPatch, apiDelete } from "@/lib/api";
-import { Search, Plus, Edit3, Trash2, ChevronDown, MapPin, X } from "lucide-react";
+import { Search, Plus, Trash2, ChevronDown, MapPin, X } from "lucide-react";
 
 type Job = {
   id: number; title: string; department: string; employment_type: string;

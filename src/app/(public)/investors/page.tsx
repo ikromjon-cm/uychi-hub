@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useApi, apiPost } from "@/lib/api";
 
 type Partner = { id: number; name: string; country: string; category: string; tier: string };

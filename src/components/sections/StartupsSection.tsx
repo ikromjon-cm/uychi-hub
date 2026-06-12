@@ -21,7 +21,6 @@ type HStartup = {
   order: number;
 };
 
-type AccentKey = "cyan" | "violet" | "emerald" | "accent";
 
 const accentMap: Record<string, {
   border: string; badge: string; badgeDot: string;

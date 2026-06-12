@@ -35,10 +35,10 @@ export default function InvestorApplyPage() {
             <TrendingUp className="h-3 w-3" />
             Investor Arizasi
           </div>
-          <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold leading-tight tracking-tight text-white">
+          <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold leading-tight tracking-tight text-foreground">
             Uychi Hubga Investitsiya Kiriting
           </h1>
-          <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-zinc-500">
+          <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-muted">
             Investitsiya manfaatingizni yuboring. Hamkorlik jamoamiz barcha arizalarni
             48 soat ichida ko&apos;rib chiqadi va qo&apos;ng&apos;iroq rejalashtiriladi.
           </p>
@@ -47,13 +47,13 @@ export default function InvestorApplyPage() {
         {sent ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-16 text-center">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10 text-2xl text-emerald-400">✓</div>
-            <h2 className="text-xl font-bold text-white">Ariza Qabul Qilindi!</h2>
-            <p className="mt-2 text-[14px] text-zinc-500">Investitsiya jamoamiz 48 soat ichida siz bilan bog&apos;lanadi.</p>
+            <h2 className="text-xl font-bold text-foreground">Ariza Qabul Qilindi!</h2>
+            <p className="mt-2 text-[14px] text-muted">Investitsiya jamoamiz 48 soat ichida siz bilan bog&apos;lanadi.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-6">
-              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-zinc-500">Shaxsiy Ma&apos;lumotlar</h2>
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-muted">Shaxsiy Ma&apos;lumotlar</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
                   { name: "contact_name", label: "Ism Familya", type: "text", placeholder: "To'liq ismingiz" },
@@ -64,49 +64,49 @@ export default function InvestorApplyPage() {
                   { name: "linkedin", label: "LinkedIn", type: "url", placeholder: "linkedin.com/in/profilingiz" },
                 ].map((f) => (
                   <div key={f.name}>
-                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">{f.label}</label>
-                    <input name={f.name} type={f.type} placeholder={f.placeholder} required={["contact_name", "email", "company"].includes(f.name)} className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-emerald-400/40 focus:bg-white/3" />
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">{f.label}</label>
+                    <input name={f.name} type={f.type} placeholder={f.placeholder} required={["contact_name", "email", "company"].includes(f.name)} className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-emerald-400/40 focus:bg-card" />
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-6">
-              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-zinc-500">Investitsiya Profili</h2>
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="mb-5 text-[12px] font-bold uppercase tracking-wider text-muted">Investitsiya Profili</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Investitsiya Turi</label>
-                  <select name="investor_type" required className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-emerald-400/40">
+                  <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-muted">Investitsiya Turi</label>
+                  <select name="investor_type" required className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none focus:border-emerald-400/40">
                     <option value="">Turni tanlang</option>
                     {INVESTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Asosiy Sohalar</label>
-                  <select name="sectors" className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-emerald-400/40">
+                  <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-muted">Asosiy Sohalar</label>
+                  <select name="sectors" className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none focus:border-emerald-400/40">
                     <option value="">Asosiy sohani tanlang</option>
                     {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Investitsiya Hajmi</label>
-                    <select name="ticket_size" required className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-emerald-400/40">
+                    <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-muted">Investitsiya Hajmi</label>
+                    <select name="ticket_size" required className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none focus:border-emerald-400/40">
                       <option value="">Hajmni tanlang</option>
                       {TICKET_SIZES.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Investitsiya Muddati</label>
-                    <select name="timeline" className="w-full rounded-xl border border-white/6 bg-[#0d0d0d] px-4 py-3 text-[14px] text-white outline-none focus:border-emerald-400/40">
+                    <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-muted">Investitsiya Muddati</label>
+                    <select name="timeline" className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none focus:border-emerald-400/40">
                       <option value="">Muddatni tanlang</option>
                       {TIMELINES.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Investitsiya Konsepsiyasi va Xabar</label>
-                  <textarea name="notes" rows={4} placeholder="Investitsiya konsepsiyangizni, nima qidirayotganingizni va nima uchun Uychi Hub sizni qiziqtirayotganini yozing..." className="w-full resize-none rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-emerald-400/40 focus:bg-white/3" />
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Investitsiya Konsepsiyasi va Xabar</label>
+                  <textarea name="notes" rows={4} placeholder="Investitsiya konsepsiyangizni, nima qidirayotganingizni va nima uchun Uychi Hub sizni qiziqtirayotganini yozing..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-emerald-400/40 focus:bg-card" />
                 </div>
               </div>
             </div>

@@ -18,7 +18,7 @@ const IT_COMPANIES: ServiceCompany[] = [
 
 type AccentKey = "cyan" | "violet" | "emerald";
 const A: Record<AccentKey, { border: string; badge: string; text: string; glow: string }> = {
-  cyan:    { border: "border-cyan-500/20 hover:border-cyan-500/40",    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",    text: "text-cyan-400",    glow: "hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.15)]" },
+  cyan:    { border: "border-accent/20 hover:border-accent/40",    badge: "bg-accent/10 text-accent border-accent/20",    text: "text-accent",    glow: "hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.15)]" },
   violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  glow: "hover:shadow-[0_0_25px_-5px_rgba(167,139,250,0.15)]" },
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", glow: "hover:shadow-[0_0_25px_-5px_rgba(52,211,153,0.15)]" },
 };
@@ -50,31 +50,31 @@ export default function CompaniesPage() {
   const totalProjects = IT_COMPANIES.reduce((s, c) => s + c.projects, 0);
 
   return (
-    <div className="min-h-screen bg-[#030303]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative border-b border-white/4 px-6 py-16">
+      <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.05)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ IT Kompaniyalar Katalogi</p>
-          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-white">
+          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
             Uychi IT Hubning<br />
             <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Rezident Kompaniyalari</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-500">
-            Uychi IT Parkida faoliyat ko'rsatuvchi IT kompaniyalar — xizmatlar, texnologiyalar va bog'lanish ma'lumotlari.
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
+            Uychi tumanidagi 900+ kichik korxona va IT Park rezident kompaniyalari — xizmatlar, texnologiyalar va bog'lanish ma'lumotlari.
           </p>
 
           {/* Stats */}
           <div className="mt-8 flex flex-wrap gap-4">
             {[
               { label: "Rezident kompaniyalar", value: "50+", color: "text-violet-400" },
-              { label: "Jami loyihalar", value: `${totalProjects}+`, color: "text-cyan-400" },
+              { label: "Jami loyihalar", value: `${totalProjects}+`, color: "text-accent" },
               { label: "IT mutaxassislar", value: "400+", color: "text-emerald-400" },
-              { label: "Xizmat yo'nalishlari", value: "12+", color: "text-violet-400" },
+              { label: "Tuman korxonalari", value: "900+", color: "text-violet-400" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/5 bg-white/2 px-5 py-3 text-center">
+              <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-zinc-600">{s.label}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-muted">{s.label}</p>
               </div>
             ))}
           </div>
@@ -84,9 +84,9 @@ export default function CompaniesPage() {
       <div className="mx-auto max-w-7xl px-6 py-10">
         {/* Search + Filter */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-white/8 bg-white/3 px-4 py-3">
-            <svg className="h-4 w-4 shrink-0 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Kompaniya yoki xizmat qidirish..." className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-zinc-600" />
+          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+            <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Kompaniya yoki xizmat qidirish..." className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
           </div>
           <div className="flex flex-wrap gap-2">
             {SERVICE_CATEGORIES.map((cat) => (
@@ -96,7 +96,7 @@ export default function CompaniesPage() {
                 className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${
                   category === cat
                     ? "border-violet-400/40 bg-violet-500/10 text-violet-400"
-                    : "border-white/8 bg-white/3 text-zinc-500 hover:border-white/15 hover:text-zinc-300"
+                    : "border-border bg-card text-muted hover:border-border hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -108,7 +108,7 @@ export default function CompaniesPage() {
         {/* Companies grid */}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
-            <p className="text-[15px] text-zinc-500">Kompaniya topilmadi</p>
+            <p className="text-[15px] text-muted">Kompaniya topilmadi</p>
             <button onClick={() => { setSearch(""); setCategory("Barchasi"); }} className="mt-3 text-[13px] text-violet-400 hover:underline">Filtrni tozalash</button>
           </div>
         ) : (
@@ -116,24 +116,24 @@ export default function CompaniesPage() {
             {filtered.map((company) => {
               const c = A[company.accent as AccentKey];
               return (
-                <div key={company.id} className={`group flex flex-col rounded-2xl border bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1 ${c.border} ${c.glow}`}>
+                <div key={company.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 ${c.border} ${c.glow}`}>
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className={`flex h-12 w-12 items-center justify-center rounded-xl border text-lg font-bold ${c.badge}`}>
                       {company.name.charAt(0)}
                     </div>
-                    <span className="rounded-full border border-white/8 bg-white/3 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-500">
+                    <span className="rounded-full border border-border bg-card px-2.5 py-0.5 text-[10px] font-semibold text-muted">
                       IT Park rezidenti
                     </span>
                   </div>
 
                   <h3 className={`mt-4 text-[16px] font-bold ${c.text}`}>{company.name}</h3>
-                  <p className="mt-1 text-[12px] text-zinc-500">{company.tagline}</p>
+                  <p className="mt-1 text-[12px] text-muted">{company.tagline}</p>
 
                   {/* Services */}
                   <ul className="mt-5 flex-1 space-y-2">
                     {company.services.map((srv) => (
-                      <li key={srv} className="flex items-center gap-2 text-[12px] text-zinc-300">
+                      <li key={srv} className="flex items-center gap-2 text-[12px] text-foreground">
                         <svg className={`h-3 w-3 shrink-0 ${c.text}`} fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" /></svg>
                         {srv}
                       </li>
@@ -148,8 +148,8 @@ export default function CompaniesPage() {
                   </div>
 
                   {/* Stats */}
-                  <div className="mt-5 flex items-center justify-between border-t border-white/4 pt-4 text-[12px]">
-                    <div className="flex items-center gap-4 text-zinc-600">
+                  <div className="mt-5 flex items-center justify-between border-t border-border-subtle pt-4 text-[12px]">
+                    <div className="flex items-center gap-4 text-muted">
                       <span className="flex items-center gap-1">
                         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                         {company.employees}
@@ -170,18 +170,18 @@ export default function CompaniesPage() {
         )}
 
         {/* Join CTA */}
-        <div className="mt-16 rounded-2xl border border-violet-400/15 bg-gradient-to-br from-[#0d0a1a] to-[#0a0a0a] p-8">
+        <div className="mt-16 rounded-2xl border border-violet-400/15 bg-gradient-to-br from-background to-card p-8">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-violet-400">/ IT Park Rezidenti Bo'ling</p>
-              <h3 className="mt-2 text-xl font-bold text-white md:text-2xl">Kompaniyangizni Katalogga Qo'shing</h3>
-              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-zinc-500">IT Park rezidenti sifatida soliq imtiyozlari, infratuzilma va biznes rivojlanish xizmatlaridan foydalaning.</p>
+              <h3 className="mt-2 text-xl font-bold text-foreground md:text-2xl">Kompaniyangizni Katalogga Qo'shing</h3>
+              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-muted">IT Park rezidenti sifatida soliq imtiyozlari, infratuzilma va biznes rivojlanish xizmatlaridan foydalaning. Uychi tumanidagi 5 sanoat zonasida ofis ochish imkoniyati.</p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
               <button className="rounded-full border border-violet-400/30 bg-violet-500/10 px-6 py-3 text-[13px] font-bold text-violet-400 transition-all hover:bg-violet-500/20">
                 Ariza topshirish
               </button>
-              <a href="https://itpark.uz" target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/10 bg-white/3 px-6 py-3 text-center text-[13px] font-semibold text-zinc-400 transition-all hover:text-white">
+              <a href="https://itpark.uz" target="_blank" rel="noopener noreferrer" className="rounded-full border border-border bg-card px-6 py-3 text-center text-[13px] font-semibold text-muted transition-all hover:text-foreground">
                 IT Park haqida
               </a>
             </div>

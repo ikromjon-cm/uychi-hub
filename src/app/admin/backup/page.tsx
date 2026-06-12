@@ -75,49 +75,49 @@ export default function AdminBackup() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Backup Center</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">Manage automated and manual system backups.</p>
+          <h1 className="text-2xl font-bold text-foreground">Backup Center</h1>
+          <p className="mt-1 text-[13px] text-muted">Manage automated and manual system backups.</p>
         </div>
-        <button onClick={handleBackup} disabled={running} className="flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-cyan-400 disabled:opacity-50">
+        <button onClick={handleBackup} disabled={running} className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-accent-dark disabled:opacity-50">
           <RotateCw className={`h-4 w-4 ${running ? "animate-spin" : ""}`} /> {running ? `Backing up... ${progress}%` : "Backup Now"}
         </button>
       </div>
 
       {running && (
-        <div className="rounded-2xl border border-cyan-500/20 bg-cyan-400/5 p-4">
+        <div className="rounded-2xl border border-accent/20 bg-accent/5 p-4">
           <div className="mb-2 flex items-center justify-between text-[13px]">
-            <span className="text-cyan-400">Full backup in progress...</span>
-            <span className="text-cyan-400">{progress}%</span>
+            <span className="text-accent">Full backup in progress...</span>
+            <span className="text-accent">{progress}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-white/5">
-            <div className="h-full rounded-full bg-cyan-400 transition-all duration-200" style={{ width: `${progress}%` }} />
+          <div className="h-2 overflow-hidden rounded-full bg-card-hover">
+            <div className="h-full rounded-full bg-accent transition-all duration-200" style={{ width: `${progress}%` }} />
           </div>
         </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Backups", value: backups.length.toString(), color: "text-white" },
-          { label: "Storage Used", value: "42.5 GB", color: "text-cyan-400" },
+          { label: "Total Backups", value: backups.length.toString(), color: "text-foreground" },
+          { label: "Storage Used", value: "42.5 GB", color: "text-accent" },
           { label: "Last Backup", value: "Today 03:00", color: "text-emerald-400" },
           { label: "Success Rate", value: `${Math.round((backups.filter((b) => b.status === "completed").length / backups.length) * 100)}%`, color: "text-violet-400" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 text-center">
+          <div key={s.label} className="rounded-2xl border border-border-subtle bg-card p-4 text-center">
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="mt-1 text-[12px] text-zinc-600">{s.label}</p>
+            <p className="mt-1 text-[12px] text-muted">{s.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0a0a0a]">
-            <div className="border-b border-white/5 px-6 py-4">
-              <h2 className="text-[14px] font-bold text-white">Backup History</h2>
+          <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
+            <div className="border-b border-border-subtle px-6 py-4">
+              <h2 className="text-[14px] font-bold text-foreground">Backup History</h2>
             </div>
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/5 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+                <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4">Size</th>
@@ -126,31 +126,31 @@ export default function AdminBackup() {
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/4">
+              <tbody className="divide-y divide-border-subtle">
                 {backups.map((b) => {
                   const Icon = statusIcons[b.status] || CheckCircle;
                   return (
-                    <tr key={b.id} className="group text-[13px] transition-colors hover:bg-white/2">
+                    <tr key={b.id} className="group text-[13px] transition-colors hover:bg-card">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/6 bg-white/2 text-zinc-400"><Database className="h-4 w-4" /></div>
-                          <span className="font-medium text-white">{b.name}</span>
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted"><Database className="h-4 w-4" /></div>
+                          <span className="font-medium text-foreground">{b.name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="rounded-full border border-white/6 px-2.5 py-0.5 text-[10px] font-bold text-zinc-400">{b.type}</span>
+                        <span className="rounded-full border border-border px-2.5 py-0.5 text-[10px] font-bold text-muted">{b.type}</span>
                       </td>
-                      <td className="px-6 py-4 text-zinc-500">{b.size}</td>
+                      <td className="px-6 py-4 text-muted">{b.size}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${statusColors[b.status]}`}>
                           <Icon className="h-3 w-3" />{b.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-zinc-500">{b.date}</td>
+                      <td className="px-6 py-4 text-muted">{b.date}</td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                          <button className="rounded-lg border border-white/6 bg-white/2 p-1.5 text-zinc-500 transition-colors hover:border-cyan-500/30 hover:text-cyan-400"><Download className="h-3.5 w-3.5" /></button>
-                          <button className="rounded-lg border border-white/6 bg-white/2 p-1.5 text-zinc-500 transition-colors hover:border-blue-500/30 hover:text-blue-400"><Play className="h-3.5 w-3.5" /></button>
+                          <button className="rounded-lg border border-border bg-card p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Download className="h-3.5 w-3.5" /></button>
+                          <button className="rounded-lg border border-border bg-card p-1.5 text-muted transition-colors hover:border-blue-500/30 hover:text-blue-400"><Play className="h-3.5 w-3.5" /></button>
                         </div>
                       </td>
                     </tr>
@@ -162,41 +162,41 @@ export default function AdminBackup() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-5">
-            <h2 className="mb-4 text-[14px] font-bold text-white">Storage Nodes</h2>
+          <div className="rounded-2xl border border-border-subtle bg-card p-5">
+            <h2 className="mb-4 text-[14px] font-bold text-foreground">Storage Nodes</h2>
             <div className="space-y-4">
               {STORAGE_NODES.map((node) => (
                 <div key={node.name}>
                   <div className="mb-1.5 flex items-center justify-between text-[13px]">
                     <div className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-zinc-400">{node.name}</span>
+                      <span className="text-muted">{node.name}</span>
                     </div>
-                    <span className="text-zinc-600">{node.used}</span>
+                    <span className="text-muted">{node.used}</span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full rounded-full bg-cyan-400/60" style={{ width: `${node.usage}%` }} />
+                  <div className="h-1.5 overflow-hidden rounded-full bg-card-hover">
+                    <div className="h-full rounded-full bg-accent/60" style={{ width: `${node.usage}%` }} />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-5">
-            <h2 className="mb-4 text-[14px] font-bold text-white">Schedule</h2>
+          <div className="rounded-2xl border border-border-subtle bg-card p-5">
+            <h2 className="mb-4 text-[14px] font-bold text-foreground">Schedule</h2>
             <div className="space-y-3 text-[13px]">
               {[
-                { label: "Daily Full Backup", sub: "Every day at 03:00 UTC", color: "text-cyan-400" },
+                { label: "Daily Full Backup", sub: "Every day at 03:00 UTC", color: "text-accent" },
                 { label: "Database Snapshot", sub: "Every 6 hours", color: "text-emerald-400" },
                 { label: "Media Sync", sub: "Every 12 hours", color: "text-violet-400" },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-3">
                   <Clock className={`h-4 w-4 ${s.color}`} />
-                  <div><p className="text-white">{s.label}</p><p className="text-zinc-600">{s.sub}</p></div>
+                  <div><p className="text-foreground">{s.label}</p><p className="text-muted">{s.sub}</p></div>
                 </div>
               ))}
-              <div className="mt-3 border-t border-white/4 pt-3">
-                <p className="text-zinc-600">Retention: <span className="text-white">30 days</span></p>
+              <div className="mt-3 border-t border-border-subtle pt-3">
+                <p className="text-muted">Retention: <span className="text-foreground">30 days</span></p>
               </div>
             </div>
           </div>

@@ -25,7 +25,7 @@ const roleColors: Record<UserRole, string> = {
   moderator: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   startup_owner: "bg-violet-500/10 text-violet-400 border-violet-500/20",
   investor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  viewer: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
+  viewer: "bg-card-hover text-muted border-border",
 };
 
 const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
@@ -57,49 +57,49 @@ export default function AdminRoles() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">User Roles</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">Assign and manage role-based access for all users.</p>
+          <h1 className="text-2xl font-bold text-foreground">User Roles</h1>
+          <p className="mt-1 text-[13px] text-muted">Assign and manage role-based access for all users.</p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-5">
         {ALL_ROLES.map((role) => (
-          <div key={role} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 text-center">
+          <div key={role} className="rounded-2xl border border-border-subtle bg-card p-4 text-center">
             <div className={`mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl border ${roleColors[role]}`}>
               <Shield className="h-5 w-5" />
             </div>
-            <p className="text-lg font-bold text-white">{roleCount(role)}</p>
-            <p className="mt-0.5 text-[11px] capitalize text-zinc-600">{role.replace("_", " ")}</p>
+            <p className="text-lg font-bold text-foreground">{roleCount(role)}</p>
+            <p className="mt-0.5 text-[11px] capitalize text-muted">{role.replace("_", " ")}</p>
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-2 w-fit">
-            <Search className="h-4 w-4 text-zinc-600" />
-            <input type="text" placeholder="Search users..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-white outline-none placeholder:text-zinc-600" />
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 w-fit">
+            <Search className="h-4 w-4 text-muted" />
+            <input type="text" placeholder="Search users..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0a0a0a]">
+          <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/5 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+                <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Current Role</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Change Role</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/4">
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((user) => (
-                  <tr key={user.id} className="text-[13px] transition-colors hover:bg-white/2">
+                  <tr key={user.id} className="text-[13px] transition-colors hover:bg-card">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-bold ${roleColors[user.role]}`}>{user.avatar}</div>
                         <div>
-                          <p className="font-medium text-white">{user.name}</p>
-                          <p className="text-[12px] text-zinc-600">{user.email}</p>
+                          <p className="font-medium text-foreground">{user.name}</p>
+                          <p className="text-[12px] text-muted">{user.email}</p>
                         </div>
                       </div>
                     </td>
@@ -116,7 +116,7 @@ export default function AdminRoles() {
                       <select
                         value={user.role}
                         onChange={(e) => changeRole(user.id, e.target.value as UserRole)}
-                        className="appearance-none rounded-lg border border-white/6 bg-white/2 px-3 py-1.5 text-[12px] text-zinc-400 outline-none transition-colors hover:border-white/10 focus:border-cyan-500/40"
+                        className="appearance-none rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] text-muted outline-none transition-colors hover:border-border focus:border-accent/40"
                       >
                         {ALL_ROLES.map((r) => (
                           <option key={r} value={r}>{r.replace("_", " ")}</option>
@@ -131,19 +131,19 @@ export default function AdminRoles() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-[14px] font-bold text-white">Role Permissions</h2>
+          <h2 className="text-[14px] font-bold text-foreground">Role Permissions</h2>
           {ALL_ROLES.map((role) => (
-            <div key={role} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4">
+            <div key={role} className="rounded-2xl border border-border-subtle bg-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className={`flex h-7 w-7 items-center justify-center rounded-lg border ${roleColors[role]}`}>
                   <Shield className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[13px] font-bold capitalize text-white">{role.replace("_", " ")}</span>
-                <span className="ml-auto text-[11px] text-zinc-600">{roleCount(role)} users</span>
+                <span className="text-[13px] font-bold capitalize text-foreground">{role.replace("_", " ")}</span>
+                <span className="ml-auto text-[11px] text-muted">{roleCount(role)} users</span>
               </div>
               <ul className="space-y-1">
                 {ROLE_PERMISSIONS[role].map((perm) => (
-                  <li key={perm} className="text-[12px] text-zinc-500">• {perm}</li>
+                  <li key={perm} className="text-[12px] text-muted">• {perm}</li>
                 ))}
               </ul>
             </div>

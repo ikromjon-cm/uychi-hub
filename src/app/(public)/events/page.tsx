@@ -24,7 +24,7 @@ const EVENTS: EventItem[] = [
 
 type AccentKey = "cyan" | "violet" | "emerald";
 const A: Record<AccentKey, { border: string; badge: string; text: string; bg: string }> = {
-  cyan:    { border: "border-cyan-500/20 hover:border-cyan-500/40",    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",    text: "text-cyan-400",    bg: "bg-cyan-500/5" },
+  cyan:    { border: "border-accent/20 hover:border-accent/40",    badge: "bg-accent/10 text-accent border-accent/20",    text: "text-accent",    bg: "bg-accent/5" },
   violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  bg: "bg-violet-500/5" },
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", bg: "bg-emerald-500/5" },
 };
@@ -54,30 +54,30 @@ export default function EventsPage() {
   const past = filtered.filter((e) => getDaysUntil(e.date) < 0);
 
   return (
-    <div className="min-h-screen bg-[#030303]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative border-b border-white/4 px-6 py-16">
+      <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.05)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ Tadbirlar Kalendari</p>
-          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-white">
+          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
             IT Tadbirlari &<br />
             <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-400 bg-clip-text text-transparent">Musobaqalar</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-500">
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
             Hackathonlar, bootcamplar, konferentsiyalar va ustaxonalar — Uychi IT Hubdagi barcha tadbirlar.
           </p>
 
           {/* Stats */}
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Kelayotgan tadbirlar", value: String(upcoming.length), color: "text-emerald-400" },
-              { label: "Umumiy ishtirokchilar", value: "1,800+", color: "text-cyan-400" },
-              { label: "Yillik tadbirlar", value: "24+", color: "text-violet-400" },
+               { label: "Kelayotgan tadbirlar", value: String(upcoming.length), color: "text-emerald-400" },
+              { label: "Ishtirokchilar", value: "1,800+", color: "text-accent" },
+              { label: "Yillik tadbir", value: "24+", color: "text-violet-400" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/5 bg-white/2 px-5 py-3 text-center">
+              <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-zinc-600">{s.label}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-muted">{s.label}</p>
               </div>
             ))}
           </div>
@@ -94,7 +94,7 @@ export default function EventsPage() {
               className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[12px] font-semibold transition-all ${
                 activeType === type
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400"
-                  : "border-white/8 bg-white/3 text-zinc-500 hover:border-white/15 hover:text-zinc-300"
+                  : "border-border bg-card text-muted hover:border-border hover:text-foreground"
               }`}
             >
               {type !== "Barchasi" && TYPE_ICONS[type]}
@@ -106,7 +106,7 @@ export default function EventsPage() {
         {/* Upcoming Events */}
         {upcoming.length > 0 && (
           <>
-            <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-zinc-500">Kelayotgan tadbirlar</h2>
+            <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">Kelayotgan tadbirlar</h2>
             <div className="mb-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {upcoming.map((event) => {
                 const c = A[event.accent as AccentKey];
@@ -115,7 +115,7 @@ export default function EventsPage() {
                 const isFull = event.registered >= event.seats;
 
                 return (
-                  <div key={event.id} className={`group flex flex-col rounded-2xl border bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
+                  <div key={event.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
                     {/* Type badge */}
                     <div className="flex items-center justify-between">
                       <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${c.badge}`}>
@@ -132,7 +132,7 @@ export default function EventsPage() {
                     <h3 className={`mt-4 text-[16px] font-bold leading-snug ${c.text}`}>{event.title}</h3>
 
                     {/* Date & Location */}
-                    <div className="mt-3 space-y-1.5 text-[12px] text-zinc-500">
+                    <div className="mt-3 space-y-1.5 text-[12px] text-muted">
                       <div className="flex items-center gap-1.5">
                         <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 9v7.5" /></svg>
                         {event.date}{event.endDate ? ` — ${event.endDate}` : ""}
@@ -149,38 +149,38 @@ export default function EventsPage() {
                       )}
                     </div>
 
-                    <p className="mt-3 flex-1 text-[12px] leading-relaxed text-zinc-500 line-clamp-3">{event.description}</p>
+                    <p className="mt-3 flex-1 text-[12px] leading-relaxed text-muted line-clamp-3">{event.description}</p>
 
                     {/* Prize */}
                     {event.prize && (
                       <div className={`mt-3 rounded-lg border ${c.border} ${c.bg} px-3 py-2`}>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Mukofot: </span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Mukofot: </span>
                         <span className={`text-[12px] font-bold ${c.text}`}>{event.prize}</span>
                       </div>
                     )}
 
                     {/* Registration progress */}
                     <div className="mt-4">
-                      <div className="flex items-center justify-between text-[11px] text-zinc-600">
+                      <div className="flex items-center justify-between text-[11px] text-muted">
                         <span>{event.registered}/{event.seats} ro'yxatdan o'tgan</span>
                         <span>{pct}%</span>
                       </div>
-                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-                        <div className={`h-full rounded-full transition-all ${event.accent === "cyan" ? "bg-cyan-400" : event.accent === "violet" ? "bg-violet-400" : "bg-emerald-400"}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-card-hover">
+                        <div className={`h-full rounded-full transition-all ${event.accent === "cyan" ? "bg-accent" : event.accent === "violet" ? "bg-violet-400" : "bg-emerald-400"}`} style={{ width: `${Math.min(pct, 100)}%` }} />
                       </div>
                     </div>
 
                     {/* Tags */}
                     <div className="mt-3 flex flex-wrap gap-1">
                       {event.tags.map((tag) => (
-                        <span key={tag} className="rounded-full bg-white/4 px-2 py-0.5 text-[10px] font-medium text-zinc-500">{tag}</span>
+                        <span key={tag} className="rounded-full bg-card-hover px-2 py-0.5 text-[10px] font-medium text-muted">{tag}</span>
                       ))}
                     </div>
 
                     {/* Register button */}
                     <button disabled={isFull} className={`mt-5 w-full rounded-xl py-2.5 text-[13px] font-bold transition-all ${
                       isFull
-                        ? "cursor-not-allowed border border-white/5 bg-white/3 text-zinc-600"
+                        ? "cursor-not-allowed border border-border bg-card text-muted"
                         : `border ${c.badge} ${c.text} hover:opacity-80`
                     }`}>
                       {isFull ? "Joy band" : "Ro'yxatdan o'tish"}
@@ -195,21 +195,21 @@ export default function EventsPage() {
         {/* Past Events */}
         {past.length > 0 && (
           <>
-            <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-zinc-600">O'tgan tadbirlar</h2>
+            <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">O'tgan tadbirlar</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {past.map((event) => {
                 const c = A[event.accent as AccentKey];
                 return (
-                  <div key={event.id} className="flex flex-col rounded-2xl border border-white/5 bg-[#0a0a0a] p-5 opacity-60">
+                  <div key={event.id} className="flex flex-col rounded-2xl border border-border bg-card p-5 opacity-60">
                     <div className="flex items-center justify-between">
                       <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase ${c.badge} opacity-60`}>
                         {TYPE_ICONS[event.type]}
                         {event.type}
                       </span>
-                      <span className="text-[11px] text-zinc-600">{event.date}</span>
+                      <span className="text-[11px] text-muted">{event.date}</span>
                     </div>
-                    <h3 className="mt-3 text-[14px] font-semibold text-zinc-400">{event.title}</h3>
-                    <p className="mt-1 text-[12px] text-zinc-600">{event.location} · {event.registered} ishtirokchi</p>
+                    <h3 className="mt-3 text-[14px] font-semibold text-muted">{event.title}</h3>
+                    <p className="mt-1 text-[12px] text-muted">{event.location} · {event.registered} ishtirokchi</p>
                   </div>
                 );
               })}
@@ -218,10 +218,10 @@ export default function EventsPage() {
         )}
 
         {/* Submit event CTA */}
-        <div className="mt-16 rounded-2xl border border-emerald-400/15 bg-gradient-to-br from-[#0a1a0f] to-[#0a0a0a] p-8 text-center">
+        <div className="mt-16 rounded-2xl border border-emerald-400/15 bg-gradient-to-br from-background to-card p-8 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ O'z tadbiringizni o'tkazing</p>
-          <h3 className="mt-2 text-2xl font-bold text-white">Uychi IT Hubda Tadbir Tashkillash</h3>
-          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-zinc-500">Konferentsiya, bootcamp yoki hackathon o'tkazmoqchimisiz? IT Hub infratuzilmasi va auditoriyasidan foydalaning.</p>
+          <h3 className="mt-2 text-2xl font-bold text-foreground">Uychi IT Hubda Tadbir Tashkillash</h3>
+          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">Konferentsiya, bootcamp yoki hackathon o'tkazmoqchimisiz? Istiqlol 15-dagi IT Hub infratuzilmasi va Uychi hamjamiyatidan foydalaning.</p>
           <button className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-8 py-3.5 text-[14px] font-bold text-emerald-400 transition-all hover:border-emerald-400/50 hover:bg-emerald-500/15">
             Murojaat qilish
           </button>

@@ -119,52 +119,52 @@ export interface NewsItem {
 
 export const NEWS: NewsItem[] = [
   {
-    id: 'google-startups',
-    category: 'Hamkorlik',
-    title: 'Google for Startups Uychi IT Hubga keldi',
-    excerpt: "Google for Startups dasturi Uychi tumani rezidentlari uchun maxsus mentorlik va texnik yordam dasturini boshladi. Dastur doirasida 20 ta startapga $10,000 gacha kredit ajratiladi.",
-    date: '2025-06-03',
+    id: 'it-park-rezident',
+    category: 'IT Park',
+    title: "Uychi tumanida IT Park rezidentlari soni 50 taga yetdi",
+    excerpt: "Uychi IT Hub rezident kompaniyalari soni rekord darajaga yetdi. 900 dan ziyod kichik korxona va 50 ta IT Park rezidenti Uychi tumanida faoliyat yuritmoqda. Eng so'nggi rezidentlar — paxta tozalash va ipakchilik sanoati uchun IT yechimlar ishlab chiqaruvchi startaplar.",
+    date: '2026-06-10',
     accent: 'cyan',
   },
   {
-    id: 'new-graduates',
+    id: 'silk-ai',
+    category: 'AI',
+    title: "Uychi ipak fabrikalarida AI sifat nazorati joriy etildi",
+    excerpt: "Uychi tumanidagi 'Ipakchi' va 'Yigiruv-to'quv' korxonalarida kompyuter ko'rish asosida ishlaydigan AI sifat nazorati tizimi ishga tushirildi. Tizim ipak rangini, nuqsonlarni va to'qima sifatini real vaqtda tekshiradi, ishlab chiqarish tezligini 30% ga oshirdi.",
+    date: '2026-05-28',
+    accent: 'emerald',
+  },
+  {
+    id: 'ai-hackathon',
+    category: 'Tadbir',
+    title: "Uychi AI Hackathon 2026: 48 soatlik marafon yakunlandi",
+    excerpt: "Uychi IT Hubda o'tkazilgan ikki kunlik AI Hackathon'da 45 jamoa ishtirok etdi. G'olib bo'lgan 'PaxtaSoft' jamoasi paxta tozalash zavodlarida chiqindini kamaytirish bo'yicha AI yechimi uchun 5,000,000 UZS mukofot oldi.",
+    date: '2026-05-15',
+    accent: 'violet',
+  },
+  {
+    id: 'school-digital',
     category: "Ta'lim",
-    title: "Uychi IT Park ta'lim markazidan 150 nafar bitiruvchi",
-    excerpt: "IT Park Uychi qoshidagi dasturlash kurslari birinchi to'liq yilida 150 nafar dasturchi va dizaynerni tayyorladi. Bitiruvchilarning 80% mahalliy IT kompaniyalarda ishga joylashgan.",
-    date: '2025-05-20',
-    accent: 'violet',
-  },
-  {
-    id: 'agrosmart-grant',
-    category: 'Yutuq',
-    title: "AgroSmart Uychi CentralAsia TechFest'da $50,000 yutdi",
-    excerpt: "Uychi tumanining agrotexnologiya startapi AgroSmart Toshkentda bo'lib o'tgan CentralAsia TechFest tanlovida birinchi o'rinni egalladi va $50,000 miqdorida xalqaro grant oldi.",
-    date: '2025-04-28',
-    accent: 'emerald',
-  },
-  {
-    id: 'new-residents',
-    category: 'O\'sish',
-    title: "Rezidentlar soni 50 taga yetdi — yangi rekord",
-    excerpt: "2025-yil aprel oyida Uychi IT Hubga 12 ta yangi kompaniya qo'shildi. Hozirda jami 50 ta rezident kompaniya faoliyat ko'rsatmoqda va 400+ IT mutaxassis ish bilan ta'minlangan.",
-    date: '2025-04-10',
+    title: "Uychidagi 47 maktabdan 20 tasi raqamlashtirildi",
+    excerpt: "Uychi tumanidagi 47 umumta'lim maktabidan 20 tasi to'liq raqamli ta'lim tizimiga o'tkazildi. Har bir maktabga IT Park Uychi tomonidan 10 tadan kompyuter va interaktiv doska yetkazib berildi. 42,400 o'quvchining 18,000 dan ortig'i raqamli ta'lim bilan qamrab olindi.",
+    date: '2026-05-02',
     accent: 'cyan',
   },
   {
-    id: 'mdec-partnership',
-    category: 'Hamkorlik',
-    title: "Malayziya MDEC bilan strategik bitim imzolandi",
-    excerpt: "Uychi IT Hub Malayziyaning yetakchi texnologiya agentligi MDEC bilan texnologiya transferi va startaplarni qo'llab-quvvatlash bo'yicha 3 yillik hamkorlik shartnomasini imzoladi.",
-    date: '2025-03-20',
-    accent: 'violet',
+    id: 'devonabobo-app',
+    category: 'Texnologiya',
+    title: "Devonabobo ziyoratgohi mobil ilovasiga ega bo'ldi",
+    excerpt: "Uychi tumanidagi qadimiy Devonabobo ziyoratgohi uchun ishlab chiqilgan mobil ilova orqali tashrif buyuruvchilar tarixiy ma'lumotlar, audio gid va virtual 3D sayohat qilish imkoniyatiga ega bo'ldi. Loyiha Uychi IT Hub rezidenti GameLab UZ tomonidan yaratildi.",
+    date: '2026-04-18',
+    accent: 'emerald',
   },
   {
-    id: 'fiber-network',
+    id: 'sanoat-zonalari',
     category: 'Infratuzilma',
-    title: "10 Gbps optik tolali internet butun hub bo'ylab yoyildi",
-    excerpt: "Uychi IT Hub hududida to'liq 10 Gbps optik tolali internet infratuzilmasi qurildi. Barcha ofislar va coworking zonalari yuqori tezlikli aloqa bilan ta'minlandi.",
-    date: '2025-03-05',
-    accent: 'emerald',
+    title: "5 ta sanoat zonasi raqamli boshqaruv tizimiga ulandi",
+    excerpt: "Uychi tumanidagi Yorkatay, Ovchibuloq, Kumtepa, Yuksalish va Yangiyer sanoat zonalari yagona raqamli boshqaruv platformasiga birlashtirildi. Tizim mahsulot logistikasi, energiya iste'moli va ishlab chiqarish ko'rsatkichlarini real vaqtda monitoring qiladi.",
+    date: '2026-03-25',
+    accent: 'violet',
   },
 ];
 
@@ -855,5 +855,205 @@ export const PARTNERS_LIST: Partner[] = [
     country: 'UK',
     description: 'Global mobil aloqa sanoatini ifodalovchi assotsiatsiya — mobil innovatsiyalar va raqamli inklyuziya bo\'yicha dasturlar.',
     website: 'https://www.gsma.com',
+  },
+];
+
+// ─── Mock API Startup Data ──────────────────────────────────────────────────
+
+export interface MockStartupItem {
+  name: string;
+  sector: string;
+  stage: string;
+  founder: string;
+  teamSize: number;
+  fundingNeeded: string;
+  desc: string;
+  techStack: string;
+}
+
+export const MOCK_STARTUPS: MockStartupItem[] = [
+  {
+    name: "PaxtaSoft AI",
+    sector: "AgriTech",
+    stage: "Seed",
+    founder: "Akmal Rahimov",
+    teamSize: 8,
+    fundingNeeded: "$150K",
+    desc: "Paxta tozalash zavodlari uchun AI asosida chiqindini kamaytirish va sifat nazorati tizimi.",
+    techStack: "Computer Vision, Python, IoT, TensorFlow",
+  },
+  {
+    name: "Ipakchi AI",
+    sector: "Textile AI",
+    stage: "MVP",
+    founder: "Dildora Yunusova",
+    teamSize: 5,
+    fundingNeeded: "$100K",
+    desc: "Ipak fabrikalarida kompyuter ko'rish yordamida mato nuqsonlarini aniqlash tizimi.",
+    techStack: "Computer Vision, Deep Learning, OpenCV, Python",
+  },
+  {
+    name: "AgriSense",
+    sector: "AgriTech",
+    stage: "Pre-Seed",
+    founder: "Jasur Toshmatov",
+    teamSize: 4,
+    fundingNeeded: "$50K",
+    desc: "Tuproq namligi va o'g'it miqdorini IoT sensorlar bilan monitoring qilish tizimi.",
+    techStack: "IoT, Arduino, Python, React",
+  },
+  {
+    name: "SilkPay",
+    sector: "FinTech",
+    stage: "Idea",
+    founder: "Shahlo Karimova",
+    teamSize: 3,
+    fundingNeeded: "$30K",
+    desc: "Ipak yetishtiruvchi kichik korxonalar uchun mikromoliya va to'lov tizimi.",
+    techStack: "Flutter, Node.js, PostgreSQL, Blockchain",
+  },
+  {
+    name: "CottonLog",
+    sector: "LogiTech",
+    stage: "Seed",
+    founder: "Rustam Aliyev",
+    teamSize: 7,
+    fundingNeeded: "$200K",
+    desc: "Paxta logistikasi va ta'minot zanjirini raqamlashtirish platformasi.",
+    techStack: "React, Django, PostgreSQL, Redis",
+  },
+  {
+    name: "EduRural",
+    sector: "EdTech",
+    stage: "MVP",
+    founder: "Zulfiya Nurmatova",
+    teamSize: 6,
+    fundingNeeded: "$80K",
+    desc: "Qishloq maktablari uchun adaptiv o'quv platformasi va AI repetitor.",
+    techStack: "Next.js, Python, NLP, TensorFlow",
+  },
+  {
+    name: "GreenSilk",
+    sector: "Textile AI",
+    stage: "Pre-Seed",
+    founder: "Bekzod Xoshimov",
+    teamSize: 4,
+    fundingNeeded: "$70K",
+    desc: "Ipak qurti yetishtirish jarayonlarini AI bilan optimallashtirish.",
+    techStack: "ML, Computer Vision, IoT, Python",
+  },
+];
+
+// ─── Mock API Job Data ──────────────────────────────────────────────────────
+
+export interface MockJobItem {
+  title: string;
+  department: string;
+  employment_type: string;
+  location: string;
+  status: string;
+  salary_range: string;
+  description: string;
+  requirements: string;
+  applicants_count: number;
+  created_at: string;
+}
+
+export const MOCK_JOBS: MockJobItem[] = [
+  {
+    title: "Senior React Developer",
+    department: "Frontend Development",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$1,200 – $2,000/oy",
+    description: "Uychi IT Hub jamoasiga qo'shiling va mahalliy startaplar uchun zamonaviy veb-ilovalar yarating.",
+    requirements: "React, TypeScript, Next.js, Tailwind CSS, Git",
+    applicants_count: 15,
+    created_at: "2026-06-01",
+  },
+  {
+    title: "Python/Django Backend Developer",
+    department: "Backend Development",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$1,000 – $1,800/oy",
+    description: "Mahalliy IT loyihalar uchun backend tizimlarini ishlab chiqish va API integratsiyasi.",
+    requirements: "Python, Django, PostgreSQL, Docker, REST API",
+    applicants_count: 8,
+    created_at: "2026-05-28",
+  },
+  {
+    title: "Flutter Developer",
+    department: "Mobile Development",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$900 – $1,500/oy",
+    description: "Ipakchi AI va boshqa startaplar uchun mobil ilovalar yaratish.",
+    requirements: "Flutter, Dart, Firebase, REST API, BLoC",
+    applicants_count: 10,
+    created_at: "2026-05-25",
+  },
+  {
+    title: "UI/UX Dizayner",
+    department: "Design",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$800 – $1,400/oy",
+    description: "Startap va IT kompaniyalar uchun foydalanuvchi interfeyslari va brending loyihalari.",
+    requirements: "Figma, Adobe XD, Prototiplash, Foydalanuvchi tadqiqoti",
+    applicants_count: 7,
+    created_at: "2026-05-20",
+  },
+  {
+    title: "Data Science Intern",
+    department: "Data Science",
+    employment_type: "Internship",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$300 – $500/oy",
+    description: "AI va ma'lumotlar tahlili bo'yicha stajyorlik dasturi. Amaliy loyihalar va mentorlik.",
+    requirements: "Python, Pandas, Scikit-learn, SQL, Statistika",
+    applicants_count: 20,
+    created_at: "2026-05-15",
+  },
+  {
+    title: "DevOps Engineer",
+    department: "Infrastructure",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$1,300 – $2,200/oy",
+    description: "IT Hub infratuzilmasini boshqarish va CI/CD jarayonlarini avtomatlashtirish.",
+    requirements: "Docker, Kubernetes, AWS, CI/CD, Linux, Terraform",
+    applicants_count: 5,
+    created_at: "2026-05-10",
+  },
+  {
+    title: "Marketing Manager",
+    department: "Marketing",
+    employment_type: "Full-time",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$700 – $1,200/oy",
+    description: "Uychi IT Hub va rezident startaplar uchun raqamli marketing strategiyasini boshqarish.",
+    requirements: "Digital Marketing, SEO, SMM, Google Ads, Kontent",
+    applicants_count: 12,
+    created_at: "2026-05-08",
+  },
+  {
+    title: "Cybersecurity Intern",
+    department: "Security",
+    employment_type: "Internship",
+    location: "Uychi, Namangan",
+    status: "active",
+    salary_range: "$250 – $450/oy",
+    description: "Kiberxavfsizlik bo'yicha amaliy stajyorlik – penetratsion test va tarmoq xavfsizligi.",
+    requirements: "Linux, Networking, Python, Kriptografiya",
+    applicants_count: 18,
+    created_at: "2026-05-01",
   },
 ];

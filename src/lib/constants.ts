@@ -4,18 +4,18 @@ export const SITE: SiteConfig = {
   name: "Uychi AI & IT Hub",
   url: "https://uychi.uz",
   description:
-    "World-class AI & technology ecosystem in Uzbekistan attracting global investors, Fortune-500 companies, and high-growth startups.",
+    "Uychi tumanidagi IT va sun'iy intellekt markazi — startaplar, IT kompaniyalar va yoshlar uchun texnologiya ekotizimi.",
   keywords: [
+    "Uychi tumani",
+    "Namangan IT",
+    "Uychi IT Hub",
+    "Startap Namangan",
     "AI Uzbekistan",
-    "AI Central Asia",
-    "Invest in Uzbekistan",
-    "Technology Hub Uzbekistan",
-    "Digital Innovation Uzbekistan",
-    "Startup Uzbekistan",
-    "AI Center Central Asia",
-    "Innovation Hub",
-    "Future City Uzbekistan",
-    "Global Technology Park",
+    "IT Park Namangan",
+    "Sun'iy intellekt",
+    "Uychi startaplar",
+    "Namangan texnologiya",
+    "IT ta'lim Uychi",
   ],
   ogImage: "/og.jpg",
 };
@@ -71,9 +71,9 @@ export const ADMIN_NAV: NavLink[] = [
 ];
 
 export const STATS = [
-  { value: "50+", label: "Startap Loyiha" },
-  { value: "10K+", label: "Faol Foydalanuvchi" },
-  { value: "1,200+", label: "Yaratilgan Ish O'rni" },
-  { value: "30+", label: "Xalqaro Hamkor" },
-  { value: "25+", label: "AI Yechim" },
+  { value: "237,600+", label: "Tuman Aholisi" },
+  { value: "309", label: "Maydoni km²" },
+  { value: "47", label: "Maktablar" },
+  { value: "900+", label: "Kichik Korxona" },
+  { value: "5", label: "Sanoat Zonalari" },
 ];

@@ -55,10 +55,10 @@ export default function AdminMedia() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Media Library</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">{items.length} assets total</p>
+          <h1 className="text-2xl font-bold text-foreground">Media Library</h1>
+          <p className="mt-1 text-[13px] text-muted">{items.length} assets total</p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-cyan-400">
+        <button className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-accent-dark">
           <Plus className="h-4 w-4" /> Upload
         </button>
       </div>
@@ -69,28 +69,28 @@ export default function AdminMedia() {
           { label: "Videos", value: items.filter((m) => m.type === "video").length.toString(), color: "text-violet-400" },
           { label: "Documents", value: items.filter((m) => m.type === "document").length.toString(), color: "text-orange-400" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 text-center">
+          <div key={s.label} className="rounded-2xl border border-border-subtle bg-card p-4 text-center">
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="mt-1 text-[12px] text-zinc-600">{s.label}</p>
+            <p className="mt-1 text-[12px] text-muted">{s.label}</p>
           </div>
         ))}
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-2">
-            <Search className="h-4 w-4 text-zinc-600" />
-            <input type="text" placeholder="Search assets..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-white outline-none placeholder:text-zinc-600" />
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+            <Search className="h-4 w-4 text-muted" />
+            <input type="text" placeholder="Search assets..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
           </div>
-          <div className="flex gap-1 rounded-xl border border-white/6 bg-white/2 p-1">
+          <div className="flex gap-1 rounded-xl border border-border bg-card p-1">
             {["all", "image", "video", "document"].map((t) => (
-              <button key={t} onClick={() => setTypeFilter(t)} className={`rounded-lg px-3 py-1.5 text-[12px] font-medium capitalize transition-colors ${typeFilter === t ? "bg-white/10 text-white" : "text-zinc-500 hover:text-white"}`}>{t}</button>
+              <button key={t} onClick={() => setTypeFilter(t)} className={`rounded-lg px-3 py-1.5 text-[12px] font-medium capitalize transition-colors ${typeFilter === t ? "bg-card-hover text-foreground" : "text-muted hover:text-foreground"}`}>{t}</button>
             ))}
           </div>
         </div>
-        <div className="flex gap-1 rounded-xl border border-white/6 bg-white/2 p-1">
-          <button onClick={() => setView("grid")} className={`rounded-lg p-1.5 transition-colors ${view === "grid" ? "bg-white/10 text-white" : "text-zinc-600 hover:text-white"}`}><LayoutGrid className="h-4 w-4" /></button>
-          <button onClick={() => setView("list")} className={`rounded-lg p-1.5 transition-colors ${view === "list" ? "bg-white/10 text-white" : "text-zinc-600 hover:text-white"}`}><List className="h-4 w-4" /></button>
+        <div className="flex gap-1 rounded-xl border border-border bg-card p-1">
+          <button onClick={() => setView("grid")} className={`rounded-lg p-1.5 transition-colors ${view === "grid" ? "bg-card-hover text-foreground" : "text-muted hover:text-foreground"}`}><LayoutGrid className="h-4 w-4" /></button>
+          <button onClick={() => setView("list")} className={`rounded-lg p-1.5 transition-colors ${view === "list" ? "bg-card-hover text-foreground" : "text-muted hover:text-foreground"}`}><List className="h-4 w-4" /></button>
         </div>
       </div>
 
@@ -99,28 +99,28 @@ export default function AdminMedia() {
           {filtered.map((m) => {
             const Icon = typeIcons[m.type] || File;
             return (
-              <div key={m.id} className="group relative rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 transition-all hover:border-white/10">
-                <div className={`flex h-32 items-center justify-center rounded-xl border ${typeColors[m.type] || "bg-zinc-400/10 text-zinc-400 border-zinc-400/20"} bg-white/2`}>
+              <div key={m.id} className="group relative rounded-2xl border border-border-subtle bg-card p-4 transition-all hover:border-border">
+                <div className={`flex h-32 items-center justify-center rounded-xl border ${typeColors[m.type] || "bg-card-hover text-muted border-border"} bg-card`}>
                   <Icon className="h-10 w-10 opacity-50" />
                 </div>
                 <div className="mt-3">
-                  <p className="truncate text-[13px] font-medium text-white" title={m.name}>{m.name}</p>
-                  <p className="text-[12px] text-zinc-600">{m.size} · {m.category}</p>
-                  <p className="text-[11px] text-zinc-700">{m.uploadedAt}</p>
+                  <p className="truncate text-[13px] font-medium text-foreground" title={m.name}>{m.name}</p>
+                  <p className="text-[12px] text-muted">{m.size} · {m.category}</p>
+                  <p className="text-[11px] text-muted-foreground">{m.uploadedAt}</p>
                 </div>
                 <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button className="rounded-lg border border-white/6 bg-[#0a0a0a] p-1.5 text-zinc-500 transition-colors hover:border-cyan-500/30 hover:text-cyan-400"><Download className="h-3.5 w-3.5" /></button>
-                  <button onClick={() => deleteItem(m.id)} className="rounded-lg border border-white/6 bg-[#0a0a0a] p-1.5 text-zinc-500 transition-colors hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                  <button className="rounded-lg border border-border bg-card p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Download className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => deleteItem(m.id)} className="rounded-lg border border-border bg-card p-1.5 text-muted transition-colors hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0a0a0a]">
+        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Type</th>
                 <th className="px-6 py-4">Size</th>
@@ -130,26 +130,26 @@ export default function AdminMedia() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/4">
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((m) => (
-                <tr key={m.id} className="group text-[13px] transition-colors hover:bg-white/2">
+                <tr key={m.id} className="group text-[13px] transition-colors hover:bg-card">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${typeColors[m.type] || "bg-zinc-400/10 text-zinc-400 border-zinc-400/20"}`}>
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${typeColors[m.type] || "bg-card-hover text-muted border-border"}`}>
                         {React.createElement(typeIcons[m.type] || File, { className: "h-4 w-4" })}
                       </div>
-                      <span className="font-medium text-white">{m.name}</span>
+                      <span className="font-medium text-foreground">{m.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 capitalize text-zinc-500">{m.type}</td>
-                  <td className="px-6 py-4 text-zinc-500">{m.size}</td>
-                  <td className="px-6 py-4 text-zinc-500">{m.category}</td>
-                  <td className="px-6 py-4 text-zinc-500">{m.uploadedBy}</td>
-                  <td className="px-6 py-4 text-zinc-500">{m.uploadedAt}</td>
+                  <td className="px-6 py-4 capitalize text-muted">{m.type}</td>
+                  <td className="px-6 py-4 text-muted">{m.size}</td>
+                  <td className="px-6 py-4 text-muted">{m.category}</td>
+                  <td className="px-6 py-4 text-muted">{m.uploadedBy}</td>
+                  <td className="px-6 py-4 text-muted">{m.uploadedAt}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      <button className="rounded-lg border border-white/6 bg-white/2 p-1.5 text-zinc-500 hover:border-cyan-500/30 hover:text-cyan-400"><Download className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => deleteItem(m.id)} className="rounded-lg border border-white/6 bg-white/2 p-1.5 text-zinc-500 hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                      <button className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Download className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => deleteItem(m.id)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                     </div>
                   </td>
                 </tr>

@@ -35,23 +35,23 @@ export default function LoginPage() {
             <LogIn className="h-3 w-3" />
             Tizimga Kirish
           </div>
-          <h1 className="text-[clamp(1.8rem,4vw,2.5rem)] font-bold leading-tight tracking-tight text-white">
+          <h1 className="text-[clamp(1.8rem,4vw,2.5rem)] font-bold leading-tight tracking-tight text-foreground">
             Xush Kelibsiz
           </h1>
-          <p className="mt-3 text-[14px] text-zinc-500">
+          <p className="mt-3 text-[14px] text-muted">
             Uychi Hub boshqaruv paneliga kirish
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/5 bg-[#0a0a0a] p-6">
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6">
           <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Foydalanuvchi Nomi</label>
-            <input name="username" type="text" required autoComplete="username" placeholder="foydalanuvchi_nomi" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+            <label htmlFor="login-username" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Foydalanuvchi Nomi</label>
+            <input id="login-username" name="username" type="text" required autoComplete="username" placeholder="foydalanuvchi_nomi" className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-violet-400/40 focus:bg-card" />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-zinc-600">Parol</label>
-            <input name="password" type="password" required autoComplete="current-password" placeholder="••••••••" className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-3 text-[14px] text-white outline-none placeholder:text-zinc-700 focus:border-violet-400/40 focus:bg-white/3" />
+            <label htmlFor="login-password" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Parol</label>
+            <input id="login-password" name="password" type="password" required autoComplete="current-password" placeholder="••••••••" className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-violet-400/40 focus:bg-card" />
           </div>
 
           {error && (
@@ -64,7 +64,7 @@ export default function LoginPage() {
             {loading ? "Kirilmoqda..." : <>Kirish <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span></>}
           </button>
 
-          <p className="pt-2 text-center text-[13px] text-zinc-600">
+          <p className="pt-2 text-center text-[13px] text-muted">
             Hisobingiz yo&apos;qmi?{" "}
             <Link href="/register" className="text-violet-400 hover:text-violet-300">
               Ro&apos;yxatdan o&apos;tish

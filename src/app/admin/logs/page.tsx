@@ -38,50 +38,50 @@ export default function AdminLogs() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">System Logs</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">Barcha tizim faoliyatining audit jurnali.</p>
+          <h1 className="text-2xl font-bold text-foreground">System Logs</h1>
+          <p className="mt-1 text-[13px] text-muted">Barcha tizim faoliyatining audit jurnali.</p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Events", value: logs.length.toString(), color: "text-white" },
+          { label: "Total Events", value: logs.length.toString(), color: "text-foreground" },
           { label: "Errors", value: errorCount.toString(), color: "text-red-400" },
           { label: "Warnings", value: warningCount.toString(), color: "text-yellow-400" },
           { label: "Success Events", value: logs.filter(l => l.level === "success").length.toString(), color: "text-emerald-400" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 text-center">
+          <div key={s.label} className="rounded-2xl border border-border-subtle bg-card p-4 text-center">
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="mt-1 text-[12px] text-zinc-600">{s.label}</p>
+            <p className="mt-1 text-[12px] text-muted">{s.label}</p>
           </div>
         ))}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-2">
-          <Search className="h-4 w-4 text-zinc-600" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search logs..." className="w-48 bg-transparent text-[13px] text-white outline-none placeholder:text-zinc-600" />
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+          <Search className="h-4 w-4 text-muted" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search logs..." className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
         </div>
         <div className="relative">
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="appearance-none rounded-xl border border-white/6 bg-white/2 px-4 py-2 pr-8 text-[13px] text-zinc-400 outline-none transition-colors hover:border-white/10">
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="appearance-none rounded-xl border border-border bg-card px-4 py-2 pr-8 text-[13px] text-muted outline-none transition-colors hover:border-border">
             <option value="all">All Levels</option>
             <option value="info">Info</option>
             <option value="success">Success</option>
             <option value="warning">Warning</option>
             <option value="error">Error</option>
           </select>
-          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
         </div>
-        <span className="text-[12px] text-zinc-700">{filtered.length} events</span>
+        <span className="text-[12px] text-muted-foreground">{filtered.length} events</span>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0a0a0a]">
+      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
         {loading ? (
-          <div className="px-6 py-10 text-center text-[13px] text-zinc-600">Yuklanmoqda...</div>
+          <div className="px-6 py-10 text-center text-[13px] text-muted">Yuklanmoqda...</div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 <th className="px-6 py-4">Level</th>
                 <th className="px-6 py-4">Action</th>
                 <th className="px-6 py-4">User</th>
@@ -90,26 +90,26 @@ export default function AdminLogs() {
                 <th className="px-6 py-4">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/4">
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((log) => {
                 const Icon = levelIcons[log.level] || Info;
                 return (
-                  <tr key={log.id} className="text-[13px] transition-colors hover:bg-white/2">
+                  <tr key={log.id} className="text-[13px] transition-colors hover:bg-card">
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelColors[log.level]}`}>
                         <Icon className="h-3 w-3" />{log.level}
                       </span>
                     </td>
-                    <td className="px-6 py-4"><span className="font-medium text-white">{log.action}</span></td>
-                    <td className="px-6 py-4 text-zinc-500">{log.user || "—"}</td>
-                    <td className="px-6 py-4 text-zinc-500">{log.module}</td>
-                    <td className="px-6 py-4 font-mono text-[12px] text-zinc-600">{log.ip_address || "—"}</td>
-                    <td className="px-6 py-4 text-zinc-500">{log.timestamp?.slice(0, 19).replace("T", " ") || "—"}</td>
+                    <td className="px-6 py-4"><span className="font-medium text-foreground">{log.action}</span></td>
+                    <td className="px-6 py-4 text-muted">{log.user || "—"}</td>
+                    <td className="px-6 py-4 text-muted">{log.module}</td>
+                    <td className="px-6 py-4 font-mono text-[12px] text-muted">{log.ip_address || "—"}</td>
+                    <td className="px-6 py-4 text-muted">{log.timestamp?.slice(0, 19).replace("T", " ") || "—"}</td>
                   </tr>
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-[13px] text-zinc-600">Log yozuvlari topilmadi.</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-[13px] text-muted">Log yozuvlari topilmadi.</td></tr>
               )}
             </tbody>
           </table>

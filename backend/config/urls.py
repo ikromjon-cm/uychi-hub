@@ -19,6 +19,10 @@ core_patterns = [
     path("newsletter/", include("apps.newsletter.urls")),
     path("logs/", include("apps.logs.urls")),
     path("users/", include("apps.users.urls")),
+    path("education/", include("apps.education.urls")),
+    path("events/", include("apps.events.urls")),
+    path("coworking/", include("apps.coworking.urls")),
+    path("students/", include("apps.students.urls")),
 ]
 
 auth_patterns = [

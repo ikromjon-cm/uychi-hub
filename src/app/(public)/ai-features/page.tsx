@@ -76,7 +76,7 @@ const FEATURES = [
 ];
 
 const accentMap = {
-  accent: { border: "border-cyan-500/20 hover:border-cyan-500/40", badge: "bg-cyan-500/10 text-cyan-400", dot: "bg-cyan-400", glow: "hover:shadow-[0_0_40px_-10px_rgba(6,247,227,0.2)]" },
+  accent: { border: "border-accent/20 hover:border-accent/40", badge: "bg-accent/10 text-accent", dot: "bg-accent", glow: "hover:shadow-[0_0_40px_-10px_rgba(6,247,227,0.2)]" },
   violet: { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400", dot: "bg-violet-400", glow: "hover:shadow-[0_0_40px_-10px_rgba(167,139,250,0.2)]" },
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400", dot: "bg-emerald-400", glow: "hover:shadow-[0_0_40px_-10px_rgba(52,211,153,0.2)]" },
 };
@@ -87,23 +87,23 @@ export default function AIFeaturesPage() {
       <section className="relative overflow-hidden px-6 pb-20 pt-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.07)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/15 bg-cyan-500/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan-400">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-accent">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
             8 AI-Powered Tools
           </div>
-          <h1 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.08] tracking-tight text-white">
+          <h1 className="text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.08] tracking-tight text-foreground">
             The AI Engine Behind<br />
             <span className="gradient-text">Uychi Hub</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-zinc-500">
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-muted">
             A suite of enterprise-grade AI tools built to accelerate business decisions,
             streamline operations, and unlock new opportunities across the Central Asian market.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/schedule" className="rounded-full bg-cyan-400 px-7 py-3 text-[13px] font-bold text-black transition-all hover:bg-cyan-300 hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.5)]">
+            <Link href="/schedule" className="rounded-full bg-accent px-7 py-3 text-[13px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.5)]">
               Schedule a Demo
             </Link>
-            <Link href="/#contact" className="rounded-full border border-white/10 px-7 py-3 text-[13px] font-semibold text-zinc-400 transition-all hover:border-white/20 hover:text-white">
+            <Link href="/#contact" className="rounded-full border border-border px-7 py-3 text-[13px] font-semibold text-muted transition-all hover:border-border hover:text-foreground">
               Contact Sales
             </Link>
           </div>
@@ -116,15 +116,15 @@ export default function AIFeaturesPage() {
             {FEATURES.map((f) => {
               const c = accentMap[f.accent];
               return (
-                <div key={f.id} id={f.id} className={`group rounded-2xl border bg-[#0a0a0a] p-7 transition-all duration-300 hover:-translate-y-0.5 ${c.border} ${c.glow}`}>
+                <div key={f.id} id={f.id} className={`group rounded-2xl border bg-card p-7 transition-all duration-300 hover:-translate-y-0.5 ${c.border} ${c.glow}`}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 text-3xl">{f.icon}</div>
                     <div className="flex-1">
-                      <h2 className="text-lg font-bold text-white">{f.title}</h2>
-                      <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">{f.desc}</p>
+                      <h2 className="text-lg font-bold text-foreground">{f.title}</h2>
+                      <p className="mt-2 text-[13px] leading-relaxed text-muted">{f.desc}</p>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {f.capabilities.map((cap) => (
-                          <span key={cap} className={`rounded-full border border-white/6 px-3 py-1 text-[11px] font-medium ${c.badge}`}>
+                          <span key={cap} className={`rounded-full border border-border px-3 py-1 text-[11px] font-medium ${c.badge}`}>
                             {cap}
                           </span>
                         ))}
@@ -138,11 +138,11 @@ export default function AIFeaturesPage() {
         </div>
       </section>
 
-      <section className="relative border-t border-white/4 bg-[#070707] px-6 py-20">
+      <section className="relative border-t border-border-subtle bg-card px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold text-white md:text-3xl">Ready to Experience the AI Advantage?</h2>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-500">Book a live demo with our team and see how AI tools can accelerate your business in Uzbekistan.</p>
-          <Link href="/schedule" className="mt-8 inline-flex items-center gap-2 rounded-full bg-cyan-400 px-8 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-cyan-300 hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.5)]">
+          <h2 className="text-2xl font-bold text-foreground md:text-3xl">Ready to Experience the AI Advantage?</h2>
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted">Book a live demo with our team and see how AI tools can accelerate your business in Uzbekistan.</p>
+          <Link href="/schedule" className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.5)]">
             Book a Free Demo →
           </Link>
         </div>

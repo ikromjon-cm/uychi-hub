@@ -11,7 +11,7 @@ const ROLES: { key: RoleKey; label: string; color: string }[] = [
   { key: "moderator", label: "Moderator", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
   { key: "startup_owner", label: "Startup Owner", color: "bg-violet-500/10 text-violet-400 border-violet-500/20" },
   { key: "investor", label: "Investor", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-  { key: "viewer", label: "Viewer", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
+  { key: "viewer", label: "Viewer", color: "bg-card-hover text-muted border-border" },
 ];
 
 const MODULES = [
@@ -84,49 +84,49 @@ export default function AdminPermissions() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Permissions</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">Granular permission control for every role and module.</p>
+          <h1 className="text-2xl font-bold text-foreground">Permissions</h1>
+          <p className="mt-1 text-[13px] text-muted">Granular permission control for every role and module.</p>
         </div>
-        <button className="rounded-xl bg-cyan-500 px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-cyan-400">Save Changes</button>
+        <button className="rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-accent-dark">Save Changes</button>
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-2">
-          <Search className="h-4 w-4 text-zinc-600" />
-          <input type="text" placeholder="Search modules..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-40 bg-transparent text-[13px] text-white outline-none placeholder:text-zinc-600" />
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+          <Search className="h-4 w-4 text-muted" />
+          <input type="text" placeholder="Search modules..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-40 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
         </div>
-        <div className="flex flex-wrap gap-1 rounded-xl border border-white/6 bg-white/2 p-1">
+        <div className="flex flex-wrap gap-1 rounded-xl border border-border bg-card p-1">
           {ROLES.map((r) => (
-            <button key={r.key} onClick={() => setSelectedRole(r.key)} className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors ${selectedRole === r.key ? "bg-cyan-500/20 text-cyan-400" : "text-zinc-500 hover:text-white"}`}>{r.label}</button>
+            <button key={r.key} onClick={() => setSelectedRole(r.key)} className={`rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors ${selectedRole === r.key ? "bg-accent/20 text-accent" : "text-muted hover:text-foreground"}`}>{r.label}</button>
           ))}
         </div>
       </div>
 
-      <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0a] px-5 py-3">
+      <div className="flex items-center gap-3 rounded-xl border border-border-subtle bg-card px-5 py-3">
         <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${selectedRoleData.color}`}><Shield className="h-4 w-4" /></div>
-        <span className="text-[14px] font-bold text-white">{selectedRoleData.label}</span>
-        {selectedRole === "super_admin" && <span className="text-[12px] text-zinc-500">— All permissions are locked ON for Super Admin</span>}
+        <span className="text-[14px] font-bold text-foreground">{selectedRoleData.label}</span>
+        {selectedRole === "super_admin" && <span className="text-[12px] text-muted">— All permissions are locked ON for Super Admin</span>}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#0a0a0a]">
+      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/5 text-left text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+            <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               <th className="px-6 py-4">Module</th>
               {PERMS.map((p) => (
                 <th key={p} className="px-6 py-4 text-center capitalize">{p}</th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/4">
+          <tbody className="divide-y divide-border-subtle">
             {filteredModules.map((mod) => {
               const perms = rolePerms[mod.name] ?? { view: false, create: false, edit: false, delete: false };
               return (
-                <tr key={mod.name} className="text-[13px] transition-colors hover:bg-white/2">
+                <tr key={mod.name} className="text-[13px] transition-colors hover:bg-card">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/6 bg-white/2 text-zinc-400"><mod.icon className="h-4 w-4" /></div>
-                      <span className="font-medium text-white">{mod.name}</span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted"><mod.icon className="h-4 w-4" /></div>
+                      <span className="font-medium text-foreground">{mod.name}</span>
                     </div>
                   </td>
                   {PERMS.map((perm) => (
@@ -134,7 +134,7 @@ export default function AdminPermissions() {
                       <button
                         onClick={() => toggle(mod.name, perm)}
                         disabled={selectedRole === "super_admin"}
-                        className={`h-5 w-5 rounded border transition-all ${perms[perm] ? "border-emerald-400/50 bg-emerald-400/20" : "border-white/10 bg-white/2"} ${selectedRole !== "super_admin" ? "cursor-pointer hover:border-cyan-400/40" : "cursor-default opacity-60"}`}
+                        className={`h-5 w-5 rounded border transition-all ${perms[perm] ? "border-emerald-400/50 bg-emerald-400/20" : "border-border bg-card"} ${selectedRole !== "super_admin" ? "cursor-pointer hover:border-accent/40" : "cursor-default opacity-60"}`}
                       >
                         {perms[perm] && <span className="block h-full w-full rounded text-[10px] leading-5 text-emerald-400">✓</span>}
                       </button>

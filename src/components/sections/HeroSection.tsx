@@ -37,22 +37,15 @@ export function HeroSection() {
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_-8%,rgba(6,247,227,0.1)_0%,transparent_65%)]" />
         <div className="absolute left-[20%] top-[25%] h-80 w-80 rounded-full bg-violet-600/7 blur-[120px]" />
-        <div className="absolute right-[15%] top-[40%] h-64 w-64 rounded-full bg-cyan-400/5 blur-[90px]" />
+        <div className="absolute right-[15%] top-[40%] h-64 w-64 rounded-full bg-accent/5 blur-[90px]" />
         <div className="absolute bottom-[20%] left-[10%] h-48 w-48 rounded-full bg-emerald-400/4 blur-[80px]" />
-        <div
-          className="absolute inset-0 opacity-[0.022]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px)",
-            backgroundSize: "70px 70px",
-          }}
-        />
+        <div className="absolute inset-0 opacity-[0.35] hero-grid" />
       </motion.div>
 
       {FLOAT_KEYWORDS.map((kw) => (
         <motion.span
           key={kw.text}
-          className="pointer-events-none absolute hidden font-mono text-[10px] font-medium text-zinc-700 lg:block"
+          className="pointer-events-none absolute hidden font-mono text-[10px] font-medium text-muted-foreground lg:block"
           style={{ left: kw.x, top: kw.y }}
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 0.6, 0.25, 0.5] }}
@@ -76,9 +69,9 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-cyan-500/15 bg-cyan-500/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan-400"
+          className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-accent/15 bg-accent/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-accent"
         >
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           Xalqaro hamkorlik va investitsiyalarga ochiq · 2026
           <Globe className="h-3 w-3 opacity-70" />
         </motion.div>
@@ -88,7 +81,7 @@ export function HeroSection() {
             <motion.span
               key={i}
               className={`mr-[0.22em] inline-block last:mr-0 ${
-                GRADIENT_WORDS.has(word) ? "gradient-text" : "text-white"
+                GRADIENT_WORDS.has(word) ? "gradient-text" : "text-foreground"
               }`}
               initial={{ opacity: 0, y: 44, filter: "blur(6px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -107,7 +100,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-7 max-w-2xl text-[clamp(0.95rem,2vw,1.15rem)] leading-relaxed text-zinc-500"
+          className="mx-auto mt-7 max-w-2xl text-[clamp(0.95rem,2vw,1.15rem)] leading-relaxed text-muted"
         >
           Uychi AI & IT Hub — startaplarga inkubatsiya, IT kompaniyalarga zamonaviy ofis maydoni,
           yoshlarga sifatli texnologiya ta&apos;limi va xalqaro investorlarga qulay muhit yaratuvchi
@@ -122,21 +115,15 @@ export function HeroSection() {
         >
           <Link
             href="/apply/startup"
-            className="group flex w-full items-center justify-center gap-2 rounded-full bg-cyan-400 px-8 py-3.5 text-[13px] font-bold text-black transition-all duration-300 hover:bg-cyan-300 hover:shadow-[0_0_40px_-6px_rgba(6,247,227,0.65)] sm:w-auto"
+            className="group flex w-full items-center justify-center gap-2 rounded-full bg-accent px-8 py-3.5 text-[13px] font-bold text-black transition-all duration-300 hover:bg-accent-dark hover:shadow-[0_0_35px_-5px_rgba(6,247,227,0.5)] sm:w-auto"
           >
             <Zap className="h-3.5 w-3.5" />
             Startap Ariza Topshiring
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
           <Link
-            href="/#how"
-            className="w-full rounded-full border border-white/10 bg-white/3 px-8 py-3.5 text-center text-[13px] font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-white/18 hover:bg-white/6 sm:w-auto"
-          >
-            Qanday Ishlaydi?
-          </Link>
-          <Link
             href="/#contact"
-            className="w-full rounded-full border border-violet-400/20 px-8 py-3.5 text-center text-[13px] font-semibold text-zinc-400 transition-all duration-300 hover:border-violet-400/40 hover:text-violet-300 sm:w-auto"
+            className="w-full rounded-full border border-border bg-card px-8 py-3.5 text-center text-[13px] font-semibold text-foreground transition-all duration-300 hover:bg-card-hover sm:w-auto"
           >
             Bog&apos;lanish
           </Link>
@@ -148,13 +135,13 @@ export function HeroSection() {
           transition={{ delay: 1.8, duration: 1 }}
           className="mt-20 flex flex-col items-center gap-2.5"
         >
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-700">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Ko&apos;proq Ko&apos;ring
           </span>
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="h-7 w-px bg-gradient-to-b from-zinc-600 to-transparent"
+            className="h-7 w-px bg-gradient-to-b from-muted to-transparent"
           />
         </motion.div>
       </motion.div>

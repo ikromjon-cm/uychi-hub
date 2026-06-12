@@ -10,15 +10,15 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
+    if (typeof window === "undefined") return "light";
     const stored = localStorage.getItem("uychi-theme") as Theme | null;
-    return stored === "light" || stored === "dark" ? stored : "dark";
+    return stored === "light" || stored === "dark" ? stored : "light";
   });
 
   useEffect(() => {

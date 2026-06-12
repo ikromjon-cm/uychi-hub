@@ -16,7 +16,7 @@ function authHeaders(): Record<string, string> {
     : { "Content-Type": "application/json" };
 }
 
-export function useApi<T>(endpoint: string, fallback: T) {
+export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
   const [data, setData] = useState<T>(fallback);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,10 +31,20 @@ export function useApi<T>(endpoint: string, fallback: T) {
         return r.json();
       })
       .then((json) => {
-        if (!cancelled) setData(json.results ?? json);
+        if (!cancelled) {
+          const result = json.results ?? json;
+          if (Array.isArray(result) && result.length === 0 && mockFallback) {
+            setData(mockFallback);
+          } else {
+            setData(result);
+          }
+        }
       })
       .catch((e) => {
-        if (!cancelled) setError(e.message);
+        if (!cancelled) {
+          setError(e.message);
+          if (mockFallback) setData(mockFallback);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

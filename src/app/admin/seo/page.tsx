@@ -60,10 +60,10 @@ export default function AdminSEO() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">SEO Management</h1>
-          <p className="mt-1 text-[13px] text-zinc-600">Optimize meta data and search performance for all pages.</p>
+          <h1 className="text-2xl font-bold text-foreground">SEO Management</h1>
+          <p className="mt-1 text-[13px] text-muted">Optimize meta data and search performance for all pages.</p>
         </div>
-        <button onClick={regenerateSitemap} disabled={sitemapStatus === "running"} className="flex items-center gap-2 rounded-xl border border-white/6 px-4 py-2.5 text-[13px] text-zinc-400 transition-colors hover:border-white/10 hover:text-white disabled:opacity-50">
+        <button onClick={regenerateSitemap} disabled={sitemapStatus === "running"} className="flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-[13px] text-muted transition-colors hover:border-border hover:text-foreground disabled:opacity-50">
           <RefreshCw className={`h-4 w-4 ${sitemapStatus === "running" ? "animate-spin" : ""}`} />
           {sitemapStatus === "done" ? "Sitemap Updated" : sitemapStatus === "running" ? "Regenerating..." : "Regenerate Sitemap"}
         </button>
@@ -71,29 +71,29 @@ export default function AdminSEO() {
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Pages Tracked", value: pages.length.toString(), color: "text-white" },
-          { label: "Avg. SEO Score", value: avgScore.toString(), color: "text-cyan-400" },
+          { label: "Pages Tracked", value: pages.length.toString(), color: "text-foreground" },
+          { label: "Avg. SEO Score", value: avgScore.toString(), color: "text-accent" },
           { label: "Total Issues", value: totalIssues.toString(), color: "text-yellow-400" },
           { label: "Critical (< 80)", value: pages.filter((p) => p.score < 80).length.toString(), color: "text-red-400" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-4 text-center">
+          <div key={s.label} className="rounded-2xl border border-border-subtle bg-card p-4 text-center">
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="mt-1 text-[12px] text-zinc-600">{s.label}</p>
+            <p className="mt-1 text-[12px] text-muted">{s.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-5">
-        <h2 className="mb-3 text-[14px] font-bold text-white">Sitemap & Robots</h2>
+      <div className="rounded-2xl border border-border-subtle bg-card p-5">
+        <h2 className="mb-3 text-[14px] font-bold text-foreground">Sitemap & Robots</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="text-[12px] text-zinc-600">Sitemap URL</p>
-            <p className="mt-1 font-mono text-[13px] text-cyan-400">https://uychi.uz/sitemap.xml</p>
-            <p className="mt-1 text-[11px] text-zinc-600">Last generated: Today 00:00 UTC</p>
+            <p className="text-[12px] text-muted">Sitemap URL</p>
+            <p className="mt-1 font-mono text-[13px] text-accent">https://uychi.uz/sitemap.xml</p>
+            <p className="mt-1 text-[11px] text-muted">Last generated: Today 00:00 UTC</p>
           </div>
           <div>
-            <p className="text-[12px] text-zinc-600">robots.txt preview</p>
-            <pre className="mt-1 rounded-lg border border-white/6 bg-white/2 p-3 text-[11px] text-zinc-400">
+            <p className="text-[12px] text-muted">robots.txt preview</p>
+            <pre className="mt-1 rounded-lg border border-border bg-card p-3 text-[11px] text-muted">
 {`User-agent: *
 Allow: /
 Disallow: /admin/
@@ -104,33 +104,33 @@ Sitemap: https://uychi.uz/sitemap.xml`}
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-2">
-          <Search className="h-4 w-4 text-zinc-600" />
-          <input type="text" placeholder="Search pages..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-white outline-none placeholder:text-zinc-600" />
+        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+          <Search className="h-4 w-4 text-muted" />
+          <input type="text" placeholder="Search pages..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
         </div>
       </div>
 
       <div className="space-y-3">
         {filtered.map((page) => (
-          <div key={page.id} className="rounded-2xl border border-white/5 bg-[#0a0a0a] p-5 transition-all hover:border-white/10">
+          <div key={page.id} className="rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-border">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[12px] text-zinc-600">{page.path}</span>
-                  <a href={page.path} className="text-zinc-600 hover:text-cyan-400"><ExternalLink className="h-3 w-3" /></a>
+                  <span className="font-mono text-[12px] text-muted">{page.path}</span>
+                  <a href={page.path} className="text-muted hover:text-accent"><ExternalLink className="h-3 w-3" /></a>
                 </div>
-                <h3 className="mt-1 text-[15px] font-bold text-white">{page.title}</h3>
-                <p className="mt-1 text-[13px] text-zinc-500">{page.desc}</p>
-                <p className="mt-1 text-[12px] text-zinc-600">Keywords: <span className="text-zinc-400">{page.keywords}</span></p>
+                <h3 className="mt-1 text-[15px] font-bold text-foreground">{page.title}</h3>
+                <p className="mt-1 text-[13px] text-muted">{page.desc}</p>
+                <p className="mt-1 text-[12px] text-muted">Keywords: <span className="text-muted">{page.keywords}</span></p>
               </div>
               <div className={`ml-4 flex shrink-0 flex-col items-center rounded-xl border px-4 py-2 ${scoreBg(page.score)}`}>
                 <span className={`text-xl font-bold ${scoreColor(page.score)}`}>{page.score}</span>
-                <span className="text-[10px] text-zinc-600">Score</span>
+                <span className="text-[10px] text-muted">Score</span>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-4 border-t border-white/4 pt-4">
+            <div className="mt-4 flex items-center gap-4 border-t border-border-subtle pt-4">
               <div className="flex items-center gap-2 text-[12px]">
-                <span className="text-zinc-600">Issues:</span>
+                <span className="text-muted">Issues:</span>
                 <span className={page.issues > 0 ? "text-yellow-400" : "text-emerald-400"}>{page.issues}</span>
               </div>
               <div className="flex gap-2">
@@ -138,7 +138,7 @@ Sitemap: https://uychi.uz/sitemap.xml`}
                 <span className="flex items-center gap-1 text-[12px] text-emerald-400"><CheckCircle className="h-3 w-3" />Description</span>
                 {page.score < 80 && <span className="flex items-center gap-1 text-[12px] text-red-400"><XCircle className="h-3 w-3" />Keywords</span>}
               </div>
-              <button onClick={() => openEdit(page)} className="ml-auto rounded-lg border border-white/6 p-1.5 text-zinc-500 transition-colors hover:border-cyan-500/30 hover:text-cyan-400"><Edit3 className="h-3.5 w-3.5" /></button>
+              <button onClick={() => openEdit(page)} className="ml-auto rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
             </div>
           </div>
         ))}
@@ -146,30 +146,30 @@ Sitemap: https://uychi.uz/sitemap.xml`}
 
       {editId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#111] p-6">
+          <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-[16px] font-bold text-white">Edit SEO — {pages.find((p) => p.id === editId)?.path}</h2>
-              <button onClick={() => setEditId(null)} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
+              <h2 className="text-[16px] font-bold text-foreground">Edit SEO — {pages.find((p) => p.id === editId)?.path}</h2>
+              <button onClick={() => setEditId(null)} className="text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[12px] text-zinc-500">Meta Title</label>
-                <input value={editForm.title ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))} className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-2.5 text-[13px] text-white outline-none focus:border-cyan-500/40" />
-                <p className="mt-1 text-[11px] text-zinc-600">{(editForm.title ?? "").length}/60 chars recommended</p>
+                <label className="mb-1.5 block text-[12px] text-muted">Meta Title</label>
+                <input value={editForm.title ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))} className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-[13px] text-foreground outline-none focus:border-accent/40" />
+                <p className="mt-1 text-[11px] text-muted">{(editForm.title ?? "").length}/60 chars recommended</p>
               </div>
               <div>
-                <label className="mb-1.5 block text-[12px] text-zinc-500">Meta Description</label>
-                <textarea value={editForm.desc ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, desc: e.target.value }))} rows={3} className="w-full resize-none rounded-xl border border-white/6 bg-white/2 px-4 py-2.5 text-[13px] text-white outline-none focus:border-cyan-500/40" />
-                <p className="mt-1 text-[11px] text-zinc-600">{(editForm.desc ?? "").length}/160 chars recommended</p>
+                <label className="mb-1.5 block text-[12px] text-muted">Meta Description</label>
+                <textarea value={editForm.desc ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, desc: e.target.value }))} rows={3} className="w-full resize-none rounded-xl border border-border bg-card px-4 py-2.5 text-[13px] text-foreground outline-none focus:border-accent/40" />
+                <p className="mt-1 text-[11px] text-muted">{(editForm.desc ?? "").length}/160 chars recommended</p>
               </div>
               <div>
-                <label className="mb-1.5 block text-[12px] text-zinc-500">Keywords (comma-separated)</label>
-                <input value={editForm.keywords ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, keywords: e.target.value }))} className="w-full rounded-xl border border-white/6 bg-white/2 px-4 py-2.5 text-[13px] text-white outline-none focus:border-cyan-500/40" />
+                <label className="mb-1.5 block text-[12px] text-muted">Keywords (comma-separated)</label>
+                <input value={editForm.keywords ?? ""} onChange={(e) => setEditForm((f) => ({ ...f, keywords: e.target.value }))} className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-[13px] text-foreground outline-none focus:border-accent/40" />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
-              <button onClick={() => setEditId(null)} className="rounded-xl border border-white/6 px-4 py-2.5 text-[13px] text-zinc-400 hover:border-white/10 hover:text-white">Cancel</button>
-              <button onClick={saveEdit} className="rounded-xl bg-cyan-500 px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-cyan-400">Save Changes</button>
+              <button onClick={() => setEditId(null)} className="rounded-xl border border-border px-4 py-2.5 text-[13px] text-muted hover:border-border hover:text-foreground">Cancel</button>
+              <button onClick={saveEdit} className="rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-accent-dark">Save Changes</button>
             </div>
           </div>
         </div>

@@ -25,7 +25,7 @@ const COURSES: Course[] = [
 
 type AccentKey = "cyan" | "violet" | "emerald";
 const A: Record<AccentKey, { border: string; badge: string; text: string; star: string }> = {
-  cyan:    { border: "border-cyan-500/20 hover:border-cyan-500/40",    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",    text: "text-cyan-400",    star: "text-cyan-400" },
+  cyan:    { border: "border-accent/20 hover:border-accent/40",    badge: "bg-accent/10 text-accent border-accent/20",    text: "text-accent",    star: "text-accent" },
   violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  star: "text-violet-400" },
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", star: "text-emerald-400" },
 };
@@ -82,31 +82,31 @@ export default function EducationPage() {
   const totalEnrolled = COURSES.reduce((sum, c) => sum + c.enrolled, 0);
 
   return (
-    <div className="min-h-screen bg-[#030303]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="relative border-b border-white/4 px-6 py-16">
+      <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.05)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-400">/ Ta'lim Markazi</p>
-          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-white">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ Ta'lim Markazi</p>
+          <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
             IT Kurslar &<br />
-            <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">Dasturlash Ta'limi</span>
+            <span className="bg-gradient-to-r from-accent via-violet-400 to-emerald-400 bg-clip-text text-transparent">Dasturlash Ta'limi</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-500">
-            Uychi IT Hub ta'lim markazida professional dasturchilar, dizaynerlar va IT mutaxassislar tayyorlanadi.
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
+            Uychi tumanining 47 maktab va 42,400 o'quvchili ta'lim tizimiga tayangan holda, IT Hubda professional dasturchilar va IT mutaxassislar tayyorlaymiz.
           </p>
 
           {/* Stats */}
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Kurslar", value: String(COURSES.length), color: "text-cyan-400" },
+              { label: "Kurslar", value: String(COURSES.length), color: "text-accent" },
               { label: "Jami o'quvchi", value: formatNum(totalEnrolled) + "+", color: "text-violet-400" },
-              { label: "O'qituvchilar", value: "15+", color: "text-emerald-400" },
-              { label: "Sertifikatlar berilgan", value: "2,400+", color: "text-cyan-400" },
+              { label: "Maktab o'quvchilari", value: "42,400+", color: "text-emerald-400" },
+              { label: "Sertifikatlar", value: "2,400+", color: "text-accent" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/5 bg-white/2 px-5 py-3 text-center">
+              <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-zinc-600">{s.label}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-muted">{s.label}</p>
               </div>
             ))}
           </div>
@@ -124,8 +124,8 @@ export default function EducationPage() {
                 onClick={() => setCategory(cat.key)}
                 className={`rounded-full border px-4 py-1.5 text-[12px] font-semibold transition-all ${
                   category === cat.key
-                    ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-400"
-                    : "border-white/8 bg-white/3 text-zinc-500 hover:border-white/15 hover:text-zinc-300"
+                    ? "border-accent/40 bg-accent/10 text-accent"
+                    : "border-border bg-card text-muted hover:border-border hover:text-foreground"
                 }`}
               >
                 {cat.label}
@@ -143,7 +143,7 @@ export default function EducationPage() {
                   className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition-all ${
                     level === l.key
                       ? "border-violet-400/40 bg-violet-500/10 text-violet-400"
-                      : "border-white/8 bg-white/3 text-zinc-600 hover:text-zinc-300"
+                      : "border-border bg-card text-muted hover:text-foreground"
                   }`}
                 >
                   {l.label}
@@ -155,10 +155,10 @@ export default function EducationPage() {
               className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all ${
                 freeOnly
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400"
-                  : "border-white/8 bg-white/3 text-zinc-600 hover:text-zinc-300"
+                  : "border-border bg-card text-muted hover:text-foreground"
               }`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${freeOnly ? "bg-emerald-400" : "bg-zinc-600"}`} />
+              <span className={`h-1.5 w-1.5 rounded-full ${freeOnly ? "bg-emerald-400" : "bg-muted-foreground"}`} />
               Faqat bepul kurslar
             </button>
           </div>
@@ -167,15 +167,15 @@ export default function EducationPage() {
         {/* Course grid */}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
-            <p className="text-[15px] text-zinc-500">Kurs topilmadi</p>
-            <button onClick={() => { setCategory("all"); setLevel("all"); setFreeOnly(false); }} className="mt-3 text-[13px] text-cyan-400 hover:underline">Filtrni tozalash</button>
+            <p className="text-[15px] text-muted">Kurs topilmadi</p>
+            <button onClick={() => { setCategory("all"); setLevel("all"); setFreeOnly(false); }} className="mt-3 text-[13px] text-accent hover:underline">Filtrni tozalash</button>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((course) => {
               const c = A[course.accent as AccentKey];
               return (
-                <div key={course.id} className={`group flex flex-col rounded-2xl border bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
+                <div key={course.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
                   {/* Top row */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex flex-wrap gap-1.5">
@@ -192,35 +192,35 @@ export default function EducationPage() {
                   </div>
 
                   <h3 className={`mt-4 text-[15px] font-bold leading-snug ${c.text}`}>{course.title}</h3>
-                  <p className="mt-1 text-[12px] text-zinc-500">O'qituvchi: {course.instructor}</p>
+                  <p className="mt-1 text-[12px] text-muted">O'qituvchi: {course.instructor}</p>
 
                   {/* Course info */}
-                  <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl border border-white/4 bg-white/2 p-3 text-center text-[11px]">
+                  <div className="mt-4 grid grid-cols-3 gap-2 rounded-xl border border-border-subtle bg-card p-3 text-center text-[11px]">
                     <div>
-                      <p className="font-bold text-white">{course.duration}</p>
-                      <p className="text-zinc-600">Davomiylik</p>
+                      <p className="font-bold text-foreground">{course.duration}</p>
+                      <p className="text-muted">Davomiylik</p>
                     </div>
                     <div>
-                      <p className="font-bold text-white">{course.lessons}</p>
-                      <p className="text-zinc-600">Darslar</p>
+                      <p className="font-bold text-foreground">{course.lessons}</p>
+                      <p className="text-muted">Darslar</p>
                     </div>
                     <div>
-                      <p className="font-bold text-white">{LEVEL_LABELS[course.level].split(" ")[0]}</p>
-                      <p className="text-zinc-600">Daraja</p>
+                      <p className="font-bold text-foreground">{LEVEL_LABELS[course.level].split(" ")[0]}</p>
+                      <p className="text-muted">Daraja</p>
                     </div>
                   </div>
 
                   {/* Tags */}
                   <div className="mt-3 flex flex-wrap gap-1">
                     {course.tags.slice(0, 4).map((tag) => (
-                      <span key={tag} className="rounded bg-white/4 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500">{tag}</span>
+                      <span key={tag} className="rounded bg-card-hover px-1.5 py-0.5 font-mono text-[10px] text-muted">{tag}</span>
                     ))}
                   </div>
 
                   <div className="mt-auto flex items-center justify-between pt-5">
                     <div>
                       <p className={`text-[15px] font-bold ${c.text}`}>{formatPrice(course.price, course.isFree)}</p>
-                      <p className="text-[11px] text-zinc-600">{formatNum(course.enrolled)} o'quvchi · {LANG_FLAGS[course.lang]} {LANG_LABELS[course.lang]}</p>
+                      <p className="text-[11px] text-muted">{formatNum(course.enrolled)} o'quvchi · {LANG_FLAGS[course.lang]} {LANG_LABELS[course.lang]}</p>
                     </div>
                     <button className={`rounded-xl border px-4 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       Ro'yxatdan o't
@@ -235,14 +235,14 @@ export default function EducationPage() {
         {/* Bottom CTA */}
         <div className="mt-16 grid gap-5 sm:grid-cols-3">
           {[
-            { title: "O'quv dasturlari", desc: "Frontend, Backend, AI, Mobile va boshqa yo'nalishlar bo'yicha sertifikatli kurslar.", accent: "cyan", icon: "📚" },
+            { title: "O'quv dasturlari", desc: "Frontend, Backend, AI, Mobile va boshqa yo'nalishlar bo'yicha sertifikatli kurslar — Uychi va Namangan yoshlari uchun.", accent: "cyan", icon: "📚" },
             { title: "Sertifikat tizimi", desc: "Kurs yakunida IT Park Uzbekistan va Uychi IT Hub birgalikdagi sertifikati beriladi.", accent: "violet", icon: "🏆" },
-            { title: "Career Center", desc: "Kurs bitirganlarni ishga joylashtirish bo'yicha yordam va IT kompaniyalarga tavsiya.", accent: "emerald", icon: "💼" },
+            { title: "Career Center", desc: "Kurs bitirganlarni Uychi tumani IT kompaniyalari va Namangan bozoriga ishga joylashtirish.", accent: "emerald", icon: "💼" },
           ].map((item) => (
-            <div key={item.title} className={`rounded-2xl border p-6 ${item.accent === "cyan" ? "border-cyan-500/15 bg-cyan-500/5" : item.accent === "violet" ? "border-violet-400/15 bg-violet-500/5" : "border-emerald-400/15 bg-emerald-500/5"}`}>
+            <div key={item.title} className={`rounded-2xl border p-6 ${item.accent === "cyan" ? "border-accent/15 bg-accent/5" : item.accent === "violet" ? "border-violet-400/15 bg-violet-500/5" : "border-emerald-400/15 bg-emerald-500/5"}`}>
               <div className="mb-3 text-3xl">{item.icon}</div>
-              <h3 className="text-[15px] font-bold text-white">{item.title}</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">{item.desc}</p>
+              <h3 className="text-[15px] font-bold text-foreground">{item.title}</h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">{item.desc}</p>
             </div>
           ))}
         </div>

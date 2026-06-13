@@ -942,6 +942,36 @@ export const MOCK_STARTUPS: MockStartupItem[] = [
     desc: "Ipak qurti yetishtirish jarayonlarini AI bilan optimallashtirish.",
     techStack: "ML, Computer Vision, IoT, Python",
   },
+  {
+    name: "Dentago",
+    sector: "MedTech",
+    stage: "MVP",
+    founder: "Sardor Holmatov",
+    teamSize: 6,
+    fundingNeeded: "$120K",
+    desc: "Uychi tumani stomatologiya klinikalari uchun aqlli navbat tizimi, to'lovlar va tibbiy tarix boshqaruvi platformasi.",
+    techStack: "Flutter, Django, PostgreSQL, Firebase",
+  },
+  {
+    name: "FarmAI Uychi",
+    sector: "AgriTech",
+    stage: "Seed",
+    founder: "Murod Toshqo'ziev",
+    teamSize: 9,
+    fundingNeeded: "$180K",
+    desc: "Uychi tumanidagi 8,100 ga paxtazorlar uchun drone va satellite rasm tahlili orqali hosildorlikni bashorat qilish tizimi.",
+    techStack: "Python, TensorFlow, Satellite API, Django, React",
+  },
+  {
+    name: "UychiEdu",
+    sector: "EdTech",
+    stage: "MVP",
+    founder: "Kamola Nazarova",
+    teamSize: 5,
+    fundingNeeded: "$60K",
+    desc: "Uychi tumanidagi 47 maktab o'quvchilari uchun offline ishlaydigan adaptiv o'quv ilovasi.",
+    techStack: "Flutter, SQLite, Python, FastAPI",
+  },
 ];
 
 // ─── Mock API Job Data ──────────────────────────────────────────────────────

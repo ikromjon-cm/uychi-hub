@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { X, Menu, Sun, Moon, ChevronDown } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { useLang, type Lang } from "@/lib/i18n";
+import { Logo } from "@/components/ui/Logo";
 
 const LANGUAGES: { code: Lang; flag: string; label: string }[] = [
   { code: "UZ", flag: "🇺🇿", label: "O'zbekcha" },
@@ -52,14 +53,7 @@ export function Navbar() {
       <div className="mx-auto flex h-[66px] max-w-7xl items-center justify-between px-5">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 select-none">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white text-[13px] font-black shadow-[0_2px_8px_rgba(79,70,229,0.4)]">
-            U
-          </span>
-          <span className="text-[15px] font-bold tracking-tight text-foreground">
-            Uychi<span className="text-accent">.Hub</span>
-          </span>
-        </Link>
+        <Logo size={34} />
 
         {/* Desktop nav */}
         <nav className="hidden items-center lg:flex">

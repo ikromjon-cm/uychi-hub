@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useApi } from "@/lib/api";
 import { MOCK_STARTUPS } from "@/lib/mock-data";
 
+function toSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 type Startup = {
   id: number;
   startup_name: string;
@@ -118,14 +122,14 @@ export default function StartupsPage() {
               const c = A[ACCENTS[idx % 3]];
               const techTags = s.tech_stack ? s.tech_stack.split(",").slice(0, 4) : [];
               return (
-                <div key={s.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 ${c.border} ${c.glow}`}>
+                <Link key={s.id} href={`/startups/${toSlug(s.startup_name)}`} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
                   <div className="flex items-start justify-between">
                     <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${c.badge}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> {s.sector}
                     </span>
                     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${STAGE_COLORS[s.stage] || "text-muted border-border"}`}>{s.stage}</span>
                   </div>
-                  <h3 className="mt-4 text-[16px] font-bold text-foreground">{s.startup_name}</h3>
+                  <h3 className="mt-4 text-[16px] font-bold text-foreground group-hover:text-accent transition-colors">{s.startup_name}</h3>
                   <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">{s.description}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {techTags.map((t, i) => <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] text-muted">{t.trim()}</span>)}
@@ -135,7 +139,10 @@ export default function StartupsPage() {
                     <div><span className="text-muted">Jamoa</span><p className="font-medium text-foreground">{s.team_size} kishi</p></div>
                     <div><span className="text-muted">Moliya</span><p className={`font-bold ${c.text}`}>{s.funding_needed || "—"}</p></div>
                   </div>
-                </div>
+                  <div className={`mt-3 flex items-center gap-1 text-[11px] font-semibold ${c.text}`}>
+                    Batafsil ko&apos;rish →
+                  </div>
+                </Link>
               );
             })}
           </div>

@@ -1,23 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Menu, Sun, Moon } from "lucide-react";
+import { X, Menu, Sun, Moon, ChevronDown } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 import { useLang, type Lang } from "@/lib/i18n";
 
-const LANGUAGES: { code: Lang; flag: string }[] = [
-  { code: "UZ", flag: "🇺🇿" },
-  { code: "RU", flag: "🇷🇺" },
-  { code: "EN", flag: "🇺🇸" },
+const LANGUAGES: { code: Lang; flag: string; label: string }[] = [
+  { code: "UZ", flag: "🇺🇿", label: "O'zbekcha" },
+  { code: "RU", flag: "🇷🇺", label: "Русский" },
+  { code: "EN", flag: "🇺🇸", label: "English" },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen,   setLangOpen]   = useState(false);
+  const [scrolled,   setScrolled]   = useState(false);
   const pathname = usePathname();
   const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
   const { lang, setLang, t } = useLang();
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -31,48 +39,78 @@ export function Navbar() {
     { label: t.nav.events, href: "/events" },
   ];
 
+  const currentLang = LANGUAGES.find(l => l.code === lang) ?? LANGUAGES[0];
+
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-border bg-nav backdrop-blur-2xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+    <header
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border bg-nav shadow-[0_1px_16px_rgba(0,0,0,0.06)] backdrop-blur-2xl"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
+      <div className="mx-auto flex h-[66px] max-w-7xl items-center justify-between px-5">
+
         {/* Logo */}
-        <Link href="/" className="text-lg font-bold tracking-[0.2em] text-foreground">
-          UYCHI<span className="text-accent">.</span>HUB
+        <Link href="/" className="flex items-center gap-2 select-none">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white text-[13px] font-black shadow-[0_2px_8px_rgba(79,70,229,0.4)]">
+            U
+          </span>
+          <span className="text-[15px] font-bold tracking-tight text-foreground">
+            Uychi<span className="text-accent">.Hub</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center lg:flex">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-lg px-3.5 py-2 text-[13px] font-medium transition-colors ${
+              className={`relative mx-0.5 px-3.5 py-2 text-[13.5px] font-medium transition-colors duration-200 ${
                 isActive(item.href)
-                  ? "bg-accent/10 text-accent"
-                  : "text-muted hover:bg-card-hover hover:text-foreground"
+                  ? "text-accent"
+                  : "text-muted hover:text-foreground"
               }`}
             >
               {item.label}
+              {isActive(item.href) && (
+                <span className="absolute bottom-0 left-1/2 h-[2px] w-4 -translate-x-1/2 rounded-full bg-accent" />
+              )}
             </Link>
           ))}
         </nav>
 
         {/* Right side */}
         <div className="hidden items-center gap-2 lg:flex">
-          {/* Language switcher */}
-          <div className="flex items-center rounded-lg border border-border bg-card">
-            {LANGUAGES.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => setLang(l.code)}
-                className={`px-2.5 py-1.5 text-[11px] font-bold transition-colors first:rounded-l-lg last:rounded-r-lg ${
-                  lang === l.code
-                    ? "bg-accent/15 text-accent"
-                    : "text-muted hover:text-foreground"
-                }`}
-              >
-                {l.flag} {l.code}
-              </button>
-            ))}
+
+          {/* Language dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-[12px] font-semibold text-muted transition-colors hover:text-foreground"
+            >
+              <span>{currentLang.flag}</span>
+              <span>{currentLang.code}</span>
+              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+                {LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => { setLang(l.code); setLangOpen(false); }}
+                    className={`flex w-full items-center gap-2.5 px-3.5 py-2.5 text-[13px] transition-colors hover:bg-card-hover ${
+                      lang === l.code ? "text-accent" : "text-muted"
+                    }`}
+                  >
+                    <span>{l.flag}</span>
+                    <span>{l.label}</span>
+                    {lang === l.code && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Theme toggle */}
@@ -80,7 +118,7 @@ export function Navbar() {
             onClick={toggleTheme}
             aria-label="Toggle theme"
             suppressHydrationWarning
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-all hover:text-foreground"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-colors hover:text-foreground"
           >
             {themeMounted && (theme === "dark" ? (
               <Sun className="h-3.5 w-3.5" />
@@ -91,15 +129,16 @@ export function Navbar() {
 
           <Link
             href="/login"
-            className="rounded-lg px-4 py-2 text-[13px] font-medium text-muted transition-colors hover:text-foreground"
+            className="px-3.5 py-2 text-[13px] font-medium text-muted transition-colors hover:text-foreground"
           >
             {t.nav.login}
           </Link>
+
           <Link
             href="/#contact"
-            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-5 py-2 text-[13px] font-bold text-black transition-all hover:bg-accent-dark"
+            className="btn-ripple inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-[13px] font-bold text-white shadow-[0_2px_12px_rgba(79,70,229,0.35)] transition-all hover:bg-accent-dark hover:shadow-[0_4px_20px_rgba(79,70,229,0.45)]"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-white/50 animate-pulse" />
             {t.nav.contact}
           </Link>
         </div>
@@ -126,31 +165,31 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border bg-nav px-6 pb-5 pt-3 backdrop-blur-2xl lg:hidden">
-          <nav className="flex flex-col gap-0.5">
+        <div className="border-t border-border bg-nav px-5 pb-6 pt-4 backdrop-blur-2xl lg:hidden">
+          <nav className="flex flex-col gap-1">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors ${
+                className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors ${
                   isActive(item.href)
                     ? "bg-accent/10 text-accent"
                     : "text-muted hover:bg-card-hover hover:text-foreground"
                 }`}
               >
+                {isActive(item.href) && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
                 {item.label}
               </Link>
             ))}
 
-            {/* Mobile lang switcher */}
             <div className="mt-3 flex gap-1 rounded-xl border border-border bg-card p-1">
               {LANGUAGES.map((l) => (
                 <button
                   key={l.code}
                   onClick={() => setLang(l.code)}
                   className={`flex-1 rounded-lg py-2 text-[12px] font-bold transition-colors ${
-                    lang === l.code ? "bg-accent/15 text-accent" : "text-muted"
+                    lang === l.code ? "bg-accent/12 text-accent" : "text-muted"
                   }`}
                 >
                   {l.flag} {l.code}
@@ -158,7 +197,7 @@ export function Navbar() {
               ))}
             </div>
 
-            <div className="mt-2 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2">
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
@@ -169,7 +208,7 @@ export function Navbar() {
               <Link
                 href="/#contact"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-xl bg-accent py-2.5 text-center text-[13px] font-bold text-black"
+                className="btn-ripple rounded-xl bg-accent py-2.5 text-center text-[13px] font-bold text-white shadow-[0_2px_12px_rgba(79,70,229,0.3)]"
               >
                 {t.nav.contact}
               </Link>

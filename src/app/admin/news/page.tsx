@@ -35,9 +35,11 @@ export default function AdminNews() {
 
   async function togglePublish(id: number, currentStatus: string) {
     const next = currentStatus === "published" ? "draft" : "published";
+    const patch = { status: next } as Record<string, string | number>;
+    if (next === "published") patch.published_at = new Date().toISOString();
     try {
-      await apiPatch(`/news/articles/${id}/`, { status: next });
-      setLocal(articles.map(a => a.id === id ? { ...a, status: next } : a));
+      await apiPatch(`/news/articles/${id}/`, patch);
+      setLocal(articles.map(a => a.id === id ? { ...a, ...patch } : a));
     } catch { /* silent */ }
   }
 
@@ -55,7 +57,7 @@ export default function AdminNews() {
     const slug = form.title.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 100) + "-" + Date.now();
     try {
       const created = await apiPost("/news/articles/", { ...form, slug, status: "draft" }) as Article;
-      setLocal([created, ...articles]);
+      setLocal([created?.id ? created : { ...form, id: Date.now(), slug, status: "draft", views: 0, published_at: "", created_at: new Date().toISOString() } as Article, ...articles]);
       setShowModal(false);
       setForm({ ...EMPTY });
     } catch (err) {

@@ -51,7 +51,7 @@ export default function AdminStartups() {
     setSaving(true);
     try {
       const created = await apiPost("/startups/startup-applications/", form) as Startup;
-      setLocal([created, ...startups]);
+      setLocal([created?.id ? created : { ...form, id: Date.now(), status: "pending" } as unknown as Startup, ...startups]);
       setShowAdd(false);
       setForm({ ...EMPTY });
     } catch { /* silent */ }

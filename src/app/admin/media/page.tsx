@@ -35,7 +35,7 @@ const MOCK_MEDIA: MediaItem[] = [
 ];
 
 export default function AdminMedia() {
-  const { data: rawItems, loading } = useApi<MediaItem[]>("/media/media-items/", [], MOCK_MEDIA);
+  const { data: rawItems, loading } = useApi<MediaItem[]>("/media/media-items/", []);
   const [deleted, setDeleted] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");

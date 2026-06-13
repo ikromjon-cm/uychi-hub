@@ -55,16 +55,11 @@ export default function AdminNews() {
     setSaving(true);
     setSaveError("");
     const slug = form.title.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 100) + "-" + Date.now();
-    try {
-      const created = await apiPost("/news/articles/", { ...form, slug, status: "draft" }) as Article;
-      setLocal([created?.id ? created : { ...form, id: Date.now(), slug, status: "draft", views: 0, published_at: "", created_at: new Date().toISOString() } as Article, ...articles]);
-      setShowModal(false);
-      setForm({ ...EMPTY });
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Saqlashda xatolik");
-    } finally {
-      setSaving(false);
-    }
+    await apiPost("/news/articles/", { ...form, slug, status: "draft" });
+    setLocal([{ ...form, id: Date.now(), slug, status: "draft", views: 0, published_at: "", created_at: new Date().toISOString() } as Article, ...articles]);
+    setShowModal(false);
+    setForm({ ...EMPTY });
+    setSaving(false);
   }
 
   return (

@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import Course, CourseApplication
 from .serializers import CourseSerializer, CourseApplicationSerializer
+from apps.utils.email import course_application_admin, course_application_confirm
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -35,3 +36,8 @@ class CourseApplicationViewSet(viewsets.ModelViewSet):
         course = application.course
         course.enrolled_count += 1
         course.save(update_fields=["enrolled_count"])
+        try:
+            course_application_admin(application)
+            course_application_confirm(application)
+        except Exception:
+            pass

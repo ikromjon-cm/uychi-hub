@@ -49,13 +49,11 @@ export default function AdminStartups() {
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    try {
-      const created = await apiPost("/startups/startup-applications/", form) as Startup;
-      setLocal([created?.id ? created : { ...form, id: Date.now(), status: "pending" } as unknown as Startup, ...startups]);
-      setShowAdd(false);
-      setForm({ ...EMPTY });
-    } catch { /* silent */ }
-    finally { setSaving(false); }
+    await apiPost("/startups/startup-applications/", form);
+    setLocal([{ ...form, id: Date.now(), status: "pending" } as Startup, ...startups]);
+    setShowAdd(false);
+    setForm({ ...EMPTY });
+    setSaving(false);
   }
 
   return (

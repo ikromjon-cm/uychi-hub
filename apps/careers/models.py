@@ -33,3 +33,30 @@ class JobPosting(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.department}"
+
+
+class JobApplication(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("review", "In Review"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+    job = models.ForeignKey(JobPosting, on_delete=models.CASCADE, related_name="applications")
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50, blank=True, default="")
+    cover_letter = models.TextField(blank=True, default="")
+    experience_years = models.IntegerField(default=0)
+    portfolio_url = models.URLField(blank=True, default="")
+    linkedin_url = models.URLField(blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Job Application"
+        verbose_name_plural = "Job Applications"
+
+    def __str__(self):
+        return f"{self.full_name} — {self.job.title}"

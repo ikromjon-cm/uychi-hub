@@ -118,6 +118,115 @@ def newsletter_confirm(sub) -> None:
     _send([sub.email], "Obunangiz tasdiqlandi — Uychi Hub", html)
 
 
+# ── Job Application ───────────────────────────────────────────────────────────
+
+def job_application_admin(a) -> None:
+    html = _base(f"""
+<h2>Yangi Ish Arizasi</h2>
+<p class="label">Lavozim</p><p class="value">{a.job.title} · {a.job.department}</p>
+<p class="label">Ariza Beruvchi</p><p class="value">{a.full_name}</p>
+<p class="label">Elektron Pochta</p><p class="value">{a.email}</p>
+<p class="label">Telefon</p><p class="value">{a.phone or '—'}</p>
+<p class="label">Tajriba</p><p class="value">{a.experience_years} yil</p>
+<p class="label">Portfolio</p><p class="value">{a.portfolio_url or '—'}</p>
+<p class="label">LinkedIn</p><p class="value">{a.linkedin_url or '—'}</p>
+<p class="label">Motivatsiya Xati</p><p class="value">{a.cover_letter[:300] if a.cover_letter else '—'}{'...' if len(a.cover_letter) > 300 else ''}</p>
+""")
+    _send([settings.ADMIN_EMAIL], f"Yangi ish arizasi: {a.full_name} → {a.job.title}", html)
+
+
+def job_application_confirm(a) -> None:
+    html = _base(f"""
+<h2>Arizangiz Qabul Qilindi ✓</h2>
+<p>Hurmatli <strong>{a.full_name}</strong>,</p>
+<p><strong>{a.job.title}</strong> lavozimi uchun arizangiz muvaffaqiyatli qabul qilindi.</p>
+<p>HR jamoamiz <strong>3 ish kuni ichida</strong> siz bilan bog'lanadi.</p>
+<p>Savollar uchun: <a href="mailto:info@uychi.uz" style="color:#22d3ee">info@uychi.uz</a></p>
+""")
+    _send([a.email], f"Ish arizangiz qabul qilindi — {a.job.title}", html)
+
+
+# ── Course Application ────────────────────────────────────────────────────────
+
+def course_application_admin(a) -> None:
+    html = _base(f"""
+<h2>Yangi Kurs Arizasi</h2>
+<p class="label">Kurs</p><p class="value">{a.course.title}</p>
+<p class="label">Ism Familya</p><p class="value">{a.full_name}</p>
+<p class="label">Elektron Pochta</p><p class="value">{a.email}</p>
+<p class="label">Telefon</p><p class="value">{a.phone}</p>
+<p class="label">Yosh</p><p class="value">{a.age or '—'}</p>
+<p class="label">Tajriba</p><p class="value">{a.experience or '—'}</p>
+<p class="label">Motivatsiya</p><p class="value">{a.motivation[:300] if a.motivation else '—'}</p>
+""")
+    _send([settings.ADMIN_EMAIL], f"Yangi kurs arizasi: {a.full_name} → {a.course.title}", html)
+
+
+def course_application_confirm(a) -> None:
+    html = _base(f"""
+<h2>Kurs Arizangiz Qabul Qilindi ✓</h2>
+<p>Hurmatli <strong>{a.full_name}</strong>,</p>
+<p><strong>{a.course.title}</strong> kursi uchun arizangiz muvaffaqiyatli qabul qilindi.</p>
+<p>Kurs jamoamiz <strong>2 ish kuni ichida</strong> siz bilan bog'lanadi.</p>
+<p>Savollar uchun: <a href="mailto:info@uychi.uz" style="color:#22d3ee">info@uychi.uz</a></p>
+""")
+    _send([a.email], f"Kurs arizangiz qabul qilindi — {a.course.title}", html)
+
+
+# ── Event Registration ────────────────────────────────────────────────────────
+
+def event_registration_admin(r) -> None:
+    html = _base(f"""
+<h2>Yangi Tadbir Ro'yxatdan O'tish</h2>
+<p class="label">Tadbir</p><p class="value">{r.event.title} · {r.event.date}</p>
+<p class="label">Ism Familya</p><p class="value">{r.full_name}</p>
+<p class="label">Elektron Pochta</p><p class="value">{r.email}</p>
+<p class="label">Telefon</p><p class="value">{r.phone}</p>
+<p class="label">Kompaniya</p><p class="value">{r.company or '—'}</p>
+<p class="label">Izoh</p><p class="value">{r.notes or '—'}</p>
+""")
+    _send([settings.ADMIN_EMAIL], f"Yangi ro'yxatdan o'tish: {r.full_name} → {r.event.title}", html)
+
+
+def event_registration_confirm(r) -> None:
+    html = _base(f"""
+<h2>Ro'yxatdan O'tish Tasdiqlandi ✓</h2>
+<p>Hurmatli <strong>{r.full_name}</strong>,</p>
+<p><strong>{r.event.title}</strong> tadbiriga muvaffaqiyatli ro'yxatdan o'tdingiz.</p>
+<p class="label">Sana</p><p class="value">{r.event.date}</p>
+<p class="label">Joylashuv</p><p class="value">{r.event.location}</p>
+<p>Savollar uchun: <a href="mailto:info@uychi.uz" style="color:#22d3ee">info@uychi.uz</a></p>
+""")
+    _send([r.email], f"Tadbir ro'yxatdan o'tish tasdiqlandi — {r.event.title}", html)
+
+
+# ── Coworking Booking ─────────────────────────────────────────────────────────
+
+def booking_admin(b) -> None:
+    html = _base(f"""
+<h2>Yangi Joy Bron Qilish</h2>
+<p class="label">Joy</p><p class="value">{b.space.name}</p>
+<p class="label">Ism Familya</p><p class="value">{b.full_name}</p>
+<p class="label">Elektron Pochta</p><p class="value">{b.email}</p>
+<p class="label">Telefon</p><p class="value">{b.phone}</p>
+<p class="label">Sana / Vaqt</p><p class="value">{b.date} · {b.start_time} – {b.end_time}</p>
+<p class="label">Maqsad</p><p class="value">{b.purpose or '—'}</p>
+""")
+    _send([settings.ADMIN_EMAIL], f"Yangi bron: {b.full_name} → {b.space.name}", html)
+
+
+def booking_confirm(b) -> None:
+    html = _base(f"""
+<h2>Bronlash Qabul Qilindi ✓</h2>
+<p>Hurmatli <strong>{b.full_name}</strong>,</p>
+<p><strong>{b.space.name}</strong> muvaffaqiyatli bron qilindi.</p>
+<p class="label">Sana</p><p class="value">{b.date}</p>
+<p class="label">Vaqt</p><p class="value">{b.start_time} – {b.end_time}</p>
+<p>Savollar uchun: <a href="mailto:info@uychi.uz" style="color:#22d3ee">info@uychi.uz</a></p>
+""")
+    _send([b.email], f"Bronlashingiz tasdiqlandi — {b.space.name}", html)
+
+
 # ── Registration ──────────────────────────────────────────────────────────────
 
 def register_welcome(user) -> None:

@@ -37,10 +37,11 @@ export default function AdminCareers() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [deleted, setDeleted] = useState<Set<number>>(new Set());
+  const [added, setAdded] = useState<Job[]>([]);
 
-  const jobs = rawJobs
+  const jobs = [...added, ...rawJobs
     .filter(j => !deleted.has(j.id))
-    .map(j => ({ ...j, ...overrides[j.id] }));
+    .map(j => ({ ...j, ...overrides[j.id] }))];
 
   const filtered = jobs.filter((j) => {
     if (filter !== "all" && j.status !== filter) return false;
@@ -61,14 +62,11 @@ export default function AdminCareers() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    try {
-      await apiPost("/careers/job-postings/", { ...form, status: "draft" });
-      window.location.reload();
-    } catch(err) {
-      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
-    } finally {
-      setSaving(false);
-    }
+    await apiPost("/careers/job-postings/", { ...form, status: "draft" });
+    setAdded(prev => [{ ...form, id: Date.now(), status: "draft", applicants_count: 0, posted_at: null } as Job, ...prev]);
+    setShowModal(false);
+    setForm(emptyForm);
+    setSaving(false);
   }
 
   const activeCount = jobs.filter(j => j.status === "active").length;

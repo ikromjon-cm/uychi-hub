@@ -30,13 +30,14 @@ export default function AdminPartners() {
   const [deleted, setDeleted] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [added, setAdded] = useState<Partner[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState<Partner | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
 
-  const partners = rawPartners.filter(p => !deleted.has(p.id));
+  const partners = [...added, ...rawPartners.filter(p => !deleted.has(p.id))];
   const filtered = partners.filter((p) => {
     if (filter !== "all" && p.category !== filter) return false;
     if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.country.toLowerCase().includes(search.toLowerCase())) return false;
@@ -51,10 +52,10 @@ export default function AdminPartners() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    try {
-      await apiPost("/partners/partners/", form);
-      window.location.reload();
-    } catch(err) { setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi"); }
+    await apiPost("/partners/partners/", form);
+    setAdded(prev => [{ ...form, id: Date.now() } as Partner, ...prev]);
+    setShowModal(false);
+    setForm(emptyForm);
     setSaving(false);
   }
 

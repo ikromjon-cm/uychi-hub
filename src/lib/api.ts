@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const API_BASE = "/api";
 
@@ -77,7 +77,7 @@ export async function apiPost(endpoint: string, body: unknown) {
     const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
     submissions.push({ endpoint, body, timestamp: new Date().toISOString() });
     localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
-    return { success: true, mock: true };
+    return { ...(body as Record<string, unknown>), id: Date.now(), mock: true };
   }
 }
 

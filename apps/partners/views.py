@@ -10,3 +10,8 @@ class PartnerViewSet(viewsets.ModelViewSet):
     filterset_fields = ["category", "tier", "status", "country"]
     search_fields = ["name", "website"]
     ordering_fields = ["name", "created_at"]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Partner.objects.all()
+        return Partner.objects.filter(status="active")

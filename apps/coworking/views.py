@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import CoworkingSpace, Booking
 from .serializers import CoworkingSpaceSerializer, BookingSerializer
+from apps.utils.email import booking_admin, booking_confirm
 
 
 class CoworkingSpaceViewSet(viewsets.ModelViewSet):
@@ -29,3 +30,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return [permissions.AllowAny()]
         return super().get_permissions()
+
+    def perform_create(self, serializer):
+        booking = serializer.save()
+        try:
+            booking_admin(booking)
+            booking_confirm(booking)
+        except Exception:
+            pass

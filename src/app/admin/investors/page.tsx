@@ -24,13 +24,14 @@ export default function AdminInvestors() {
   const [overrides, setOverrides] = useState<Record<number, Partial<Investor>>>({});
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [added, setAdded] = useState<Investor[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState<Investor | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
 
-  const investors = rawInvestors.map(i => ({ ...i, ...overrides[i.id] }));
+  const investors = [...added, ...rawInvestors.map(i => ({ ...i, ...overrides[i.id] }))];
 
   const filtered = investors.filter((inv) => {
     if (filter !== "all" && inv.status !== filter) return false;
@@ -46,14 +47,11 @@ export default function AdminInvestors() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    try {
-      await apiPost("/investors/investors/", { ...form, status: "active" });
-      window.location.reload();
-    } catch(err) {
-      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
-    } finally {
-      setSaving(false);
-    }
+    await apiPost("/investors/investors/", { ...form, status: "active" });
+    setAdded(prev => [{ ...form, id: Date.now(), status: "active", notes: "", created_at: new Date().toISOString() } as Investor, ...prev]);
+    setShowModal(false);
+    setForm(emptyForm);
+    setSaving(false);
   }
 
   const activeCount = investors.filter(i => i.status === "active").length;

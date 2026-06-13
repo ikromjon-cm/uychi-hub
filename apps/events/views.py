@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import Event, EventRegistration
 from .serializers import EventSerializer, EventRegistrationSerializer
+from apps.utils.email import event_registration_admin, event_registration_confirm
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -35,3 +36,8 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
         event = registration.event
         event.registered_count += 1
         event.save(update_fields=["registered_count"])
+        try:
+            event_registration_admin(registration)
+            event_registration_confirm(registration)
+        except Exception:
+            pass

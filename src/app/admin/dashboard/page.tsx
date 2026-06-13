@@ -153,7 +153,7 @@ export default function AdminDashboard() {
             <div className="space-y-3">
               {[
                 { label: "Django API",   val: "Online :8000",      ok: true },
-                { label: "SQLite DB",    val: "Connected",          ok: true },
+                { label: "PostgreSQL",   val: "Connected",          ok: true },
                 { label: "Next.js",      val: "Running :3001",      ok: true },
                 { label: "JWT Auth",     val: "Active",             ok: true },
                 { label: "Startups API", val: l1 ? "Loading..." : `${startups.length} records`, ok: !l1 },

@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { useApi, apiPost, apiPatch, apiDelete } from "@/lib/api";
-import { Search, Plus, Trash2, ChevronDown, MapPin, X } from "lucide-react";
+import { Search, Plus, Trash2, ChevronDown, MapPin, X, Users } from "lucide-react";
 
 type Job = {
   id: number; title: string; department: string; employment_type: string;
   location: string; status: string; salary_range: string; description: string;
   requirements: string; applicants_count: number; posted_at: string | null;
+};
+
+type JobApplication = {
+  id: number; job: number; job_title: string; job_department: string;
+  full_name: string; email: string; phone: string; experience_years: number;
+  cover_letter: string; status: string; created_at: string;
 };
 
 const typeColors: Record<string, string> = {
@@ -26,8 +32,17 @@ const statusBadge: Record<string, string> = {
 
 const emptyForm = { title: "", department: "", employment_type: "Full-time", location: "Uychi, Namangan viloyat", salary_range: "", description: "", requirements: "" };
 
+const appStatusBadge: Record<string, string> = {
+  pending: "bg-yellow-400/10 text-yellow-400",
+  review:  "bg-blue-400/10 text-blue-400",
+  approved: "bg-emerald-400/10 text-emerald-400",
+  rejected: "bg-red-400/10 text-red-400",
+};
+
 export default function AdminCareers() {
   const { data: rawJobs, loading } = useApi<Job[]>("/careers/job-postings/", []);
+  const { data: applications, loading: appsLoading } = useApi<JobApplication[]>("/careers/job-applications/", []);
+  const [activeTab, setActiveTab] = useState<"jobs" | "applications">("jobs");
   const [overrides, setOverrides] = useState<Record<number, Partial<Job>>>({});
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -70,19 +85,41 @@ export default function AdminCareers() {
   }
 
   const activeCount = jobs.filter(j => j.status === "active").length;
+  const pendingApps = applications.filter(a => a.status === "pending").length;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Career Management</h1>
-          <p className="mt-1 text-[13px] text-muted">Ish o'rinlarini boshqarish.</p>
+          <p className="mt-1 text-[13px] text-muted">Ish o'rinlari va arizalarni boshqarish.</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-accent-dark">
-          <Plus className="h-4 w-4" /> New Position
-        </button>
+        {activeTab === "jobs" && (
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-accent-dark">
+            <Plus className="h-4 w-4" /> New Position
+          </button>
+        )}
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-border-subtle">
+        {[
+          { key: "jobs", label: "Vakansiyalar", count: jobs.length },
+          { key: "applications", label: "Arizalar", count: applications.length, badge: pendingApps },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key as "jobs" | "applications")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-[13px] font-semibold transition-colors ${activeTab === tab.key ? "border-accent text-foreground" : "border-transparent text-muted hover:text-foreground"}`}
+          >
+            {tab.label}
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${activeTab === tab.key ? "bg-accent/15 text-accent" : "bg-card-hover text-muted"}`}>{tab.count}</span>
+            {tab.badge ? <span className="rounded-full bg-yellow-400/15 px-1.5 py-0.5 text-[10px] font-bold text-yellow-400">{tab.badge} yangi</span> : null}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "jobs" && (
       <div className="grid gap-4 sm:grid-cols-4">
         {[
           { label: "Active Positions", value: activeCount.toString(), color: "text-emerald-400" },
@@ -96,7 +133,53 @@ export default function AdminCareers() {
           </div>
         ))}
       </div>
+      )}
 
+      {activeTab === "applications" ? (
+        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
+          {appsLoading ? (
+            <div className="px-6 py-10 text-center text-[13px] text-muted">Yuklanmoqda...</div>
+          ) : applications.length === 0 ? (
+            <div className="flex flex-col items-center px-6 py-16 text-center">
+              <Users className="mb-3 h-10 w-10 text-muted" />
+              <p className="text-[14px] font-semibold text-foreground">Hozircha ariza yo'q</p>
+              <p className="mt-1 text-[13px] text-muted">Foydalanuvchilar ishga ariza topshirganda bu yerda ko'rinadi.</p>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-4">Ariza Beruvchi</th>
+                  <th className="px-6 py-4">Lavozim</th>
+                  <th className="px-6 py-4">Tajriba</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Sana</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-subtle">
+                {applications.map((app) => (
+                  <tr key={app.id} className="text-[13px] transition-colors hover:bg-accent/5">
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-foreground">{app.full_name}</p>
+                      <p className="text-[12px] text-muted">{app.email} · {app.phone}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-foreground">{app.job_title}</p>
+                      <p className="text-[12px] text-muted">{app.job_department}</p>
+                    </td>
+                    <td className="px-6 py-4 text-muted">{app.experience_years} yil</td>
+                    <td className="px-6 py-4">
+                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${appStatusBadge[app.status] || "bg-card-hover text-muted"}`}>{app.status}</span>
+                    </td>
+                    <td className="px-6 py-4 text-[12px] text-muted">{app.created_at?.slice(0, 10)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ) : (
+      <>
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
           <Search className="h-4 w-4 text-muted" />
@@ -272,6 +355,8 @@ export default function AdminCareers() {
             </div>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

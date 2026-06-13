@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useApi } from "@/lib/api";
+import { useApi, apiPost } from "@/lib/api";
 import { MOCK_JOBS } from "@/lib/mock-data";
 import { X, CheckCircle } from "lucide-react";
 
@@ -84,29 +84,18 @@ export default function JobsPage() {
     if (!modal.job) return;
     setModal(m => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
-    const data = {
-      ...Object.fromEntries(fd),
-      job_title: modal.job.title,
-      job_id: modal.job.id,
+    const body = {
+      job: modal.job.id,
+      full_name: fd.get("full_name"),
+      email: fd.get("email"),
+      phone: fd.get("phone") || "",
+      experience_years: Number(fd.get("experience_years") || 0),
+      cover_letter: fd.get("cover_letter") || "",
     };
     try {
-      const res = await fetch("/api/jobs/applications/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        setModal(m => ({ ...m, sent: true, sending: false }));
-      } else {
-        const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-        submissions.push({ endpoint: "/api/jobs/applications/", body: data, timestamp: new Date().toISOString() });
-        localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
-        setModal(m => ({ ...m, sent: true, sending: false }));
-      }
+      await apiPost("/careers/job-applications/", body);
+      setModal(m => ({ ...m, sent: true, sending: false }));
     } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/api/jobs/applications/", body: data, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }
@@ -265,9 +254,9 @@ export default function JobsPage() {
 
                   <form onSubmit={handleApply} className="space-y-3">
                     {[
-                      { name: "first_name",  label: "Ism",        placeholder: "Ismingiz",          required: true },
-                      { name: "phone",       label: "Telefon",    placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
-                      { name: "email",       label: "Email",      placeholder: "example@mail.com",  required: true, type: "email" },
+                      { name: "full_name", label: "Ism Familya", placeholder: "To'liq ismingiz", required: true },
+                      { name: "email",     label: "Email",        placeholder: "example@mail.com", required: true, type: "email" },
+                      { name: "phone",     label: "Telefon",      placeholder: "+998 XX XXX XX XX", type: "tel" },
                     ].map((f) => (
                       <div key={f.name}>
                         <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -282,6 +271,14 @@ export default function JobsPage() {
                         />
                       </div>
                     ))}
+                    <div>
+                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">Tajriba (yil)</label>
+                      <input name="experience_years" type="number" min="0" max="50" placeholder="mas. 2" className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">Motivatsiya xati</label>
+                      <textarea name="cover_letter" rows={3} placeholder="Nega bu lavozim siz uchun mos? Qanday tajribangiz bor?..." className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
+                    </div>
 
                     {modal.error && (
                       <p className="rounded-xl border border-rose-500/20 bg-rose-500/8 px-3 py-2 text-[12px] text-rose-500">

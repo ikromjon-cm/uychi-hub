@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useApi, apiPost, apiPatch } from "@/lib/api";
-import { Search, ChevronDown, Eye, MessageSquare, Building2, Globe, Calendar, Plus, X } from "lucide-react";
+import { useApi, apiPost, apiPatch, apiDelete } from "@/lib/api";
+import { Search, ChevronDown, Eye, Building2, Globe, Calendar, Plus, X, Trash2 } from "lucide-react";
 
 type Investor = {
   id: number; company: string; country: string; investor_type: string;
@@ -52,6 +52,12 @@ export default function AdminInvestors() {
     setShowModal(false);
     setForm(emptyForm);
     setSaving(false);
+  }
+
+  async function deleteInvestor(id: number) {
+    await apiDelete(`/investors/investors/${id}/`);
+    setAdded(prev => prev.filter(i => i.id !== id));
+    setOverrides(prev => { const n = { ...prev }; delete n[id]; return n; });
   }
 
   const activeCount = investors.filter(i => i.status === "active").length;
@@ -131,8 +137,9 @@ export default function AdminInvestors() {
               <div className="mt-3 flex items-center justify-between text-[12px] text-muted" onClick={e => e.stopPropagation()}>
                 <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{inv.created_at?.slice(0, 10) || "—"}</span>
                 <div className="flex gap-1">
-                  {inv.email && <a href={`mailto:${inv.email}`} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-blue-500/30 hover:text-blue-400"><MessageSquare className="h-3.5 w-3.5" /></a>}
+                  {inv.email && <a href={`mailto:${inv.email}`} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-blue-500/30 hover:text-blue-400"><Globe className="h-3.5 w-3.5" /></a>}
                   <button onClick={() => setSelected(inv)} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => deleteInvestor(inv.id)} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
             </div>
@@ -181,7 +188,7 @@ export default function AdminInvestors() {
               <div className="mt-5">
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Bog'lanish</p>
                 <a href={`mailto:${selected.email}`} className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-[13px] text-accent hover:border-accent/30">
-                  <MessageSquare className="h-4 w-4" />{selected.email}
+                  <Globe className="h-4 w-4" />{selected.email}
                 </a>
               </div>
             )}

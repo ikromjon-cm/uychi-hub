@@ -7,22 +7,35 @@ import {
   LayoutDashboard, FileText, Newspaper, Rocket, TrendingUp,
   Handshake, Briefcase, Image, Search, BarChart2, Shield,
   Key, ScrollText, Database, Menu, X, Bell, Settings, LogOut,
-  Sun, Moon,
+  Sun, Moon, BookOpen, CalendarDays, Building2, GraduationCap,
+  MessageSquare, Mail,
 } from "lucide-react";
 import { logout, getMe } from "@/lib/api";
 import { useTheme } from "@/lib/theme-provider";
 
-const NAV = [
+const NAV_MAIN = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Content", href: "/admin/content", icon: FileText },
   { label: "News", href: "/admin/news", icon: Newspaper },
   { label: "Startups", href: "/admin/startups", icon: Rocket },
   { label: "Investors", href: "/admin/investors", icon: TrendingUp },
   { label: "Partners", href: "/admin/partners", icon: Handshake },
+];
+
+const NAV_MANAGE = [
   { label: "Careers", href: "/admin/careers", icon: Briefcase },
+  { label: "Education", href: "/admin/education", icon: BookOpen },
+  { label: "Events", href: "/admin/events", icon: CalendarDays },
+  { label: "Coworking", href: "/admin/coworking", icon: Building2 },
+  { label: "Students", href: "/admin/students", icon: GraduationCap },
+  { label: "Contact", href: "/admin/contact", icon: MessageSquare },
+  { label: "Newsletter", href: "/admin/newsletter", icon: Mail },
   { label: "Media Library", href: "/admin/media", icon: Image },
   { label: "SEO", href: "/admin/seo", icon: Search },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart2 },
+];
+
+const NAV_SYSTEM = [
   { label: "User Roles", href: "/admin/roles", icon: Shield },
   { label: "Permissions", href: "/admin/permissions", icon: Key },
   { label: "System Logs", href: "/admin/logs", icon: ScrollText },
@@ -101,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="flex-1 overflow-y-auto px-2 py-4">
           <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Main</div>
           <ul className="space-y-0.5">
-            {NAV.slice(0, 6).map(({ label, href, icon: Icon }) => (
+            {NAV_MAIN.map(({ label, href, icon: Icon }) => (
               <li key={href}>
                 <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
                   <Icon className="h-4 w-4 flex-shrink-0" />{label}
@@ -111,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </ul>
           <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Management</div>
           <ul className="space-y-0.5">
-            {NAV.slice(6, 10).map(({ label, href, icon: Icon }) => (
+            {NAV_MANAGE.map(({ label, href, icon: Icon }) => (
               <li key={href}>
                 <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
                   <Icon className="h-4 w-4 flex-shrink-0" />{label}
@@ -121,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </ul>
           <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">System</div>
           <ul className="space-y-0.5">
-            {NAV.slice(10).map(({ label, href, icon: Icon }) => (
+            {NAV_SYSTEM.map(({ label, href, icon: Icon }) => (
               <li key={href}>
                 <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
                   <Icon className="h-4 w-4 flex-shrink-0" />{label}

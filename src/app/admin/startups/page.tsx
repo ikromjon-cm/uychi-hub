@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useApi, apiPatch, apiPost } from "@/lib/api";
-import { Search, ChevronDown, Eye, CheckCircle, XCircle, MessageSquare, Plus, X, Loader2, Globe, Mail, Phone, Users, DollarSign, Code2, MapPin, Calendar } from "lucide-react";
+import { useApi, apiPatch, apiPost, apiDelete } from "@/lib/api";
+import { Search, ChevronDown, Eye, CheckCircle, XCircle, MessageSquare, Plus, X, Loader2, Globe, Mail, Phone, Users, DollarSign, Code2, MapPin, Calendar, Trash2 } from "lucide-react";
 
 type Startup = Record<string, string | number>;
 
@@ -43,6 +43,13 @@ export default function AdminStartups() {
     try {
       await apiPatch(`/startups/startup-applications/${id}/`, { status });
       setLocal(startups.map(s => s.id === id ? { ...s, status } : s));
+    } catch { /* silent */ }
+  }
+
+  async function deleteStartup(id: number) {
+    try {
+      await apiDelete(`/startups/startup-applications/${id}/`);
+      setLocal(startups.filter(s => s.id !== id));
     } catch { /* silent */ }
   }
 
@@ -114,7 +121,8 @@ export default function AdminStartups() {
               <button onClick={() => updateStatus(Number(s.id), "approved")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-emerald-500/30 hover:text-emerald-400"><CheckCircle className="h-3.5 w-3.5" /> Approve</button>
               <button onClick={() => updateStatus(Number(s.id), "rejected")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-red-500/30 hover:text-red-400"><XCircle className="h-3.5 w-3.5" /> Reject</button>
               <button onClick={() => updateStatus(Number(s.id), "review")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-blue-500/30 hover:text-blue-400"><MessageSquare className="h-3.5 w-3.5" /></button>
-              <button onClick={() => setSelected(s)} className="ml-auto flex items-center rounded-lg border border-border p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
+              <button onClick={() => setSelected(s)} className="flex items-center rounded-lg border border-border p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
+              <button onClick={() => deleteStartup(Number(s.id))} className="ml-auto flex items-center rounded-lg border border-border p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
             </div>
           </div>
         ))}
@@ -209,6 +217,10 @@ export default function AdminStartups() {
                   {st === "approved" ? "✓ Tasdiqlash" : st === "rejected" ? "✗ Rad etish" : st === "review" ? "Ko'rib chiqish" : "Kutilmoqda"}
                 </button>
               ))}
+              <button onClick={() => { deleteStartup(Number(selected.id)); setSelected(null); }}
+                className="ml-auto flex items-center gap-2 rounded-xl border border-red-500/20 px-4 py-2 text-[12px] text-red-400 hover:bg-red-500/5">
+                <Trash2 className="h-3.5 w-3.5" /> O'chirish
+              </button>
             </div>
           </div>
         </div>

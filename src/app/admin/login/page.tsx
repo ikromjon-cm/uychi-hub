@@ -97,7 +97,8 @@ export default function AdminLoginPage() {
 
           <div className="pt-1 text-center">
             <p className="text-[11px] text-muted-foreground">
-              Admin panelga kirish uchun login va parolingizni kiriting
+              Admin: <code className="rounded bg-card-hover px-1 text-accent">admin</code>{" "}
+              Parol: <code className="rounded bg-card-hover px-1 text-accent">admin123</code>
             </p>
           </div>
         </form>

@@ -35,6 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checking, setChecking] = useState(true);
   const [me, setMe] = useState<Me | null>(null);
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
@@ -52,6 +53,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setChecking(false);
     });
   }, [pathname, isLoginPage, router]);
+
+  useEffect(() => {
+    if (isLoginPage) return;
+    fetch("/api/startups/startup-applications/", { signal: AbortSignal.timeout(4000) })
+      .then((r) => setApiOnline(r.ok || r.status === 401))
+      .catch(() => setApiOnline(false));
+  }, [isLoginPage]);
 
   function handleLogout() {
     logout();
@@ -153,9 +161,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              API Online
+            <div className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+              apiOnline === null
+                ? "border-border bg-card text-muted"
+                : apiOnline
+                  ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
+                  : "border-red-500/20 bg-red-500/5 text-red-400"
+            }`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${
+                apiOnline === null ? "bg-muted animate-pulse" : apiOnline ? "bg-emerald-400 animate-pulse" : "bg-red-400"
+              }`} />
+              {apiOnline === null ? "Tekshirilmoqda" : apiOnline ? "API Online" : "API Offline"}
             </div>
             <button aria-label="Bildirishnomalar" className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Bell className="h-4 w-4" />

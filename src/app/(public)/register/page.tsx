@@ -45,10 +45,10 @@ export default function RegisterPage() {
           <h2 className="text-xl font-bold text-foreground">Muvaffaqiyatli Ro&apos;yxatdan O&apos;tdingiz!</h2>
           <p className="mt-2 text-[14px] text-muted">Elektron pochtangizni tekshiring — xush kelibsiz xabari yuborildi.</p>
           <button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/")}
             className="mt-6 rounded-full bg-accent px-8 py-3 text-[14px] font-bold text-black transition-all hover:bg-accent-dark"
           >
-            Kirish sahifasiga o&apos;tish →
+            Bosh sahifaga qaytish →
           </button>
         </div>
       </div>

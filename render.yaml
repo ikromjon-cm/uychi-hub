@@ -8,6 +8,7 @@ services:
       python manage.py collectstatic --noinput &&
       python manage.py migrate
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /api/health/
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings
@@ -16,9 +17,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: DATABASE_URL
-        fromDatabase:
-          name: uychi-hub-db
-          property: connectionString
+        sync: false
       - key: ALLOWED_HOSTS
         value: "uychi-hub-api.onrender.com,uychi.uz,www.uychi.uz"
       - key: CORS_ALLOWED_ORIGINS
@@ -27,9 +26,3 @@ services:
         sync: false
       - key: ADMIN_EMAIL
         value: "info@uychi.uz"
-
-databases:
-  - name: uychi-hub-db
-    databaseName: uychi_hub
-    user: uychi_hub_user
-    plan: free

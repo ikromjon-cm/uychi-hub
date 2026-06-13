@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useApi } from "@/lib/api";
-import { Search, ChevronDown, AlertTriangle, Info, CheckCircle, XCircle } from "lucide-react";
+import { Search, ChevronDown, AlertTriangle, Info, CheckCircle, XCircle, X } from "lucide-react";
 
 type SystemLog = {
   id: number; action: string; user: string; role: string;
@@ -24,6 +24,7 @@ export default function AdminLogs() {
   const { data: logs, loading } = useApi<SystemLog[]>("/logs/system-logs/", []);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState<SystemLog | null>(null);
 
   const filtered = logs.filter((log) => {
     if (filter !== "all" && log.level !== filter) return false;
@@ -94,7 +95,7 @@ export default function AdminLogs() {
               {filtered.map((log) => {
                 const Icon = levelIcons[log.level] || Info;
                 return (
-                  <tr key={log.id} className="text-[13px] transition-colors hover:bg-card">
+                  <tr key={log.id} onClick={() => setSelected(log)} className="cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelColors[log.level]}`}>
                         <Icon className="h-3 w-3" />{log.level}
@@ -115,6 +116,40 @@ export default function AdminLogs() {
           </table>
         )}
       </div>
+      {selected && (() => {
+        const Icon = levelIcons[selected.level] || Info;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+            <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+
+              {/* Level badge */}
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${levelColors[selected.level] || "bg-card-hover text-muted"}`}>
+                <Icon className="h-3.5 w-3.5" />{selected.level}
+              </span>
+
+              {/* Action */}
+              <h2 className="mt-4 text-[18px] font-bold text-foreground">{selected.action}</h2>
+
+              {/* Details grid */}
+              <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+                {[
+                  { label: "Foydalanuvchi", value: selected.user || "—" },
+                  { label: "Rol", value: selected.role || "—" },
+                  { label: "Modul", value: selected.module || "—" },
+                  { label: "IP Manzil", value: selected.ip_address || "—" },
+                  { label: "Vaqt", value: selected.timestamp?.slice(0, 19).replace("T", " ") || "—" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-start justify-between gap-4">
+                    <span className="text-muted">{label}</span>
+                    <span className="font-mono text-[12px] font-medium text-foreground text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

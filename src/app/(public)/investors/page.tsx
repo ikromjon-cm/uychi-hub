@@ -66,7 +66,7 @@ export default function InvestorsPage() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative border-b border-border-subtle px-6 py-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.06)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ Investor Markazi</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -152,9 +152,9 @@ export default function InvestorsPage() {
                       opp.accent === "violet" ? "text-violet-400" : "text-emerald-400"
                     }`}>{opp.amount}</p>
                   </div>
-                  <button className="rounded-xl border border-border bg-card px-4 py-2 text-[12px] font-semibold text-muted transition-all hover:border-border hover:text-foreground">
+                  <a href="/schedule" className="rounded-xl border border-border bg-card px-4 py-2 text-[12px] font-semibold text-muted transition-all hover:text-foreground">
                     Batafsil
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}
@@ -217,7 +217,7 @@ export default function InvestorsPage() {
                   <textarea id="inv-message" name="message" rows={3} placeholder="Investitsiya yo'nalishi va qo'shimcha ma'lumotlar..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-[13px] text-foreground outline-none placeholder:text-muted-foreground focus:border-violet-400/30" />
                 </div>
                 <div className="sm:col-span-2">
-                    <button type="submit" disabled={sending} className="w-full rounded-full bg-violet-500 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-violet-400 disabled:opacity-60">
+                    <button type="submit" disabled={sending} className="w-full rounded-full bg-violet-400 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-violet-300 disabled:opacity-60">
                     {sending ? "Yuborilmoqda..." : "Muzokaraga taklif"}
                   </button>
                 </div>

@@ -77,7 +77,7 @@ export default function JobsPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ Ish & Stajyorlik</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -155,9 +155,9 @@ export default function JobsPage() {
                       <p className={`text-[15px] font-bold ${c.text}`}>{job.salary_range}</p>
                       <p className="mt-0.5 text-[11px] font-medium text-muted">{job.applicants_count} ariza</p>
                     </div>
-                    <button className={`rounded-xl border px-5 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                    <a href={`mailto:hr@uychi.uz?subject=Ariza: ${encodeURIComponent(job.title)}`} className={`rounded-xl border px-5 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       Ariza topshirish
-                    </button>
+                    </a>
                   </div>
                 </div>
               );

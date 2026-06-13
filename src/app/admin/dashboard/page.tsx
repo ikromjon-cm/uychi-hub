@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useApi } from "@/lib/api";
 import {
   Users, Rocket, TrendingUp, Globe, Newspaper,
-  ArrowUpRight, Activity, Loader2,
+  ArrowUpRight, Activity, Loader2, X,
 } from "lucide-react";
 
 const LOG_COLORS: Record<string, string> = {
@@ -31,15 +32,16 @@ export default function AdminDashboard() {
   const activeJobs = jobs.filter(x => x.status === "active").length;
 
   const STATS = [
-    { label: "Startup Applications", value: startups.length,  change: `${approved} approved`,  icon: Rocket,    color: "text-violet-400",  bg: "bg-violet-400/8 border-violet-400/15" },
-    { label: "Investors",            value: investors.length,  change: `${activeInv} active`,   icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/8 border-emerald-400/15" },
-    { label: "Partners",             value: partners.length,   change: "global network",         icon: Globe,      color: "text-yellow-400",  bg: "bg-yellow-400/8 border-yellow-400/15" },
-    { label: "News Articles",        value: news.length,       change: `${published} published`, icon: Newspaper,  color: "text-pink-400",    bg: "bg-pink-400/8 border-pink-400/15" },
-    { label: "Job Postings",         value: jobs.length,       change: `${activeJobs} active`,  icon: Activity,   color: "text-orange-400",  bg: "bg-orange-400/8 border-orange-400/15" },
-    { label: "System Logs",          value: logs.length,       change: "last events",            icon: Users,      color: "text-accent",    bg: "bg-accent/8 border-cyan-400/15" },
+    { label: "Startup Applications", value: startups.length,  change: `${approved} approved`,  icon: Rocket,    color: "text-violet-400",  bg: "bg-violet-400/8 border-violet-400/15",  href: "/admin/startups" },
+    { label: "Investors",            value: investors.length,  change: `${activeInv} active`,   icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/8 border-emerald-400/15", href: "/admin/investors" },
+    { label: "Partners",             value: partners.length,   change: "global network",         icon: Globe,      color: "text-yellow-400",  bg: "bg-yellow-400/8 border-yellow-400/15",  href: "/admin/partners" },
+    { label: "News Articles",        value: news.length,       change: `${published} published`, icon: Newspaper,  color: "text-pink-400",    bg: "bg-pink-400/8 border-pink-400/15",      href: "/admin/news" },
+    { label: "Job Postings",         value: jobs.length,       change: `${activeJobs} active`,  icon: Activity,   color: "text-orange-400",  bg: "bg-orange-400/8 border-orange-400/15",  href: "/admin/careers" },
+    { label: "System Logs",          value: logs.length,       change: "last events",            icon: Users,      color: "text-accent",      bg: "bg-accent/8 border-cyan-400/15",        href: "/admin/logs" },
   ];
 
   const recentLogs = logs.slice(0, 8);
+  const [selectedLog, setSelectedLog] = useState<Row | null>(null);
 
   const QUICK = [
     { label: "Pending Startups",  count: pending,   href: "/admin/startups", color: "text-yellow-400" },
@@ -69,7 +71,7 @@ export default function AdminDashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {STATS.map((s) => (
-          <div key={s.label} className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-card p-5">
+          <a key={s.label} href={s.href} className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-accent/30 hover:shadow-[0_0_20px_-5px_rgba(6,247,227,0.12)] cursor-pointer">
             <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${s.bg}`}>
               <s.icon className={`h-5 w-5 ${s.color}`} />
             </div>
@@ -82,7 +84,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
               <ArrowUpRight className="h-3.5 w-3.5" />{s.change}
             </div>
-          </div>
+          </a>
         ))}
       </div>
 
@@ -99,8 +101,8 @@ export default function AdminDashboard() {
               </div>
             )}
             {recentLogs.map((log, i) => (
-              <div key={i} className="flex items-center gap-4 px-6 py-3.5">
-                <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${LOG_COLORS[String(log.level)] || "bg-card-hover text-muted"}`}>
+              <div key={i} onClick={() => setSelectedLog(log)} className="flex cursor-pointer items-center gap-4 px-6 py-3.5 transition-colors hover:bg-accent/5">
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${LOG_COLORS[String(log.level)] || "bg-card-hover text-muted"}`}>
                   {String(log.level || "info")}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -151,6 +153,39 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      {selectedLog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelectedLog(null)}>
+          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelectedLog(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+            <div className="flex items-center gap-3 pr-8">
+              <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${LOG_COLORS[String(selectedLog.level)] || "bg-card-hover text-muted"}`}>
+                {String(selectedLog.level || "info")}
+              </span>
+              <span className="text-[12px] text-muted">{String(selectedLog.module || "—")}</span>
+            </div>
+            <h2 className="mt-4 text-[17px] font-bold text-foreground">{String(selectedLog.action || "—")}</h2>
+            <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+              {[
+                { label: "Foydalanuvchi", value: String(selectedLog.user || "—") },
+                { label: "Modul", value: String(selectedLog.module || "—") },
+                { label: "Vaqt", value: String(selectedLog.timestamp || "—").slice(0, 19).replace("T", " ") },
+                { label: "IP Manzil", value: String(selectedLog.ip_address || "—") },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex items-start justify-between gap-4">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-medium text-foreground text-right">{value}</span>
+                </div>
+              ))}
+            </div>
+            {selectedLog.details != null && (
+              <div className="mt-4">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Tafsilotlar</p>
+                <p className="whitespace-pre-line rounded-xl border border-border bg-background p-3 text-[12px] text-muted">{String(selectedLog.details)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

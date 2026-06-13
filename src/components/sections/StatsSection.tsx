@@ -42,7 +42,7 @@ export function StatsSection() {
 
   return (
     <section className="relative border-t border-border-subtle bg-card px-6 py-20 md:py-28">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_100%,rgba(6,247,227,0.04)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_100%,rgba(6,247,227,0.08)_0%,transparent_70%)]" />
       <div className="relative mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ export function StatsSection() {
                     transition={{ delay: i * 0.1, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                     className={`group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${c.bg} ${c.border} ${c.glow}`}
                   >
-                    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_70%)]" />
+                    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_70%)] bg-[radial-gradient(circle_at_50%_0%,rgba(0,0,0,0.02),transparent_70%)]" />
                     <div className={`text-2xl font-bold tracking-tight md:text-3xl ${c.num}`}>
                       <CountUp to={numericValue} suffix={stat.suffix} active={inView} />
                     </div>

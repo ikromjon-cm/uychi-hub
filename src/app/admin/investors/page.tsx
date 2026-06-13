@@ -25,8 +25,10 @@ export default function AdminInvestors() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState<Investor | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const investors = rawInvestors.map(i => ({ ...i, ...overrides[i.id] }));
 
@@ -43,12 +45,15 @@ export default function AdminInvestors() {
 
   async function handleAdd() {
     setSaving(true);
+    setSaveError("");
     try {
       await apiPost("/investors/investors/", { ...form, status: "active" });
       window.location.reload();
-    } catch { /* silent */ }
-    setSaving(false);
-    setShowModal(false);
+    } catch(err) {
+      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const activeCount = investors.filter(i => i.status === "active").length;
@@ -101,7 +106,7 @@ export default function AdminInvestors() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {filtered.map((inv) => (
-            <div key={inv.id} className="rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-border">
+            <div key={inv.id} onClick={() => setSelected(inv)} className="cursor-pointer rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-accent/30 hover:shadow-[0_0_20px_-5px_rgba(6,247,227,0.15)]">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-accent"><Building2 className="h-5 w-5" /></div>
@@ -112,7 +117,8 @@ export default function AdminInvestors() {
                 </div>
                 <select
                   value={inv.status}
-                  onChange={(e) => updateStatus(inv.id, e.target.value)}
+                  onChange={(e) => { e.stopPropagation(); updateStatus(inv.id, e.target.value); }}
+                  onClick={e => e.stopPropagation()}
                   className={`shrink-0 appearance-none rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer outline-none ${statusColors[inv.status] || "bg-card-hover text-muted"}`}
                 >
                   {["active", "negotiation", "due_diligence", "closed"].map(s => <option key={s} value={s}>{s}</option>)}
@@ -124,11 +130,11 @@ export default function AdminInvestors() {
                 <div><span className="text-muted">Contact</span><p className="font-medium text-foreground">{inv.contact_name || "—"}</p></div>
                 <div><span className="text-muted">Sectors</span><p className="font-medium text-accent">{inv.sectors || "—"}</p></div>
               </div>
-              <div className="mt-3 flex items-center justify-between text-[12px] text-muted">
+              <div className="mt-3 flex items-center justify-between text-[12px] text-muted" onClick={e => e.stopPropagation()}>
                 <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{inv.created_at?.slice(0, 10) || "—"}</span>
                 <div className="flex gap-1">
                   {inv.email && <a href={`mailto:${inv.email}`} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-blue-500/30 hover:text-blue-400"><MessageSquare className="h-3.5 w-3.5" /></a>}
-                  <button className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => setSelected(inv)} className="rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
             </div>
@@ -136,6 +142,71 @@ export default function AdminInvestors() {
           {filtered.length === 0 && (
             <div className="col-span-2 rounded-2xl border border-border-subtle bg-card px-6 py-10 text-center text-[13px] text-muted">Investor topilmadi.</div>
           )}
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative my-8 w-full max-w-2xl rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+
+            {/* Header */}
+            <div className="flex items-center gap-4 pr-8">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-accent"><Building2 className="h-6 w-6" /></div>
+              <div className="flex-1">
+                <h2 className="text-[20px] font-bold text-foreground">{selected.company}</h2>
+                <p className="flex items-center gap-1 text-[13px] text-muted"><Globe className="h-3.5 w-3.5" />{selected.country}</p>
+              </div>
+              <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase ${statusColors[selected.status] || "bg-card-hover text-muted"}`}>
+                {selected.status}
+              </span>
+            </div>
+
+            {/* Info grid */}
+            <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-3">
+              {[
+                { label: "Investor Type", value: selected.investor_type || "—" },
+                { label: "Ticket Size", value: selected.ticket_size || "—" },
+                { label: "Sectors", value: selected.sectors || "—" },
+                { label: "Contact", value: selected.contact_name || "—" },
+                { label: "Registered", value: selected.created_at?.slice(0, 10) || "—" },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">{label}</span>
+                  <p className="mt-0.5 text-[13px] font-medium text-foreground">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Contact */}
+            {selected.email && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Bog'lanish</p>
+                <a href={`mailto:${selected.email}`} className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-[13px] text-accent hover:border-accent/30">
+                  <MessageSquare className="h-4 w-4" />{selected.email}
+                </a>
+              </div>
+            )}
+
+            {/* Notes */}
+            {selected.notes && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Izohlar</p>
+                <p className="text-[13px] leading-relaxed text-muted">{selected.notes}</p>
+              </div>
+            )}
+
+            {/* Status actions */}
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+              <p className="w-full mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">Statusni o'zgartirish</p>
+              {["active", "negotiation", "due_diligence", "closed"].map(st => (
+                <button key={st} onClick={() => { updateStatus(selected.id, st); setSelected({ ...selected, status: st }); }}
+                  className={`rounded-lg border px-4 py-2 text-[12px] font-semibold capitalize transition-all ${selected.status === st ? (statusColors[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30 hover:text-foreground"}`}>
+                  {st.replace("_", " ")}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -167,6 +238,7 @@ export default function AdminInvestors() {
                 </select>
               </div>
             </div>
+            {saveError && <p className="text-[12px] text-red-400 mt-2">{saveError}</p>}
             <div className="mt-6 flex justify-end gap-3">
               <button onClick={() => setShowModal(false)} className="rounded-xl border border-border px-4 py-2.5 text-[13px] text-muted hover:border-border hover:text-foreground">Cancel</button>
               <button onClick={handleAdd} disabled={saving} className="rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-accent-dark disabled:opacity-60">{saving ? "Saving..." : "Add Investor"}</button>

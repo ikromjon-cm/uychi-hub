@@ -85,7 +85,7 @@ export default function AIFeaturesPage() {
   return (
     <div className="min-h-screen">
       <section className="relative overflow-hidden px-6 pb-20 pt-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.07)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.12)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-accent">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />

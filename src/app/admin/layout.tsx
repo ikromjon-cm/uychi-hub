@@ -7,8 +7,10 @@ import {
   LayoutDashboard, FileText, Newspaper, Rocket, TrendingUp,
   Handshake, Briefcase, Image, Search, BarChart2, Shield,
   Key, ScrollText, Database, Menu, X, Bell, Settings, LogOut,
+  Sun, Moon,
 } from "lucide-react";
-import { logout, isAuthenticated } from "@/lib/api";
+import { logout, getMe } from "@/lib/api";
+import { useTheme } from "@/lib/theme-provider";
 
 const NAV = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -27,24 +29,50 @@ const NAV = [
   { label: "Backup Center", href: "/admin/backup", icon: Database },
 ];
 
+type Me = { username: string; email: string; first_name: string; last_name: string; is_staff: boolean; is_superuser: boolean };
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [me, setMe] = useState<Me | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
   const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
-    if (!isLoginPage && !isAuthenticated()) {
-      router.push("/admin/login");
-    }
+    if (isLoginPage) { setChecking(false); return; }
+    setChecking(true);
+    getMe().then((user) => {
+      if (!user || !user.is_staff) {
+        router.replace("/admin/login");
+      } else {
+        setMe(user);
+      }
+      setChecking(false);
+    });
   }, [pathname, isLoginPage, router]);
 
   function handleLogout() {
     logout();
+    setMe(null);
     router.push("/admin/login");
   }
 
   if (isLoginPage) return <>{children}</>;
+
+  if (checking) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+          <p className="text-[13px] text-muted">Tekshirilmoqda...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!me) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -97,10 +125,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="border-t border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-[12px] font-bold text-accent">A</div>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/20 text-[12px] font-bold text-accent">
+              {me.username[0].toUpperCase()}
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="truncate text-[13px] font-semibold text-foreground">Super Admin</p>
-              <p className="truncate text-[11px] text-muted">admin@uychi.uz</p>
+              <p className="truncate text-[13px] font-semibold text-foreground">
+                {me.first_name ? `${me.first_name} ${me.last_name}`.trim() : me.username}
+              </p>
+              <p className="truncate text-[11px] text-muted">{me.email || me.username}</p>
             </div>
             <button onClick={handleLogout} aria-label="Chiqish" className="text-muted hover:text-red-400 transition-colors">
               <LogOut className="h-4 w-4" />
@@ -128,6 +160,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button aria-label="Bildirishnomalar" className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Bell className="h-4 w-4" />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
+            </button>
+            <button onClick={toggleTheme} aria-label="Tema almashtirish" className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-colors hover:text-foreground">
+              {themeMounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
             </button>
             <button aria-label="Sozlamalar" className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Settings className="h-4 w-4" />

@@ -82,7 +82,7 @@ export default function MediaPage() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Media Galereya</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -208,7 +208,7 @@ export default function MediaPage() {
                     </div>
                     {/* Play button overlay */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-black">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground/10 text-foreground backdrop-blur-sm">
                         <svg className="ml-1 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M8 5v14l11-7z" />
                         </svg>
@@ -243,12 +243,12 @@ export default function MediaPage() {
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <button className="rounded-xl border border-violet-400/30 bg-violet-500/10 px-6 py-3 text-[13px] font-bold text-violet-400 transition-all hover:bg-violet-500/15 whitespace-nowrap">
+              <a href="mailto:media@uychi.uz?subject=Press Kit so'rovi" className="rounded-xl border border-violet-400/30 bg-violet-500/10 px-6 py-3 text-[13px] font-bold text-violet-400 transition-all hover:bg-violet-500/15 whitespace-nowrap">
                 Press Kit (ZIP)
-              </button>
-              <button className="rounded-xl border border-border px-6 py-3 text-[13px] font-semibold text-muted transition-all hover:border-border hover:text-foreground whitespace-nowrap">
+              </a>
+              <a href="mailto:media@uychi.uz?subject=Media so'rovi" className="rounded-xl border border-border px-6 py-3 text-[13px] font-semibold text-muted transition-all hover:text-foreground whitespace-nowrap">
                 Media So&apos;rovi
-              </button>
+              </a>
             </div>
           </div>
         </div>

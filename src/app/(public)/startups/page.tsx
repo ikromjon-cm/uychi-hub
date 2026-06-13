@@ -68,7 +68,7 @@ export default function StartupsPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.06)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Startup Hub</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">

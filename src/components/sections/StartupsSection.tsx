@@ -73,7 +73,7 @@ function StartupCard({ startup, className = "" }: { startup: HStartup; className
       variants={fadeUp}
       className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-400 hover:-translate-y-1 ${c.border} ${c.glow} ${className}`}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_0%,rgba(6,247,227,0.04),transparent_65%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_0%,rgba(6,247,227,0.08),transparent_65%)]" />
       <div className="relative z-10 flex flex-col gap-4 h-full">
         <div className="flex items-start justify-between">
           <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold tracking-wide ${c.badge}`}>
@@ -125,7 +125,7 @@ export function StartupsSection() {
 
   return (
     <section id="startups" className="relative border-t border-border-subtle bg-background px-6 py-24 md:py-32">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_15%_50%,rgba(6,247,227,0.035)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_15%_50%,rgba(6,247,227,0.07)_0%,transparent_70%)]" />
       <div className="relative mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 24 }}

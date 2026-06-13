@@ -213,7 +213,7 @@ export default function LibraryPage() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ Raqamli Kutubxona</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -320,9 +320,9 @@ export default function LibraryPage() {
                       <span>·</span>
                       <span>{(res.downloads / 1000).toFixed(1)}K yuklab</span>
                     </div>
-                    <button className={`rounded-lg border px-3 py-1.5 text-[11px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                    <a href={`mailto:library@uychi.uz?subject=${res.free ? "Yuklab olish" : "Sotib olish"}: ${encodeURIComponent(res.title)}`} className={`rounded-lg border px-3 py-1.5 text-[11px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       {res.free ? "Yuklab olish" : "Sotib olish"}
-                    </button>
+                    </a>
                   </div>
                 </div>
               );
@@ -337,9 +337,9 @@ export default function LibraryPage() {
           <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">
             O&apos;zingizning kitob, maqola yoki qo&apos;llanmangizni kutubxonaga qo&apos;shish uchun ariza yuboring. Mualliflik huquqingiz saqlanadi.
           </p>
-          <button className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-accent/10 px-8 py-3.5 text-[14px] font-bold text-accent transition-all hover:bg-accent/15">
+          <a href="mailto:library@uychi.uz?subject=Resurs yuborish" className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-accent/10 px-8 py-3.5 text-[14px] font-bold text-accent transition-all hover:bg-accent/15">
             Resurs Yuborish
-          </button>
+          </a>
         </div>
       </div>
     </div>

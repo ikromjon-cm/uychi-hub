@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Database, Download, RotateCw, Play, CheckCircle, XCircle, Clock } from "lucide-react";
+import React from "react";
+import { Database, Download, RotateCw, Play, CheckCircle, XCircle, Clock, X } from "lucide-react";
 
 interface Backup {
   id: number;
@@ -45,6 +46,7 @@ export default function AdminBackup() {
   const [backups, setBackups] = useState<Backup[]>(BACKUPS);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [selected, setSelected] = useState<Backup | null>(null);
 
   function handleBackup() {
     setRunning(true);
@@ -130,7 +132,7 @@ export default function AdminBackup() {
                 {backups.map((b) => {
                   const Icon = statusIcons[b.status] || CheckCircle;
                   return (
-                    <tr key={b.id} className="group text-[13px] transition-colors hover:bg-card">
+                    <tr key={b.id} onClick={() => setSelected(b)} className="group cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted"><Database className="h-4 w-4" /></div>
@@ -202,6 +204,39 @@ export default function AdminBackup() {
           </div>
         </div>
       </div>
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${statusColors[selected.status]}`}>
+              {React.createElement(statusIcons[selected.status] || CheckCircle, { className: "h-3.5 w-3.5" })}
+              {selected.status}
+            </span>
+            <h2 className="mt-4 font-mono text-[16px] font-bold text-foreground">{selected.name}</h2>
+            <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+              {[
+                { label: "Tur", value: selected.type },
+                { label: "Hajm", value: selected.size },
+                { label: "Sana", value: selected.date },
+                { label: "Davomiyligi", value: selected.duration },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between gap-4">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-medium text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex gap-3">
+              <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-foreground">
+                <Download className="h-4 w-4" /> Yuklab olish
+              </button>
+              <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-foreground">
+                <Play className="h-4 w-4" /> Tiklash
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

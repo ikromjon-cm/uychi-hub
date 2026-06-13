@@ -2,8 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 core_patterns = [
     path("core/", include("apps.core.urls")),
@@ -32,6 +37,7 @@ auth_patterns = [
 ]
 
 urlpatterns = [
+    path("api/health/", health_check, name="health-check"),
     path("admin/", admin.site.urls),
     path("api/", include(core_patterns)),
     path("api/auth/", include(auth_patterns)),

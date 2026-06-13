@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useApi, apiPatch, apiPost } from "@/lib/api";
-import { Search, ChevronDown, Eye, CheckCircle, XCircle, MessageSquare, Plus, X, Loader2 } from "lucide-react";
+import { Search, ChevronDown, Eye, CheckCircle, XCircle, MessageSquare, Plus, X, Loader2, Globe, Mail, Phone, Users, DollarSign, Code2, MapPin, Calendar } from "lucide-react";
 
 type Startup = Record<string, string | number>;
 
@@ -28,6 +28,7 @@ export default function AdminStartups() {
   const [filter, setFilter]     = useState("all");
   const [local, setLocal]       = useState<Startup[] | null>(null);
   const [showAdd, setShowAdd]   = useState(false);
+  const [selected, setSelected] = useState<Startup | null>(null);
   const [form, setForm]         = useState({ ...EMPTY });
   const [saving, setSaving]     = useState(false);
 
@@ -94,7 +95,7 @@ export default function AdminStartups() {
           <div key={i} className="animate-pulse rounded-2xl border border-border-subtle bg-card h-48" />
         ))}
         {filtered.map(s => (
-          <div key={String(s.id)} className="rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-border">
+          <div key={String(s.id)} onClick={() => setSelected(s)} className="cursor-pointer rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-accent/30 hover:shadow-[0_0_20px_-5px_rgba(6,247,227,0.15)]">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-[15px] font-bold text-foreground">{String(s.startup_name)}</h3>
@@ -111,15 +112,109 @@ export default function AdminStartups() {
               <div><span className="text-muted">Team</span><p className="font-medium text-foreground">{String(s.team_size)} ta</p></div>
               <div className="col-span-2"><span className="text-muted">Email</span><p className="font-medium text-foreground">{String(s.email)}</p></div>
             </div>
-            <div className="mt-4 flex items-center gap-2 border-t border-border-subtle pt-4">
+            <div className="mt-4 flex items-center gap-2 border-t border-border-subtle pt-4" onClick={e => e.stopPropagation()}>
               <button onClick={() => updateStatus(Number(s.id), "approved")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-emerald-500/30 hover:text-emerald-400"><CheckCircle className="h-3.5 w-3.5" /> Approve</button>
               <button onClick={() => updateStatus(Number(s.id), "rejected")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-red-500/30 hover:text-red-400"><XCircle className="h-3.5 w-3.5" /> Reject</button>
               <button onClick={() => updateStatus(Number(s.id), "review")} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[12px] text-muted hover:border-blue-500/30 hover:text-blue-400"><MessageSquare className="h-3.5 w-3.5" /></button>
-              <button className="ml-auto flex items-center rounded-lg border border-border p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
+              <button onClick={() => setSelected(s)} className="ml-auto flex items-center rounded-lg border border-border p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
             </div>
           </div>
         ))}
       </div>
+
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative my-8 w-full max-w-2xl rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+
+            {/* Header */}
+            <div className="flex items-start gap-4 pr-8">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-[18px] font-bold text-accent">
+                {String(selected.startup_name)[0]?.toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-[20px] font-bold text-foreground">{String(selected.startup_name)}</h2>
+                <p className={`text-[13px] font-medium ${SECTOR_COLORS[String(selected.sector)] || "text-muted"}`}>{String(selected.sector)}</p>
+              </div>
+              <span className={`ml-auto shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase ${STATUS_COLORS[String(selected.status)] || "bg-card-hover text-muted"}`}>
+                {String(selected.status)}
+              </span>
+            </div>
+
+            {/* Key info grid */}
+            <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-3">
+              {[
+                { icon: <DollarSign className="h-3.5 w-3.5" />, label: "Bosqich", value: String(selected.stage || "—") },
+                { icon: <Users className="h-3.5 w-3.5" />, label: "Jamoa", value: `${String(selected.team_size || "—")} kishi` },
+                { icon: <DollarSign className="h-3.5 w-3.5" />, label: "Moliyalashtirish", value: String(selected.funding_needed || "—") },
+                { icon: <MapPin className="h-3.5 w-3.5" />, label: "Mamlakat", value: String(selected.country || "—") },
+                { icon: <Calendar className="h-3.5 w-3.5" />, label: "Ariza sanasi", value: String(selected.created_at || "").slice(0, 10) || "—" },
+              ].map(({ icon, label, value }) => (
+                <div key={label} className="flex flex-col gap-1">
+                  <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted">{icon}{label}</span>
+                  <span className="text-[13px] font-medium text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Contact */}
+            <div className="mt-5 space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Asoschisi</p>
+              <div className="flex flex-wrap gap-3">
+                <span className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[13px] text-foreground">
+                  <Users className="h-3.5 w-3.5 text-muted" />{String(selected.founder_name || "—")}
+                </span>
+                {selected.email && (
+                  <a href={`mailto:${String(selected.email)}`} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[13px] text-accent hover:border-accent/30">
+                    <Mail className="h-3.5 w-3.5" />{String(selected.email)}
+                  </a>
+                )}
+                {selected.phone && (
+                  <a href={`tel:${String(selected.phone)}`} className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[13px] text-foreground hover:border-accent/30">
+                    <Phone className="h-3.5 w-3.5 text-muted" />{String(selected.phone)}
+                  </a>
+                )}
+                {selected.website && (
+                  <a href={String(selected.website)} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-[13px] text-foreground hover:border-accent/30">
+                    <Globe className="h-3.5 w-3.5 text-muted" />{String(selected.website)}
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Tech stack */}
+            {selected.tech_stack && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted"><Code2 className="mr-1 inline h-3 w-3" />Texnologiyalar</p>
+                <div className="flex flex-wrap gap-2">
+                  {String(selected.tech_stack).split(/[,;]/).map(t => t.trim()).filter(Boolean).map(tech => (
+                    <span key={tech} className="rounded-lg border border-border bg-background px-2.5 py-1 text-[12px] text-foreground">{tech}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {selected.description && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Tavsif</p>
+                <p className="text-[13px] leading-relaxed text-muted">{String(selected.description)}</p>
+              </div>
+            )}
+
+            {/* Status actions */}
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+              <p className="w-full text-[11px] font-semibold uppercase tracking-wider text-muted mb-1">Statusni o'zgartirish</p>
+              {["approved", "review", "rejected", "pending"].map(st => (
+                <button key={st} onClick={() => { updateStatus(Number(selected.id), st); setSelected({ ...selected, status: st }); }}
+                  className={`rounded-lg border px-4 py-2 text-[12px] font-semibold transition-all ${String(selected.status) === st ? STATUS_COLORS[st] + " border-current" : "border-border text-muted hover:border-accent/30 hover:text-foreground"}`}>
+                  {st === "approved" ? "✓ Tasdiqlash" : st === "rejected" ? "✗ Rad etish" : st === "review" ? "Ko'rib chiqish" : "Kutilmoqda"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, Users, Eye, MousePointer } from "lucide-react";
+import { TrendingUp, Users, Eye, MousePointer, X } from "lucide-react";
 
 const ANALYTICS_MONTHLY = [
   { month: 'Yan', visitors: 1200, pageviews: 4800, signups: 45 },
@@ -33,6 +33,7 @@ const RANGES: Record<string, number> = { "3m": 3, "6m": 6, "1y": 12 };
 
 export default function AdminAnalytics() {
   const [range, setRange] = useState("6m");
+  const [selectedPage, setSelectedPage] = useState<typeof TOP_PAGES[0] | null>(null);
 
   const months = ANALYTICS_MONTHLY.slice(-(RANGES[range] ?? 6));
   const maxVisitors = Math.max(...months.map((m) => m.visitors));
@@ -128,7 +129,7 @@ export default function AdminAnalytics() {
               const maxViews = TOP_PAGES[0].views;
               const pct = Math.round((p.views / maxViews) * 100);
               return (
-                <div key={p.page}>
+                <div key={p.page} onClick={() => setSelectedPage(p)} className="cursor-pointer rounded-xl p-2 -mx-2 transition-colors hover:bg-accent/5">
                   <div className="mb-1 flex items-center justify-between text-[12px]">
                     <span className="font-mono text-accent">{p.page}</span>
                     <span className="text-muted">{p.views.toLocaleString()} · {p.bounce} bounce</span>
@@ -142,6 +143,29 @@ export default function AdminAnalytics() {
           </div>
         </div>
       </div>
+      {selectedPage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelectedPage(null)}>
+          <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelectedPage(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+            <span className="font-mono text-[13px] text-accent">{selectedPage.page}</span>
+            <h2 className="mt-2 text-[18px] font-bold text-foreground">{selectedPage.title}</h2>
+            <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+              {[
+                { label: "Ko'rishlar", value: selectedPage.views.toLocaleString() },
+                { label: "Bounce Rate", value: selectedPage.bounce },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between gap-4">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-bold text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+            <a href={selectedPage.page} target="_blank" rel="noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-accent">
+              Sahifani ko'rish →
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -67,7 +67,7 @@ export default function PartnersPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.06)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Hamkorlar Tarmog&apos;i</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -108,7 +108,7 @@ export default function PartnersPage() {
             {filtered.map((partner) => {
               const colorClass = CATEGORY_COLORS[partner.category] || "text-muted border-border bg-card";
               return (
-                <div key={partner.id} className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-border">
+                <div key={partner.id} className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400/30">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card text-lg font-bold text-foreground">
                     {partner.name.charAt(0)}
                   </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import React from "react";
-import { Search, Plus, Trash2, Download, Image, Film, File, LayoutGrid, List } from "lucide-react";
+import { Search, Plus, Trash2, Download, Image, Film, File, LayoutGrid, List, X } from "lucide-react";
 import { useApi, apiDelete } from "@/lib/api";
 
 interface MediaItem {
@@ -40,6 +40,7 @@ export default function AdminMedia() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [selected, setSelected] = useState<MediaItem | null>(null);
 
   const items = rawItems.filter(m => !deleted.has(m.id));
   const filtered = items.filter(m => {
@@ -113,7 +114,7 @@ export default function AdminMedia() {
           {filtered.map(m => {
             const Icon = typeIcons[m.media_type] || File;
             return (
-              <div key={m.id} className="group relative rounded-2xl border border-border-subtle bg-card p-4 transition-all hover:border-border">
+              <div key={m.id} onClick={() => setSelected(m)} className="group relative cursor-pointer rounded-2xl border border-border-subtle bg-card p-4 transition-all hover:border-border">
                 <div className={`flex h-32 items-center justify-center rounded-xl border ${typeColors[m.media_type] || "bg-card-hover text-muted border-border"} bg-card`}>
                   <Icon className="h-10 w-10 opacity-50" />
                 </div>
@@ -122,7 +123,7 @@ export default function AdminMedia() {
                   <p className="text-[12px] text-muted">{m.size || "—"} · {m.media_type}</p>
                   <p className="text-[11px] text-muted">{m.uploaded_at?.slice(0, 10)}</p>
                 </div>
-                <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100" onClick={e => e.stopPropagation()}>
                   {m.file && m.file !== "#" && (
                     <a href={m.file} target="_blank" rel="noreferrer" className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Download className="h-3.5 w-3.5" /></a>
                   )}
@@ -146,7 +147,7 @@ export default function AdminMedia() {
             </thead>
             <tbody className="divide-y divide-border-subtle">
               {filtered.map(m => (
-                <tr key={m.id} className="group text-[13px] transition-colors hover:bg-card">
+                <tr key={m.id} onClick={() => setSelected(m)} className="group cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${typeColors[m.media_type] || "bg-card-hover text-muted border-border"}`}>
@@ -158,7 +159,7 @@ export default function AdminMedia() {
                   <td className="px-6 py-4 capitalize text-muted">{m.media_type}</td>
                   <td className="px-6 py-4 text-muted">{m.size || "—"}</td>
                   <td className="px-6 py-4 text-muted">{m.uploaded_at?.slice(0, 10)}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       {m.file && m.file !== "#" && (
                         <a href={m.file} target="_blank" rel="noreferrer" className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Download className="h-3.5 w-3.5" /></a>
@@ -172,6 +173,45 @@ export default function AdminMedia() {
           </table>
         </div>
       )}
+      {selected && (() => {
+        const Icon = typeIcons[selected.media_type] || File;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+            <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+              <div className={`flex h-24 w-24 items-center justify-center rounded-2xl border mx-auto ${typeColors[selected.media_type] || "bg-card-hover text-muted border-border"}`}>
+                <Icon className="h-10 w-10 opacity-60" />
+              </div>
+              <h2 className="mt-4 text-center text-[16px] font-bold text-foreground break-all">{selected.name}</h2>
+              <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+                {[
+                  { label: "Tur", value: selected.media_type },
+                  { label: "Hajm", value: selected.size || "—" },
+                  { label: "O'lcham", value: selected.dimensions || "—" },
+                  { label: "Alt matn", value: selected.alt_text || "—" },
+                  { label: "Yuklangan", value: selected.uploaded_at?.slice(0, 10) || "—" },
+                  { label: "Ishlatilmoqda", value: selected.in_use ? "Ha" : "Yo'q" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between gap-4">
+                    <span className="text-muted">{label}</span>
+                    <span className="font-medium text-foreground capitalize">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 flex gap-3">
+                {selected.file && selected.file !== "#" && (
+                  <a href={selected.file} target="_blank" rel="noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-accent">
+                    <Download className="h-4 w-4" /> Yuklab olish
+                  </a>
+                )}
+                <button onClick={() => { handleDelete(selected.id); setSelected(null); }} className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500/20 py-2.5 text-[13px] text-red-400 hover:bg-red-500/5">
+                  <Trash2 className="h-4 w-4" /> O'chirish
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

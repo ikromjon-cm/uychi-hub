@@ -68,7 +68,7 @@ export default function EducationPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ Ta&apos;lim Markazi</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -165,9 +165,9 @@ export default function EducationPage() {
                       <p className={`text-[15px] font-bold ${c.text}`}>{formatPrice(course.price, course.is_free)}</p>
                       <p className="text-[11px] text-muted">{formatNum(course.enrolled_count)} o&apos;quvchi · {LANG_FLAGS[course.lang]} {LANG_LABELS[course.lang]}</p>
                     </div>
-                    <button className={`rounded-xl border px-4 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                    <a href={`mailto:edu@uychi.uz?subject=Kursga ro'yxatdan o'tish: ${encodeURIComponent(course.title)}`} className={`rounded-xl border px-4 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       Ro&apos;yxatdan o&apos;t
-                    </button>
+                    </a>
                   </div>
                 </div>
               );

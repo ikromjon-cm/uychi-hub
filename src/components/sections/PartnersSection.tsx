@@ -61,7 +61,7 @@ export function PartnersSection() {
 
   return (
     <section className="relative overflow-hidden border-t border-border-subtle bg-background px-0 py-20 md:py-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_80%_50%,rgba(167,139,250,0.04)_0%,transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_80%_50%,rgba(167,139,250,0.08)_0%,transparent_70%)]" />
       <div className="relative mx-auto mb-12 max-w-6xl px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Ishonchli Hamkorlar</p>

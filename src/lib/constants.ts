@@ -17,7 +17,7 @@ export const SITE: SiteConfig = {
     "Namangan texnologiya",
     "IT ta'lim Uychi",
   ],
-  ogImage: "/og.jpg",
+  ogImage: "/og.svg",
 };
 
 export const SOCIAL = {

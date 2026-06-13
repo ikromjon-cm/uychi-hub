@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Edit3, CheckCircle, XCircle, ExternalLink, RefreshCw, X } from "lucide-react";
+import { Search, CheckCircle, XCircle, ExternalLink, RefreshCw, X } from "lucide-react";
 import { useApi, apiPatch } from "@/lib/api";
 
 interface SeoPage {
@@ -119,7 +119,7 @@ export default function AdminSEO() {
       ) : (
         <div className="space-y-3">
           {filtered.map((page) => (
-            <div key={page.id} className="rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-border">
+            <div key={page.id} onClick={() => openEdit(page)} className="cursor-pointer rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-border">
               <div className="flex items-start justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -145,9 +145,9 @@ export default function AdminSEO() {
                   <span className="flex items-center gap-1 text-[12px] text-emerald-400"><CheckCircle className="h-3 w-3" />Description</span>
                   {page.score < 80 && <span className="flex items-center gap-1 text-[12px] text-red-400"><XCircle className="h-3 w-3" />Keywords</span>}
                 </div>
-                <button onClick={() => openEdit(page)} className="ml-auto rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent">
-                  <Edit3 className="h-3.5 w-3.5" />
-                </button>
+                <a href={page.path} onClick={e => e.stopPropagation()} className="ml-auto rounded-lg border border-border p-1.5 text-muted transition-colors hover:border-accent/30 hover:text-accent">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
               </div>
             </div>
           ))}

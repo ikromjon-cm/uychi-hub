@@ -51,7 +51,7 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ Tadbirlar Kalendari</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -154,10 +154,15 @@ export default function EventsPage() {
                             <span key={tag} className="rounded-full bg-card-hover px-2 py-0.5 text-[10px] font-medium text-muted">{tag}</span>
                           ))}
                         </div>
-                        <button disabled={isFull}
-                          className={`mt-5 w-full rounded-xl py-2.5 text-[13px] font-bold transition-all ${isFull ? "cursor-not-allowed border border-border bg-card text-muted" : `border ${c.badge} ${c.text} hover:opacity-80`}`}>
-                          {isFull ? "Joy band" : "Ro'yxatdan o'tish"}
-                        </button>
+                        {isFull ? (
+                          <button disabled className="mt-5 w-full cursor-not-allowed rounded-xl border border-border bg-card py-2.5 text-[13px] font-bold text-muted">
+                            Joy band
+                          </button>
+                        ) : (
+                          <a href={`mailto:events@uychi.uz?subject=Ro'yxatdan o'tish: ${encodeURIComponent(event.title)}`} className={`mt-5 block w-full rounded-xl border py-2.5 text-center text-[13px] font-bold transition-all ${c.badge} ${c.text} hover:opacity-80`}>
+                            Ro&apos;yxatdan o&apos;tish
+                          </a>
+                        )}
                       </div>
                     );
                   })}
@@ -203,9 +208,9 @@ export default function EventsPage() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ O&apos;z tadbiringizni o&apos;tkazing</p>
           <h3 className="mt-2 text-2xl font-bold text-foreground">Uychi IT Hubda Tadbir Tashkillash</h3>
           <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">Konferentsiya, bootcamp yoki hackathon o&apos;tkazmoqchimisiz? IT Hub infratuzilmasi va Uychi hamjamiyatidan foydalaning.</p>
-          <button className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-8 py-3.5 text-[14px] font-bold text-emerald-400 transition-all hover:border-emerald-400/50 hover:bg-emerald-500/15">
+          <a href="mailto:events@uychi.uz?subject=Tadbir tashkillash murojaat" className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-8 py-3.5 text-[14px] font-bold text-emerald-400 transition-all hover:border-emerald-400/50 hover:bg-emerald-500/15">
             Murojaat qilish
-          </button>
+          </a>
         </div>
       </div>
     </div>

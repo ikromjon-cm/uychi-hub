@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
-import { login } from "@/lib/api";
+import { login, logout, getMe } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,6 +18,12 @@ export default function LoginPage() {
 
     try {
       await login(fd.get("username") as string, fd.get("password") as string);
+      const me = await getMe();
+      if (!me || !me.is_staff) {
+        logout();
+        setError("Sizda admin panelga kirish huquqi yo'q. admin@uychi.uz ga murojaat qiling.");
+        return;
+      }
       router.push("/admin/dashboard");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Foydalanuvchi nomi yoki parol noto'g'ri.");
@@ -65,10 +70,11 @@ export default function LoginPage() {
           </button>
 
           <p className="pt-2 text-center text-[13px] text-muted">
-            Hisobingiz yo&apos;qmi?{" "}
-            <Link href="/register" className="text-violet-400 hover:text-violet-300">
-              Ro&apos;yxatdan o&apos;tish
-            </Link>
+            Kirish huquqi uchun{" "}
+            <a href="mailto:admin@uychi.uz" className="text-violet-400 hover:text-violet-300">
+              admin@uychi.uz
+            </a>{" "}
+            ga murojaat qiling.
           </p>
         </form>
       </div>

@@ -23,16 +23,22 @@ export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_BASE}${endpoint}`, {
-      headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((json) => {
+    const url = `${API_BASE}${endpoint}`;
+    const token = getToken();
+
+    const doFetch = (withAuth: boolean): Promise<unknown> =>
+      fetch(url, { headers: withAuth && token ? { Authorization: `Bearer ${token}` } : {} })
+        .then((r) => {
+          if (r.status === 401 && withAuth) return doFetch(false);
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json() as Promise<unknown>;
+        });
+
+    doFetch(!!token)
+      .then((json: unknown) => {
         if (!cancelled) {
-          const result = json.results ?? json;
+          const j = json as Record<string, unknown>;
+          const result = (j.results ?? json) as T;
           if (Array.isArray(result) && result.length === 0 && mockFallback) {
             setData(mockFallback);
           } else {
@@ -40,7 +46,7 @@ export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
           }
         }
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         if (!cancelled) {
           setError(e.message);
           if (mockFallback) setData(mockFallback);
@@ -109,4 +115,18 @@ export function logout() {
 
 export function isAuthenticated(): boolean {
   return !!getToken();
+}
+
+export async function getMe(): Promise<{ id: number; username: string; email: string; first_name: string; last_name: string; is_staff: boolean; is_superuser: boolean } | null> {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const res = await fetch(`${API_BASE}/users/me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
 }

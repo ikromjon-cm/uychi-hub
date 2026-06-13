@@ -111,8 +111,8 @@ export default function AiCenterPage() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border-subtle px-6 py-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(6,247,227,0.06)_0%,transparent_60%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_80%_30%,rgba(167,139,250,0.05)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_80%_30%,rgba(167,139,250,0.08)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-12 lg:flex-row lg:items-center">
             <div className="flex-1">
@@ -128,13 +128,13 @@ export default function AiCenterPage() {
                 Uychi AI Markazi — Namangan-Uchqo'rg'on yo'lidagi Uychi tumanida AI tadqiqot va ishlab chiqish markazi. Korporativ AI vositalari, startap akseleratsiyasi va ilmiy tadqiqotlar.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <button className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-[13px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.5)]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-black" />
+                <a href="/schedule" className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-[13px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_25px_-5px_rgba(6,247,227,0.5)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
                   Demoni Ko&apos;rish
-                </button>
-                <button className="inline-flex items-center gap-2 rounded-full border border-border px-7 py-3 text-[13px] font-semibold text-muted transition-all hover:border-border hover:text-foreground">
+                </a>
+                <a href="mailto:research@uychi.uz?subject=Tadqiqot guruhi" className="inline-flex items-center gap-2 rounded-full border border-border px-7 py-3 text-[13px] font-semibold text-muted transition-all hover:text-foreground">
                   Tadqiqot Guruhi
-                </button>
+                </a>
               </div>
             </div>
 
@@ -198,9 +198,9 @@ export default function AiCenterPage() {
                         <span key={tag} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] font-medium text-muted">{tag}</span>
                       ))}
                     </div>
-                    <button className={`mt-5 w-full rounded-xl border py-2.5 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                    <a href="/schedule" className={`mt-5 block w-full rounded-xl border py-2.5 text-center text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       Boshlash →
-                    </button>
+                    </a>
                   </div>
                 );
               })}
@@ -250,9 +250,9 @@ export default function AiCenterPage() {
               <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">
                 AI tadqiqot guruhimizga qo&apos;shilish uchun ariza qoldiring — universitet o&apos;qituvchilari, doktorantlar va mustaqil tadqiqotchilar xush kelibsiz.
               </p>
-              <button className="mt-6 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/10 px-8 py-3.5 text-[14px] font-bold text-violet-400 transition-all hover:bg-violet-500/15">
+              <a href="mailto:research@uychi.uz?subject=Tadqiqot guruhiga qo'shilish" className="mt-6 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/10 px-8 py-3.5 text-[14px] font-bold text-violet-400 transition-all hover:bg-violet-500/15">
                 Ariza Topshirish
-              </button>
+              </a>
             </div>
           </div>
         )}
@@ -268,12 +268,12 @@ export default function AiCenterPage() {
             Kompaniyangiz yoki startapingiz uchun maxsus AI yechimi ishlab chiqishga tayyor jamoamiz bilan bog&apos;laning.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button className="rounded-full bg-accent px-8 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.5)]">
+            <a href="/schedule" className="rounded-full bg-accent px-8 py-3.5 text-[14px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.5)]">
               Bepul Konsultatsiya
-            </button>
-            <button className="rounded-full border border-border px-8 py-3.5 text-[14px] font-semibold text-muted transition-all hover:border-border hover:text-foreground">
+            </a>
+            <a href="mailto:ai@uychi.uz?subject=Texnik hujjatlar so'rovi" className="rounded-full border border-border px-8 py-3.5 text-[14px] font-semibold text-muted transition-all hover:text-foreground">
               Texnik Hujjatlar
-            </button>
+            </a>
           </div>
         </div>
       </section>

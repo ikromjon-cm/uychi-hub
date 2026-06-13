@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Shield } from "lucide-react";
+import { Search, Shield, X } from "lucide-react";
 
 type UserRole = 'super_admin' | 'moderator' | 'startup_owner' | 'investor' | 'viewer';
 type Status = 'active' | 'inactive' | 'pending' | 'banned';
@@ -41,6 +41,7 @@ const ALL_ROLES: UserRole[] = ["super_admin", "moderator", "startup_owner", "inv
 export default function AdminRoles() {
   const [users, setUsers] = useState<AdminUser[]>(ADMIN_USERS);
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<AdminUser | null>(null);
 
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -93,7 +94,7 @@ export default function AdminRoles() {
               </thead>
               <tbody className="divide-y divide-border-subtle">
                 {filtered.map((user) => (
-                  <tr key={user.id} className="text-[13px] transition-colors hover:bg-card">
+                  <tr key={user.id} onClick={() => setSelected(user)} className="cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-bold ${roleColors[user.role]}`}>{user.avatar}</div>
@@ -112,7 +113,7 @@ export default function AdminRoles() {
                         {user.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
                       <select
                         value={user.role}
                         onChange={(e) => changeRole(user.id, e.target.value as UserRole)}
@@ -150,6 +151,43 @@ export default function AdminRoles() {
           ))}
         </div>
       </div>
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+            <div className="flex flex-col items-center text-center">
+              <div className={`flex h-16 w-16 items-center justify-center rounded-2xl border text-[24px] font-bold ${roleColors[selected.role]}`}>{selected.avatar}</div>
+              <h2 className="mt-3 text-[18px] font-bold text-foreground">{selected.name}</h2>
+              <a href={`mailto:${selected.email}`} className="text-[13px] text-accent hover:underline">{selected.email}</a>
+              <span className={`mt-2 rounded-full border px-3 py-0.5 text-[11px] font-bold capitalize tracking-wider ${roleColors[selected.role]}`}>{selected.role.replace("_", " ")}</span>
+            </div>
+            <div className="mt-6 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+              {[
+                { label: "Status", value: selected.status },
+                { label: "Qo'shilgan", value: selected.joined },
+                { label: "Oxirgi kirish", value: selected.lastLogin },
+                ...(selected.startupName ? [{ label: "Startup", value: selected.startupName }] : []),
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between gap-4">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-medium capitalize text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Rolni o'zgartirish</p>
+              <div className="flex flex-wrap gap-2">
+                {(["super_admin", "moderator", "startup_owner", "investor", "viewer"] as const).map(r => (
+                  <button key={r} onClick={() => { changeRole(selected.id, r); setSelected({ ...selected, role: r }); }}
+                    className={`rounded-lg border px-3 py-1.5 text-[12px] font-semibold capitalize transition-all ${selected.role === r ? roleColors[r] + " border-current" : "border-border text-muted hover:border-accent/30 hover:text-foreground"}`}>
+                    {r.replace("_", " ")}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

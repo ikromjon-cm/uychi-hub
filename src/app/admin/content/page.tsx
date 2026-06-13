@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/lib/api";
-import { Search, Plus, Edit3, Trash2, Eye, ChevronDown } from "lucide-react";
+import { Search, Plus, Edit3, Trash2, Eye, ChevronDown, X, ExternalLink } from "lucide-react";
 
 interface Page {
   title: string;
@@ -31,6 +31,7 @@ export default function AdminContent() {
   const [pages, setPages] = useState<Page[]>(PAGES);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState<Page | null>(null);
 
   const { data: newsArticles } = useApi<{ id: number; status: string }[]>("/news/articles/", []);
   const { data: startupApps } = useApi<{ id: number; status: string }[]>("/startups/startup-applications/", []);
@@ -122,7 +123,7 @@ export default function AdminContent() {
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {filtered.map((page) => (
-              <tr key={page.slug} className="group text-[13px] transition-colors hover:bg-card">
+              <tr key={page.slug} onClick={() => setSelected(page)} className="group cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                 <td className="px-6 py-4 font-medium text-foreground">{page.title}</td>
                 <td className="px-6 py-4 font-mono text-[12px] text-muted">{page.slug}</td>
                 <td className="px-6 py-4">
@@ -132,10 +133,10 @@ export default function AdminContent() {
                 </td>
                 <td className="px-6 py-4 text-muted">{page.updated}</td>
                 <td className="px-6 py-4 text-muted">{page.author}</td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button className="rounded-lg border border-border bg-card p-2 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></button>
-                    <button className="rounded-lg border border-border bg-card p-2 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
+                    <a href={page.slug} target="_blank" rel="noreferrer" className="rounded-lg border border-border bg-card p-2 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Eye className="h-3.5 w-3.5" /></a>
+                    <button onClick={() => setSelected(page)} className="rounded-lg border border-border bg-card p-2 text-muted transition-colors hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
                     <button onClick={() => deletePage(page.slug)} className="rounded-lg border border-border bg-card p-2 text-muted transition-colors hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                   </div>
                 </td>
@@ -144,6 +145,37 @@ export default function AdminContent() {
           </tbody>
         </table>
       </div>
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+            <span className={`inline-block rounded-full px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider ${selected.status === "published" ? "bg-emerald-400/10 text-emerald-400" : "bg-yellow-400/10 text-yellow-400"}`}>
+              {selected.status}
+            </span>
+            <h2 className="mt-3 text-[20px] font-bold text-foreground">{selected.title}</h2>
+            <p className="mt-1 font-mono text-[13px] text-muted">{selected.slug}</p>
+            <div className="mt-5 space-y-3 rounded-xl border border-border bg-background p-4 text-[13px]">
+              {[
+                { label: "Muallif", value: selected.author },
+                { label: "Yangilangan", value: selected.updated },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between gap-4">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-medium text-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex gap-3">
+              <a href={selected.slug} target="_blank" rel="noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-accent">
+                <ExternalLink className="h-4 w-4" /> Ko'rish
+              </a>
+              <button onClick={() => { deletePage(selected.slug); setSelected(null); }} className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500/20 py-2.5 text-[13px] text-red-400 hover:bg-red-500/5">
+                <Trash2 className="h-4 w-4" /> O'chirish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

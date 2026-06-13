@@ -10,6 +10,7 @@ type Article = {
   slug: string;
   category: string;
   excerpt: string;
+  content: string;
   status: string;
   views: number;
   author_name: string;
@@ -38,11 +39,12 @@ function formatDate(str: string | null): string {
 export default function NewsPage() {
   const mockArticles: Article[] = MOCK_NEWS.map((n, i) => ({
     id: i + 1, title: n.title, category: n.category,
-    excerpt: n.excerpt, slug: n.id, status: "published",
+    excerpt: n.excerpt, content: n.excerpt, slug: n.id, status: "published",
     views: 0, author_name: "Uychi IT Hub", published_at: n.date,
     created_at: n.date,
   }));
   const { data: allArticles, loading } = useApi<Article[]>("/news/articles/", [], mockArticles);
+  const [selected, setSelected] = useState<Article | null>(null);
   const [activeCategory, setActiveCategory] = useState("Barchasi");
   const [search, setSearch] = useState("");
 
@@ -60,7 +62,7 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen bg-background">
       <section className="relative border-b border-border-subtle px-6 py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.06)_0%,transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ IT Yangiliklar Portali</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
@@ -105,9 +107,7 @@ export default function NewsPage() {
                 </div>
                 <div className="mt-8 flex items-center gap-3">
                   <span className="rounded-full border border-accent/20 bg-accent/8 px-4 py-1.5 text-[11px] font-semibold text-accent">{featured.category}</span>
-                  <button className="flex items-center gap-1.5 text-[13px] font-semibold text-accent hover:opacity-70">
-                    Batafsil o&apos;qish <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                  </button>
+                  <button onClick={() => setSelected(featured)} className="flex items-center gap-1.5 text-[13px] font-semibold text-accent hover:opacity-70">Batafsil o&apos;qish ...</button>
                 </div>
               </div>
               <div className="flex items-center justify-center bg-gradient-to-br from-cyan-500/8 to-transparent p-8 md:col-span-2">
@@ -143,7 +143,7 @@ export default function NewsPage() {
             {filtered.map((item, idx) => {
               const c = A[getAccent(idx)];
               return (
-                <article key={item.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 ${c.border}`}>
+                <div key={item.id} onClick={() => setSelected(item)} role="button" className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 cursor-pointer ${c.border}`}>
                   <div className="flex items-center justify-between gap-3">
                     <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${c.badge}`}>{item.category}</span>
                     <time className="text-[11px] text-muted">{formatDate(item.published_at || item.created_at)}</time>
@@ -153,7 +153,7 @@ export default function NewsPage() {
                   <div className={`mt-5 flex items-center gap-1.5 text-[12px] font-semibold ${c.text}`}>
                     Batafsil o&apos;qish <svg className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                   </div>
-                </article>
+                </div>
               );
             })}
           </div>
@@ -172,6 +172,24 @@ export default function NewsPage() {
           ))}
         </div>
       </div>
+
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative my-8 w-full max-w-2xl rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+            <div className="flex flex-wrap items-center gap-3 mb-5">
+              <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">{selected.category}</span>
+              <span className="text-[12px] text-muted">{selected.author_name && `${selected.author_name} · `}{formatDate(selected.published_at || selected.created_at)}</span>
+              <span className="text-[12px] text-muted">{selected.views} ko&apos;rish</span>
+            </div>
+            <h2 className="text-[clamp(1.3rem,3vw,1.8rem)] font-bold leading-snug text-foreground">{selected.title}</h2>
+            {selected.excerpt && <p className="mt-4 text-[14px] leading-relaxed text-muted italic border-l-2 border-accent/30 pl-4">{selected.excerpt}</p>}
+            {selected.content && <div className="mt-6 text-[14px] leading-relaxed text-foreground whitespace-pre-line">{selected.content}</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -10,21 +10,31 @@ const TIMELINES = ["Darhol (0–3 oy)", "Qisqa muddatli (3–6 oy)", "O'rta mudd
 
 export default function InvestorApplyPage() {
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent]       = useState(false);
+  const [error, setError]     = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSending(true);
+    setError("");
     const fd = new FormData(e.currentTarget as HTMLFormElement);
     try {
-      await fetch("/api/investors/investors/", {
+      const res = await fetch("/api/investors/investors/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(Object.fromEntries(fd)),
       });
-    } catch {}
-    setSending(false);
-    setSent(true);
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        const msg = body ? Object.values(body).flat().join(", ") : `Xatolik: ${res.status}`;
+        throw new Error(msg);
+      }
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Yuborishda xatolik. Qayta urinib ko'ring.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -111,6 +121,9 @@ export default function InvestorApplyPage() {
               </div>
             </div>
 
+            {error && (
+              <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-[13px] text-red-400">{error}</div>
+            )}
             <button type="submit" disabled={sending} className="group w-full rounded-full bg-emerald-400 py-4 text-[14px] font-bold text-black transition-all hover:bg-emerald-300 hover:shadow-[0_0_35px_-5px_rgba(52,211,153,0.5)] disabled:opacity-60">
               {sending ? "Yuborilmoqda..." : <>Ariza Yuborish <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span></>}
             </button>

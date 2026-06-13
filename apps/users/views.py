@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, generics, status
+from rest_framework.decorators import api_view, permission_classes as perm_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, RegisterSerializer
@@ -11,6 +12,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     search_fields = ["username", "email", "first_name", "last_name"]
     ordering_fields = ["date_joined", "username"]
+
+
+@api_view(["GET"])
+@perm_classes([permissions.IsAuthenticated])
+def me_view(request):
+    return Response(UserSerializer(request.user).data)
 
 
 class RegisterView(generics.CreateAPIView):

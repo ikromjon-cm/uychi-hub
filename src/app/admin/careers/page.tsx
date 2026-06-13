@@ -32,8 +32,10 @@ export default function AdminCareers() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState<Job | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [deleted, setDeleted] = useState<Set<number>>(new Set());
 
   const jobs = rawJobs
@@ -58,12 +60,15 @@ export default function AdminCareers() {
 
   async function handleAdd() {
     setSaving(true);
+    setSaveError("");
     try {
       await apiPost("/careers/job-postings/", { ...form, status: "draft" });
       window.location.reload();
-    } catch { /* show error if needed */ }
-    setSaving(false);
-    setShowModal(false);
+    } catch(err) {
+      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const activeCount = jobs.filter(j => j.status === "active").length;
@@ -128,7 +133,7 @@ export default function AdminCareers() {
             </thead>
             <tbody className="divide-y divide-border-subtle">
               {filtered.map((j) => (
-                <tr key={j.id} className="group text-[13px] transition-colors hover:bg-card">
+                <tr key={j.id} onClick={() => setSelected(j)} className="group cursor-pointer text-[13px] transition-colors hover:bg-accent/5">
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-medium text-foreground">{j.title}</p>
@@ -142,7 +147,7 @@ export default function AdminCareers() {
                   <td className="px-6 py-4">
                     <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${typeColors[j.employment_type] || "bg-card-hover text-muted"}`}>{j.employment_type}</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
                     <select
                       value={j.status}
                       onChange={(e) => updateStatus(j.id, e.target.value)}
@@ -151,7 +156,7 @@ export default function AdminCareers() {
                       {["active", "paused", "draft", "closed"].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <button onClick={() => deleteItem(j.id)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                     </div>
@@ -165,6 +170,72 @@ export default function AdminCareers() {
           </table>
         )}
       </div>
+
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <div className="relative my-8 w-full max-w-2xl rounded-2xl border border-border bg-card p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-muted hover:text-foreground"><X className="h-5 w-5" /></button>
+
+            {/* Header */}
+            <div className="flex items-start gap-4 pr-8">
+              <div className="flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${typeColors[selected.employment_type] || "bg-card-hover text-muted"}`}>{selected.employment_type}</span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${statusBadge[selected.status] || "bg-card-hover text-muted"}`}>{selected.status}</span>
+                </div>
+                <h2 className="mt-2 text-[20px] font-bold text-foreground">{selected.title}</h2>
+                <p className="mt-1 text-[13px] text-muted">{selected.department}</p>
+              </div>
+            </div>
+
+            {/* Info grid */}
+            <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-3">
+              {[
+                { label: "Joylashuv", value: selected.location || "—" },
+                { label: "Ish haqi", value: selected.salary_range || "—" },
+                { label: "Arizachilar", value: `${selected.applicants_count || 0} ta` },
+                { label: "Joylashtirish sanasi", value: selected.posted_at?.slice(0, 10) || "—" },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">{label}</span>
+                  <p className="mt-0.5 text-[13px] font-medium text-foreground">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Description */}
+            {selected.description && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Tavsif</p>
+                <p className="whitespace-pre-line text-[13px] leading-relaxed text-muted">{selected.description}</p>
+              </div>
+            )}
+
+            {/* Requirements */}
+            {selected.requirements && (
+              <div className="mt-5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Talablar</p>
+                <p className="whitespace-pre-line text-[13px] leading-relaxed text-muted">{selected.requirements}</p>
+              </div>
+            )}
+
+            {/* Status + Delete */}
+            <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-5">
+              <p className="w-full mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">Statusni o'zgartirish</p>
+              {["active", "paused", "draft", "closed"].map(st => (
+                <button key={st} onClick={() => { updateStatus(selected.id, st); setSelected({ ...selected, status: st }); }}
+                  className={`rounded-lg border px-4 py-2 text-[12px] font-semibold transition-all ${selected.status === st ? (statusBadge[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30 hover:text-foreground"}`}>
+                  {st}
+                </button>
+              ))}
+              <button onClick={() => { deleteItem(selected.id); setSelected(null); }}
+                className="ml-auto flex items-center gap-2 rounded-xl border border-red-500/20 px-4 py-2 text-[12px] text-red-400 hover:bg-red-500/5">
+                <Trash2 className="h-3.5 w-3.5" /> O'chirish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
@@ -196,6 +267,7 @@ export default function AdminCareers() {
                 <textarea value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))} rows={3} placeholder="Lavozim tavsifi..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-2.5 text-[13px] text-foreground outline-none placeholder:text-muted focus:border-accent/40" />
               </div>
             </div>
+            {saveError && <p className="text-[12px] text-red-400 mt-2">{saveError}</p>}
             <div className="mt-6 flex justify-end gap-3">
               <button onClick={() => setShowModal(false)} className="rounded-xl border border-border px-4 py-2.5 text-[13px] text-muted hover:border-border hover:text-foreground">Cancel</button>
               <button onClick={handleAdd} disabled={saving} className="rounded-xl bg-accent px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-accent-dark disabled:opacity-60">{saving ? "Saving..." : "Add Position"}</button>

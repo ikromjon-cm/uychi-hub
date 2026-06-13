@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useApi } from "@/lib/api";
+import { MOCK_STARTUPS, PARTNERS_LIST, MOCK_JOBS } from "@/lib/mock-data";
 import {
   Users, Rocket, TrendingUp, Globe, Newspaper,
   ArrowUpRight, Activity, Loader2, X,
@@ -17,12 +18,29 @@ const LOG_COLORS: Record<string, string> = {
 type Row = Record<string, unknown>;
 
 export default function AdminDashboard() {
-  const { data: startups, loading: l1 } = useApi<Row[]>("/startups/startup-applications/", []);
-  const { data: investors }              = useApi<Row[]>("/investors/investors/", []);
-  const { data: partners }               = useApi<Row[]>("/partners/partners/", []);
-  const { data: news }                   = useApi<Row[]>("/news/articles/", []);
-  const { data: jobs }                   = useApi<Row[]>("/careers/job-postings/", []);
-  const { data: logs }                   = useApi<Row[]>("/logs/system-logs/", []);
+  const mockStartups: Row[] = MOCK_STARTUPS.map(s => ({ ...s, status: "approved" }));
+  const mockPartners: Row[] = PARTNERS_LIST.map(p => ({ ...p, status: "active" }));
+  const mockJobs: Row[] = MOCK_JOBS.map(j => ({ ...j }));
+  const mockNews: Row[] = [
+    { id: 1, title: "Uychi AI Hub yangi startaplarni qabul qilmoqda", status: "published", created_at: "2026-06-10" },
+    { id: 2, title: "PaxtaSoft AI Seed bosqichida $150K yig'di", status: "published", created_at: "2026-06-08" },
+  ];
+  const mockLogs: Row[] = [
+    { level: "info", action: "Admin panelga kirish", user: "admin", module: "Auth", timestamp: "2026-06-13T10:00:00", ip_address: "127.0.0.1" },
+    { level: "success", action: "Yangi startup qo'shildi", user: "admin", module: "Startups", timestamp: "2026-06-13T09:30:00", ip_address: "127.0.0.1" },
+  ];
+  const mockInvestors: Row[] = [
+    { id: 1, name: "Akmal Rahimov", status: "active" },
+  ];
+
+  const { data: startups, loading: l1, error: err1 } = useApi<Row[]>("/startups/startup-applications/", [], mockStartups);
+  const { data: investors, error: err2 }              = useApi<Row[]>("/investors/investors/", [], mockInvestors);
+  const { data: partners, error: err3 }               = useApi<Row[]>("/partners/partners/", [], mockPartners);
+  const { data: news, error: err4 }                   = useApi<Row[]>("/news/articles/", [], mockNews);
+  const { data: jobs, error: err5 }                   = useApi<Row[]>("/careers/job-postings/", [], mockJobs);
+  const { data: logs, error: err6 }                   = useApi<Row[]>("/logs/system-logs/", [], mockLogs);
+
+  const apiError = err1 || err2 || err3 || err4 || err5 || err6;
 
   const pending    = startups.filter(x => x.status === "pending").length;
   const approved   = startups.filter(x => x.status === "approved").length;
@@ -58,13 +76,13 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="mt-1 text-[13px] text-muted">Django backend — real ma&apos;lumotlar</p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
+        <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${apiError ? "border-red-500/20 bg-red-500/5" : "border-emerald-500/20 bg-emerald-500/5"}`}>
           {l1
             ? <Loader2 className="h-3.5 w-3.5 animate-spin text-muted" />
-            : <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            : <span className={`h-1.5 w-1.5 rounded-full ${apiError ? "bg-red-400" : "bg-emerald-400 animate-pulse"}`} />
           }
-          <span className="text-[12px] font-medium text-emerald-400">
-            {l1 ? "Yuklanmoqda" : "API Ulangan"}
+          <span className={`text-[12px] font-medium ${apiError ? "text-red-400" : "text-emerald-400"}`}>
+            {l1 ? "Yuklanmoqda" : apiError ? "Backend Ulanmagan" : "API Ulangan"}
           </span>
         </div>
       </div>

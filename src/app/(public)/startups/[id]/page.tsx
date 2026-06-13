@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { MOCK_STARTUPS } from "@/lib/mock-data";
 import { ArrowLeft, CheckCircle, Globe, Users, DollarSign, Code2 } from "lucide-react";
 
@@ -234,6 +235,21 @@ const STAGE_COLORS: Record<string, string> = {
   "Series A": "text-emerald-600 border-emerald-500/30 bg-emerald-500/10 dark:text-emerald-400",
 };
 
+export function generateMetadata({ params }: { params: { id: string } }): Metadata {
+  const slug = params.id;
+  const startup = MOCK_STARTUPS.find(s => toSlug(s.name) === slug);
+  if (!startup) return { title: "Startap topilmadi — Uychi IT Hub" };
+  return {
+    title: `${startup.name} — Uychi IT Hub Startaplari`,
+    description: startup.desc,
+    openGraph: {
+      title: `${startup.name} — ${startup.sector}`,
+      description: startup.desc,
+      siteName: "Uychi IT Hub",
+    },
+  };
+}
+
 export default function StartupDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const startup = MOCK_STARTUPS.find(s => toSlug(s.name) === id);
@@ -300,6 +316,13 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                 <DollarSign className="h-4 w-4" />
                 Investitsiya qilish
               </Link>
+              <a
+                href={`mailto:startups@uychi.uz?subject=Murojaat: ${encodeURIComponent(startup.name)}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-[13px] font-semibold text-foreground transition-all hover:bg-card-hover"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                Murojaat qilish
+              </a>
               {detail?.website && (
                 <a
                   href={detail.website}

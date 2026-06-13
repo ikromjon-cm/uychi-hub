@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn } from "lucide-react";
-import { login, logout, getMe } from "@/lib/api";
+import { login, logout, getMe, isAuthenticated } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated()) router.push("/admin/dashboard");
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

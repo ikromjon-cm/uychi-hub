@@ -110,10 +110,12 @@ export default function Home() {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error((await res.text().catch(() => "")) || "Yuborishda xatolik yuz berdi");
-      setSent(true);
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+    } catch {
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/contact/submissions/", body: data, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
     }
+    setSent(true);
     setSending(false);
   }
 

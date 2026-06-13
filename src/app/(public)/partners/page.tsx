@@ -25,9 +25,18 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const COUNTRY_FLAGS: Record<string, string> = {
-  "O'zbekiston": "🇺🇿", "AQSh": "🇺🇸", "Qozog'iston": "🇰🇿", "Rossiya": "🇷🇺",
-  "Filippin": "🇵🇭", "Janubiy Koreya": "🇰🇷", "Xitoy": "🇨🇳", "Singapur": "🇸🇬",
-  "Malayziya": "🇲🇾", "Germaniya": "🇩🇪", "Yaponiya": "🇯🇵",
+  "O'zbekiston": "🇺🇿", "Uzbekistan": "🇺🇿",
+  "AQSh": "🇺🇸", "USA": "🇺🇸",
+  "Qozog'iston": "🇰🇿",
+  "Rossiya": "🇷🇺", "Russia": "🇷🇺",
+  "Filippin": "🇵🇭", "Philippines": "🇵🇭",
+  "Janubiy Koreya": "🇰🇷", "South Korea": "🇰🇷",
+  "Xitoy": "🇨🇳", "China": "🇨🇳",
+  "Singapur": "🇸🇬",
+  "Malayziya": "🇲🇾", "Malaysia": "🇲🇾",
+  "Germaniya": "🇩🇪",
+  "Yaponiya": "🇯🇵",
+  "UK": "🇬🇧",
 };
 
 const FILTER_OPTIONS = [

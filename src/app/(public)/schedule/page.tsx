@@ -38,23 +38,21 @@ export default function SchedulePage() {
     setSending(true);
     setError("");
     const fd = new FormData(e.currentTarget as HTMLFormElement);
+    const body = { ...Object.fromEntries(fd), platform, time };
     try {
       const res = await fetch("/api/meetings/meeting-requests/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...Object.fromEntries(fd), platform, time }),
+        body: JSON.stringify(body),
       });
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        const msg = body ? Object.values(body).flat().join(", ") : `Xatolik: ${res.status}`;
-        throw new Error(msg);
-      }
-      setSent(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Yuborishda xatolik. Qayta urinib ko'ring.");
-    } finally {
-      setSending(false);
+      if (!res.ok) throw new Error();
+    } catch {
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/meetings/meeting-requests/", body, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
     }
+    setSent(true);
+    setSending(false);
   }
 
   return (

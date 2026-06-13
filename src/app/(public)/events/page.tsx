@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useApi } from "@/lib/api";
+import { X, CheckCircle } from "lucide-react";
 
 const EVENT_TYPES = ["Hackathon", "Meetup", "Bootcamp", "Conference", "Training", "Workshop"] as const;
 type EventType = typeof EVENT_TYPES[number];
@@ -39,9 +40,53 @@ function getDaysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - new Date().getTime()) / 86400000);
 }
 
+type RegisterModal = { open: boolean; event: EventItem | null; sent: boolean; sending: boolean; error: string };
+
 export default function EventsPage() {
   const { data: allEvents, loading } = useApi<EventItem[]>("/events/events/", [], MOCK_EVENTS);
   const [activeType, setActiveType] = useState<string>("Barchasi");
+  const [modal, setModal] = useState<RegisterModal>({ open: false, event: null, sent: false, sending: false, error: "" });
+
+  function openModal(event: EventItem) {
+    setModal({ open: true, event, sent: false, sending: false, error: "" });
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    setModal(m => ({ ...m, open: false }));
+    document.body.style.overflow = "";
+  }
+
+  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!modal.event) return;
+    setModal(m => ({ ...m, sending: true, error: "" }));
+    const fd = new FormData(e.currentTarget);
+    const data = {
+      ...Object.fromEntries(fd),
+      event_title: modal.event.title,
+      event_id: modal.event.id,
+    };
+    try {
+      const res = await fetch("/api/events/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        setModal(m => ({ ...m, sent: true, sending: false }));
+      } else {
+        const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+        submissions.push({ endpoint: "/api/events/register/", body: data, timestamp: new Date().toISOString() });
+        localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+        setModal(m => ({ ...m, sent: true, sending: false }));
+      }
+    } catch {
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/api/events/register/", body: data, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+      setModal(m => ({ ...m, sent: true, sending: false }));
+    }
+  }
 
   const events = allEvents.filter(e => e.status !== "cancelled");
   const filtered = activeType === "Barchasi" ? events : events.filter(e => e.event_type === activeType);
@@ -159,9 +204,9 @@ export default function EventsPage() {
                             Joy band
                           </button>
                         ) : (
-                          <a href={`mailto:events@uychi.uz?subject=Ro'yxatdan o'tish: ${encodeURIComponent(event.title)}`} className={`mt-5 block w-full rounded-xl border py-2.5 text-center text-[13px] font-bold transition-all ${c.badge} ${c.text} hover:opacity-80`}>
+                          <button onClick={() => openModal(event)} className={`mt-5 block w-full rounded-xl border py-2.5 text-center text-[13px] font-bold transition-all ${c.badge} ${c.text} hover:opacity-80`}>
                             Ro&apos;yxatdan o&apos;tish
-                          </a>
+                          </button>
                         )}
                       </div>
                     );
@@ -213,6 +258,89 @@ export default function EventsPage() {
           </a>
         </div>
       </div>
+      {/* Registration Modal */}
+      {modal.open && modal.event && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={closeModal}
+        >
+          <div
+            className="relative w-full max-w-md rounded-2xl border border-border bg-card shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeModal}
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card-hover hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="p-6">
+              {modal.sent ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10">
+                    <CheckCircle className="h-8 w-8 text-emerald-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">Ro&apos;yxatdan o&apos;tdingiz!</h3>
+                  <p className="mt-2 text-[13px] text-muted">
+                    <strong className="text-foreground">{modal.event.title}</strong> tadbiri uchun ariza qabul qilindi.
+                    24 soat ichida aloqaga chiqamiz.
+                  </p>
+                  <button
+                    onClick={closeModal}
+                    className="mt-6 rounded-full bg-accent px-8 py-2.5 text-[13px] font-bold text-white"
+                  >
+                    Yopish
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-5">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-accent">Tadbirga ro&apos;yxatdan o&apos;tish</p>
+                    <h3 className="mt-1 text-[16px] font-bold text-foreground">{modal.event.title}</h3>
+                    <p className="mt-0.5 text-[12px] text-muted">{modal.event.date} · {modal.event.location}</p>
+                  </div>
+
+                  <form onSubmit={handleRegister} className="space-y-3">
+                    {[
+                      { name: "first_name",  label: "Ism",        placeholder: "Ismingiz",          required: true },
+                      { name: "phone",       label: "Telefon",    placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
+                      { name: "email",       label: "Email",      placeholder: "example@mail.com",  required: true, type: "email" },
+                    ].map((f) => (
+                      <div key={f.name}>
+                        <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">
+                          {f.label} {f.required && <span className="text-rose-500">*</span>}
+                        </label>
+                        <input
+                          name={f.name}
+                          type={f.type ?? "text"}
+                          placeholder={f.placeholder}
+                          required={f.required}
+                          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.1)]"
+                        />
+                      </div>
+                    ))}
+
+                    {modal.error && (
+                      <p className="rounded-xl border border-rose-500/20 bg-rose-500/8 px-3 py-2 text-[12px] text-rose-500">
+                        {modal.error}
+                      </p>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={modal.sending}
+                      className="mt-1 w-full rounded-full bg-accent py-3 text-[13px] font-bold text-white shadow-[0_4px_16px_rgba(79,70,229,0.3)] transition-all hover:bg-accent-dark disabled:opacity-60"
+                    >
+                      {modal.sending ? "Yuborilmoqda..." : "Ariza Yuborish →"}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

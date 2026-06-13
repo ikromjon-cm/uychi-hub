@@ -9,6 +9,23 @@ function toSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function StartupAvatar({ name, idx }: { name: string; idx: number }) {
+  const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
+  const colors = [
+    { bg: "#4f46e5", text: "#818cf8" },
+    { bg: "#7c3aed", text: "#a78bfa" },
+    { bg: "#059669", text: "#34d399" },
+  ];
+  const c = colors[idx % 3];
+  return (
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" className="shrink-0">
+      <circle cx="22" cy="22" r="22" fill={c.bg} fillOpacity="0.12" />
+      <circle cx="22" cy="22" r="21" fill="none" stroke={c.bg} strokeWidth="1" strokeOpacity="0.25" />
+      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fill={c.text} fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif">{initials}</text>
+    </svg>
+  );
+}
+
 type Startup = {
   id: number;
   startup_name: string;
@@ -129,7 +146,10 @@ export default function StartupsPage() {
                     </span>
                     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${STAGE_COLORS[s.stage] || "text-muted border-border"}`}>{s.stage}</span>
                   </div>
-                  <h3 className="mt-4 text-[16px] font-bold text-foreground group-hover:text-accent transition-colors">{s.startup_name}</h3>
+                  <div className="flex items-center gap-3 mt-4">
+                    <StartupAvatar name={s.startup_name} idx={idx} />
+                    <h3 className="text-[16px] font-bold text-foreground group-hover:text-accent transition-colors">{s.startup_name}</h3>
+                  </div>
                   <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">{s.description}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {techTags.map((t, i) => <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] text-muted">{t.trim()}</span>)}

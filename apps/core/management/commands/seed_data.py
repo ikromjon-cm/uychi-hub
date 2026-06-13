@@ -19,6 +19,8 @@ class Command(BaseCommand):
         from apps.logs.models import SystemLog
         from apps.education.models import Course
         from apps.events.models import Event
+        from apps.coworking.models import CoworkingSpace
+        from apps.students.models import StudentProfile, Achievement
 
         # Admin
         if not User.objects.filter(username="admin").exists():
@@ -39,6 +41,14 @@ class Command(BaseCommand):
         if not Event.objects.exists():
             self._seed_events(Event)
 
+        # Coworking spaces — separate check
+        if not CoworkingSpace.objects.exists():
+            self._seed_coworking(CoworkingSpace)
+
+        # Students — separate check
+        if not StudentProfile.objects.exists():
+            self._seed_students(StudentProfile, Achievement)
+
         self.stdout.write(self.style.SUCCESS(
             f"\n✓ Seed yakunlandi!\n"
             f"  Partners: {Partner.objects.count()}\n"
@@ -48,6 +58,8 @@ class Command(BaseCommand):
             f"  Investors: {Investor.objects.count()}\n"
             f"  Courses: {Course.objects.count()}\n"
             f"  Events: {Event.objects.count()}\n"
+            f"  Coworking Spaces: {CoworkingSpace.objects.count()}\n"
+            f"  Students: {StudentProfile.objects.count()}\n"
             f"  Admin: admin / admin123"
         ))
 
@@ -265,3 +277,180 @@ class Command(BaseCommand):
                 accent=e["accent"], tags=e["tags"], status=e["status"],
             )
         self.stdout.write("Events seeded.")
+
+    def _seed_coworking(self, CoworkingSpace):
+        for sp in [
+            {
+                "slug": "open-coworking-a", "name": "Open Coworking — A Blok",
+                "space_type": "desk", "capacity": 40, "price_per_hour": 15000, "price_per_day": 80000,
+                "description": "80+ ish o'rinli zamonaviy ochiq maydon. Yuqori tezlikli Wi-Fi, konditsioner, erkin joylashish.",
+                "amenities": ["Wi-Fi 1Gbps", "Konditsioner", "Choy/Kofe", "Locker", "Printerlar"],
+                "accent": "cyan", "is_active": True,
+            },
+            {
+                "slug": "meeting-room-alpha", "name": "Meeting Room — Alpha",
+                "space_type": "meeting_room", "capacity": 12, "price_per_hour": 80000, "price_per_day": 500000,
+                "description": "12 kishilik zamonaviy yig'ilish xonasi. 4K ekran, videokonferensiya tizimi, aqlli taxtacha.",
+                "amenities": ["4K Ekran", "Video Conference", "Aqlli Taxtacha", "Konditsioner", "Choy/Kofe"],
+                "accent": "violet", "is_active": True,
+            },
+            {
+                "slug": "private-office-startup-1", "name": "Startup Office — #1",
+                "space_type": "private_office", "capacity": 6, "price_per_hour": 50000, "price_per_day": 300000,
+                "description": "6 kishilik izolyatsiyalangan startup ofisi. Xavfsiz kirish, alohida internet kanali.",
+                "amenities": ["Xavfsiz Kirish", "Alohida Internet", "Locker", "Konditsioner", "24/7 Kirish"],
+                "accent": "emerald", "is_active": True,
+            },
+            {
+                "slug": "ai-lab-1", "name": "AI Tadqiqot Laboratoriyasi",
+                "space_type": "lab", "capacity": 20, "price_per_hour": 120000, "price_per_day": 800000,
+                "description": "GPU klasterli AI laboratoriya. NVIDIA A100 serverlari, machine learning va kompyuter ko'rish uchun.",
+                "amenities": ["GPU Klaster (NVIDIA A100)", "Yuqori Tezlikli Internet", "24/7 Kirish", "Texnik Yordam"],
+                "accent": "cyan", "is_active": True,
+            },
+            {
+                "slug": "conference-hall-main", "name": "Asosiy Konferens Zal",
+                "space_type": "conference_hall", "capacity": 200, "price_per_hour": 500000, "price_per_day": 3000000,
+                "description": "200 o'rinli zamonaviy konferens zal. Hackathonlar, konferensiyalar va demo day uchun ideal.",
+                "amenities": ["Sahna va Mikrofon", "Proyektor (4K)", "Ovoz Tizimi", "Simultane Tarjima", "Videoyozuv"],
+                "accent": "violet", "is_active": True,
+            },
+            {
+                "slug": "meeting-room-beta", "name": "Meeting Room — Beta",
+                "space_type": "meeting_room", "capacity": 6, "price_per_hour": 50000, "price_per_day": 300000,
+                "description": "6 kishilik kichik yig'ilish xonasi. Tezkor brainstorming va jamoaviy muhokamalarga qulay.",
+                "amenities": ["Smart TV", "Aqlli Taxtacha", "Konditsioner", "Choy/Kofe"],
+                "accent": "emerald", "is_active": True,
+            },
+            {
+                "slug": "open-coworking-b", "name": "Quiet Zone — B Blok",
+                "space_type": "desk", "capacity": 20, "price_per_hour": 12000, "price_per_day": 65000,
+                "description": "Jimjit ishlash uchun maxsus zona. Qo'ng'iroqlar taqiqlangan, deep work uchun ideal muhit.",
+                "amenities": ["Wi-Fi 1Gbps", "Shovqin Kamaytiruvchi Quloqchin", "Konditsioner", "Locker"],
+                "accent": "cyan", "is_active": True,
+            },
+            {
+                "slug": "private-office-startup-2", "name": "Startup Office — #2",
+                "space_type": "private_office", "capacity": 10, "price_per_hour": 80000, "price_per_day": 500000,
+                "description": "10 kishilik katta startup ofisi. O'sib borayotgan jamoalar uchun moslashuvchan joy.",
+                "amenities": ["Xavfsiz Kirish", "Alohida Internet", "Yig'ilish Burchagi", "Konditsioner", "24/7 Kirish"],
+                "accent": "violet", "is_active": True,
+            },
+        ]:
+            CoworkingSpace.objects.create(**sp)
+        self.stdout.write("Coworking spaces seeded.")
+
+    def _seed_students(self, StudentProfile, Achievement):
+        students_data = [
+            {
+                "full_name": "Jasur Tursunov", "email": "jasur.tursunov@uychi.uz",
+                "role": "graduate", "bio": "Frontend mutaxassisi. React va Next.js bo'yicha 2 yillik tajriba. AgroSmart Uychi startapida ishlaydi.",
+                "course": "React bilan Frontend Dasturlash", "specialization": "Frontend Development",
+                "score": 980, "rank": 1, "projects_count": 12, "certificates_count": 4,
+                "github_url": "https://github.com/jasurtursunov", "skills": ["React", "Next.js", "TypeScript", "Tailwind CSS", "GraphQL"],
+                "accent": "cyan", "is_featured": True,
+                "achievements": [
+                    {"title": "Hackathon G'olibi", "description": "Uychi IT Hackathon 2025 — 1-o'rin", "date": "2025-11-15", "category": "competition", "icon": "🏆"},
+                    {"title": "React Developer Sertifikati", "description": "Meta React Developer Professional Certificate", "date": "2025-08-20", "category": "certificate", "icon": "📜"},
+                    {"title": "Open Source Hissador", "description": "Next.js repositoriyasiga 3 ta PR qo'shildi", "date": "2025-06-10", "category": "project", "icon": "⭐"},
+                ],
+            },
+            {
+                "full_name": "Nilufar Xasanova", "email": "nilufar.xasanova@uychi.uz",
+                "role": "student", "bio": "Python va AI bo'yicha ixtisoslashgan talaba. Hozirda NLP loyihasida tadqiqot olib bormoqda.",
+                "course": "Python va Sun'iy Intellekt", "specialization": "AI/ML Engineering",
+                "score": 955, "rank": 2, "projects_count": 8, "certificates_count": 3,
+                "github_url": "https://github.com/nilufarxasanova", "skills": ["Python", "TensorFlow", "PyTorch", "NLP", "Data Analysis"],
+                "accent": "violet", "is_featured": True,
+                "achievements": [
+                    {"title": "AI Tadqiqot Mukofoti", "description": "O'zbek tilida NLP modeli — Namangan viloyati darajasida eng yaxshi loyiha", "date": "2025-12-01", "category": "research", "icon": "🔬"},
+                    {"title": "TensorFlow Developer Sertifikati", "description": "Google TensorFlow Professional Certificate", "date": "2025-09-14", "category": "certificate", "icon": "📜"},
+                ],
+            },
+            {
+                "full_name": "Sherzod Mirzayev", "email": "sherzod.mirzayev@uychi.uz",
+                "role": "mentor", "bio": "Senior Full-Stack dasturchi va mentor. 5+ yillik tajriba. Django, React va DevOps bo'yicha dars beradi.",
+                "course": "Node.js Backend Dasturlash", "specialization": "Full-Stack & DevOps",
+                "score": 990, "rank": 1, "projects_count": 25, "certificates_count": 8,
+                "github_url": "https://github.com/sherzodmirzayev",
+                "linkedin_url": "https://linkedin.com/in/sherzodmirzayev",
+                "skills": ["Django", "React", "Docker", "PostgreSQL", "AWS", "Kubernetes"],
+                "accent": "emerald", "is_featured": True,
+                "achievements": [
+                    {"title": "Yilning Eng Yaxshi Mentori", "description": "Uychi IT Hub 2025 — 15 ta o'quvchini ishga joylashtirdi", "date": "2025-12-31", "category": "teaching", "icon": "👨‍🏫"},
+                    {"title": "AWS Solutions Architect", "description": "AWS Certified Solutions Architect — Professional", "date": "2024-11-05", "category": "certificate", "icon": "☁️"},
+                ],
+            },
+            {
+                "full_name": "Aziza Rahimova", "email": "aziza.rahimova@uychi.uz",
+                "role": "student", "bio": "Flutter bilan mobil ilovalar yaratishni o'rganmoqda. iOS va Android uchun 3 ta loyiha yaratdi.",
+                "course": "Flutter bilan Mobil Dasturlash", "specialization": "Mobile Development",
+                "score": 870, "rank": 4, "projects_count": 5, "certificates_count": 2,
+                "github_url": "https://github.com/azizarahimova",
+                "skills": ["Flutter", "Dart", "Firebase", "REST API", "UI Design"],
+                "accent": "cyan", "is_featured": False,
+                "achievements": [
+                    {"title": "Flutter Loyihasi — 1 000 yuklab olindi", "description": "App Store va Google Play'da birinchi 1000 yuklab olinish", "date": "2026-01-20", "category": "project", "icon": "📱"},
+                ],
+            },
+            {
+                "full_name": "Bobur Ergashev", "email": "bobur.ergashev@uychi.uz",
+                "role": "graduate", "bio": "UI/UX dizayner. Figma va Adobe XD da professionallik darajasiga yetdi. 3 ta startapga dizayn qildi.",
+                "course": "UI/UX Dizayn — Figma Pro", "specialization": "UI/UX Design",
+                "score": 910, "rank": 3, "projects_count": 18, "certificates_count": 5,
+                "portfolio_url": "https://bobur.design",
+                "linkedin_url": "https://linkedin.com/in/boburergashev",
+                "skills": ["Figma", "Adobe XD", "Prototyping", "Design Systems", "User Research"],
+                "accent": "violet", "is_featured": True,
+                "achievements": [
+                    {"title": "Awwwards Nomination", "description": "Uychi IT Hub sayt dizayni Awwwards SOTD nominatsiyasiga saralandi", "date": "2025-10-08", "category": "award", "icon": "🎨"},
+                    {"title": "Google UX Design Sertifikati", "description": "Google Professional Certificate in UX Design", "date": "2025-07-22", "category": "certificate", "icon": "📜"},
+                ],
+            },
+            {
+                "full_name": "Kamola Yusupova", "email": "kamola.yusupova@uychi.uz",
+                "role": "student", "bio": "Kiberxavfsizlik yo'nalishida o'qimoqda. CTF musobaqalarida faol ishtirok etadi.",
+                "course": "Kiberxavfsizlik Asoslari", "specialization": "Cybersecurity",
+                "score": 820, "rank": 6, "projects_count": 4, "certificates_count": 1,
+                "github_url": "https://github.com/kamolayusupova",
+                "skills": ["Linux", "Network Security", "Python", "Wireshark", "CTF"],
+                "accent": "emerald", "is_featured": False,
+                "achievements": [
+                    {"title": "CTF Musobaqasi — 3-o'rin", "description": "O'zbekiston CTF Championship 2025 — 3-o'rin", "date": "2025-09-28", "category": "competition", "icon": "🔐"},
+                ],
+            },
+            {
+                "full_name": "Sardor Nazarov", "email": "sardor.nazarov@uychi.uz",
+                "role": "student", "bio": "DevOps va cloud texnologiyalarini o'rganmoqda. Docker va Kubernetes bilan tajriba orttirdi.",
+                "course": "DevOps: Docker va CI/CD", "specialization": "DevOps Engineering",
+                "score": 840, "rank": 5, "projects_count": 6, "certificates_count": 2,
+                "github_url": "https://github.com/sardornazarov",
+                "skills": ["Docker", "Kubernetes", "GitHub Actions", "Linux", "Terraform", "AWS"],
+                "accent": "cyan", "is_featured": False,
+                "achievements": [
+                    {"title": "Docker Captain Nomination", "description": "Docker Inc. tomonidan Docker Captain dasturiga nomzod ko'rsatildi", "date": "2026-02-14", "category": "award", "icon": "🐋"},
+                ],
+            },
+            {
+                "full_name": "Dildora Qodirov", "email": "dildora.qodirov@uychi.uz",
+                "role": "graduate", "bio": "Data scientist. Python, Pandas va SQL bo'yicha tajriba. Hozirda AgriTech startapida ma'lumot tahlilchisi.",
+                "course": "Ma'lumotlar Fani va Tahlil", "specialization": "Data Science",
+                "score": 895, "rank": 4, "projects_count": 10, "certificates_count": 4,
+                "github_url": "https://github.com/dildoraqodirov",
+                "linkedin_url": "https://linkedin.com/in/dildoraqodirov",
+                "skills": ["Python", "Pandas", "SQL", "Tableau", "Scikit-learn", "Statistics"],
+                "accent": "violet", "is_featured": False,
+                "achievements": [
+                    {"title": "DataHack O'zbekiston — 2-o'rin", "description": "Namangan viloyati qishloq xo'jaligi ma'lumotlari tahlili", "date": "2025-11-30", "category": "competition", "icon": "📊"},
+                    {"title": "IBM Data Science Sertifikati", "description": "IBM Professional Certificate in Data Science", "date": "2025-05-18", "category": "certificate", "icon": "📜"},
+                ],
+            },
+        ]
+
+        for s_data in students_data:
+            achievements = s_data.pop("achievements")
+            student = StudentProfile.objects.create(**s_data)
+            for ach in achievements:
+                Achievement.objects.create(student=student, **ach)
+
+        self.stdout.write("Students and achievements seeded.")

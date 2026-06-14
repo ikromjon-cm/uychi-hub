@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, RegisterSerializer
 from apps.utils.email import register_welcome
+from drf_spectacular.utils import extend_schema
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -14,6 +15,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["date_joined", "username"]
 
 
+@extend_schema(responses=UserSerializer)
 @api_view(["GET"])
 @perm_classes([permissions.IsAuthenticated])
 def me_view(request):

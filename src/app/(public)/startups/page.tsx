@@ -76,7 +76,7 @@ export default function StartupsPage() {
   const [sector, setSector] = useState("Barchasi");
   const [search, setSearch] = useState("");
 
-  const visible = all.filter(s => ["approved", "review"].includes(s.status));
+  const visible = all.filter(s => s.status !== "rejected");
   const sectors = ["Barchasi", ...Array.from(new Set(visible.map(s => s.sector)))];
 
   const filtered = visible.filter((s) => {
@@ -139,7 +139,7 @@ export default function StartupsPage() {
               const c = A[ACCENTS[idx % 3]];
               const techTags = s.tech_stack ? s.tech_stack.split(",").slice(0, 4) : [];
               return (
-                <Link key={s.id} href={`/startups/${toSlug(s.startup_name)}`} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
+                <Link key={s.id} href={`/startups/${s.id}`} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
                   <div className="flex items-start justify-between">
                     <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${c.badge}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> {s.sector}

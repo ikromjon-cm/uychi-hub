@@ -77,11 +77,16 @@ export default function AdminCareers() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    await apiPost("/careers/job-postings/", { ...form, status: "draft" });
-    setAdded(prev => [{ ...form, id: Date.now(), status: "draft", applicants_count: 0, posted_at: null } as Job, ...prev]);
-    setShowModal(false);
-    setForm(emptyForm);
-    setSaving(false);
+    try {
+      await apiPost("/careers/job-postings/", { ...form, status: "draft" });
+      setAdded(prev => [{ ...form, id: Date.now(), status: "draft", applicants_count: 0, posted_at: null } as Job, ...prev]);
+      setShowModal(false);
+      setForm(emptyForm);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const activeCount = jobs.filter(j => j.status === "active").length;

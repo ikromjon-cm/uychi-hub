@@ -60,22 +60,29 @@ export default function AdminStudents() {
       certificates_count: Number(form.certificates_count),
       skills: [], rank: 0,
     };
-    if (editing) {
-      await apiPatch(`/students/profiles/${editing.id}/`, payload);
-      setLocal(students.map(s => s.id === editing.id ? { ...s, ...payload } : s));
-    } else {
-      await apiPost("/students/profiles/", payload);
-      setLocal([{ ...payload, id: Date.now(), achievements: [] } as Student, ...students]);
+    try {
+      if (editing) {
+        await apiPatch(`/students/profiles/${editing.id}/`, payload);
+        setLocal(students.map(s => s.id === editing.id ? { ...s, ...payload } : s));
+      } else {
+        await apiPost("/students/profiles/", payload);
+        setLocal([{ ...payload, id: Date.now(), achievements: [] } as Student, ...students]);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+      setShowAdd(false);
+      setEditing(null);
+      setForm({ ...EMPTY });
     }
-    setSaving(false);
-    setShowAdd(false);
-    setEditing(null);
-    setForm({ ...EMPTY });
   }
 
   async function deleteStudent(id: number) {
-    await apiDelete(`/students/profiles/${id}/`);
-    setLocal(students.filter(s => s.id !== id));
+    try {
+      await apiDelete(`/students/profiles/${id}/`);
+      setLocal(students.filter(s => s.id !== id));
+    } catch { /* silent */ }
   }
 
   async function toggleFeatured(id: number, current: boolean) {

@@ -227,6 +227,37 @@ def booking_confirm(b) -> None:
     _send([b.email], f"Bronlashingiz tasdiqlandi — {b.space.name}", html)
 
 
+# ── Meeting Request ───────────────────────────────────────────────────────────
+
+def meeting_admin(m) -> None:
+    html = _base(f"""
+<h2>Yangi Uchrashuv So'rovi</h2>
+<p class="label">Ism Familya</p><p class="value">{m.name}</p>
+<p class="label">Kompaniya</p><p class="value">{m.company or '—'}</p>
+<p class="label">Elektron Pochta</p><p class="value">{m.email}</p>
+<p class="label">Telefon</p><p class="value">{m.phone or '—'}</p>
+<p class="label">Sana / Vaqt</p><p class="value">{m.date} · {m.time}</p>
+<p class="label">Platforma</p><p class="value">{m.platform}</p>
+<p class="label">Mavzu</p><p class="value">{m.topic}</p>
+<p class="label">Xabar</p><p class="value">{m.message or '—'}</p>
+""")
+    _send([settings.ADMIN_EMAIL], f"Yangi uchrashuv so'rovi: {m.name} — {m.topic}", html)
+
+
+def meeting_confirm(m) -> None:
+    html = _base(f"""
+<h2>Uchrashuv So'rovingiz Qabul Qilindi ✓</h2>
+<p>Hurmatli <strong>{m.name}</strong>,</p>
+<p>Uchrashuv so'rovingiz muvaffaqiyatli qabul qilindi.</p>
+<p class="label">Sana</p><p class="value">{m.date}</p>
+<p class="label">Vaqt</p><p class="value">{m.time}</p>
+<p class="label">Platforma</p><p class="value">{m.platform}</p>
+<p>Jamoamiz <strong>24 soat ichida</strong> siz bilan bog'lanadi va uchrashuvni tasdiqlaydi.</p>
+<p>Savollar uchun: <a href="mailto:info@uychi.uz" style="color:#22d3ee">info@uychi.uz</a></p>
+""")
+    _send([m.email], "Uchrashuv so'rovingiz qabul qilindi — Uychi Hub", html)
+
+
 # ── Registration ──────────────────────────────────────────────────────────────
 
 def register_welcome(user) -> None:

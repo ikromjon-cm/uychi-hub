@@ -31,6 +31,7 @@ export default function AdminStartups() {
   const [selected, setSelected] = useState<Startup | null>(null);
   const [form, setForm]         = useState({ ...EMPTY });
   const [saving, setSaving]     = useState(false);
+  const [error, setError]       = useState("");
 
   const startups = local ?? (Array.isArray(raw) ? raw : []);
   const filtered = startups.filter(s => {
@@ -56,11 +57,17 @@ export default function AdminStartups() {
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    await apiPost("/startups/startup-applications/", form);
-    setLocal([{ ...form, id: Date.now(), status: "pending" } as Startup, ...startups]);
-    setShowAdd(false);
-    setForm({ ...EMPTY });
-    setSaving(false);
+    setError("");
+    try {
+      await apiPost("/startups/startup-applications/", form);
+      setLocal([{ ...form, id: Date.now(), status: "pending" } as Startup, ...startups]);
+      setShowAdd(false);
+      setForm({ ...EMPTY });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Xatolik");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -256,6 +263,7 @@ export default function AdminStartups() {
                 <label className="mb-1 block text-[11px] text-muted">Tavsif</label>
                 <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className="w-full rounded-xl border border-border bg-card px-3 py-2 text-[13px] text-foreground outline-none resize-none" />
               </div>
+              {error && <p className="text-[12px] text-red-400">{error}</p>}
               <div className="flex gap-2 pt-1">
                 <button type="button" onClick={() => setShowAdd(false)} className="flex-1 rounded-xl border border-border py-2.5 text-[13px] text-muted hover:text-foreground">Bekor</button>
                 <button type="submit" disabled={saving} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent py-2.5 text-[13px] font-bold text-black hover:bg-accent-dark disabled:opacity-60">

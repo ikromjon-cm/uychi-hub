@@ -61,18 +61,23 @@ export default function AdminCoworking() {
       price_per_hour: Number(form.price_per_hour),
       price_per_day: Number(form.price_per_day),
     };
-    if (editing) {
-      await apiPatch(`/coworking/coworking-spaces/${editing.id}/`, payload);
-      setLocalS(spaces.map(s => s.id === editing.id ? { ...s, ...payload } : s));
-    } else {
-      const slug = String(form.name).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
-      await apiPost("/coworking/coworking-spaces/", { ...payload, slug, accent: "cyan", amenities: [] });
-      setLocalS([{ ...payload, id: Date.now(), slug, amenities: [] } as Space, ...spaces]);
+    try {
+      if (editing) {
+        await apiPatch(`/coworking/coworking-spaces/${editing.id}/`, payload);
+        setLocalS(spaces.map(s => s.id === editing.id ? { ...s, ...payload } : s));
+      } else {
+        const slug = String(form.name).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
+        await apiPost("/coworking/coworking-spaces/", { ...payload, slug, accent: "cyan", amenities: [] });
+        setLocalS([{ ...payload, id: Date.now(), slug, amenities: [] } as Space, ...spaces]);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+      setShowAdd(false);
+      setEditing(null);
+      setForm({ ...EMPTY_SPACE });
     }
-    setSaving(false);
-    setShowAdd(false);
-    setEditing(null);
-    setForm({ ...EMPTY_SPACE });
   }
 
   async function deleteSpace(id: number) {

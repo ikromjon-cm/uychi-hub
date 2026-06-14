@@ -61,13 +61,15 @@ export default function EventsPage() {
     if (!modal.event) return;
     setModal(m => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
+    const raw = Object.fromEntries(fd) as Record<string, string>;
     const data = {
-      ...Object.fromEntries(fd),
-      event_title: modal.event.title,
-      event_id: modal.event.id,
+      event: modal.event.id,
+      full_name: raw.full_name || "",
+      email: raw.email || "",
+      phone: raw.phone || "",
     };
     try {
-      const res = await fetch("/api/events/register/", {
+      const res = await fetch("/api/events/registrations/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -75,15 +77,9 @@ export default function EventsPage() {
       if (res.ok) {
         setModal(m => ({ ...m, sent: true, sending: false }));
       } else {
-        const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-        submissions.push({ endpoint: "/api/events/register/", body: data, timestamp: new Date().toISOString() });
-        localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
-        setModal(m => ({ ...m, sent: true, sending: false }));
+        setModal(m => ({ ...m, sending: false, error: "Xatolik yuz berdi. Qayta urinib ko'ring." }));
       }
     } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/api/events/register/", body: data, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }
@@ -303,9 +299,9 @@ export default function EventsPage() {
 
                   <form onSubmit={handleRegister} className="space-y-3">
                     {[
-                      { name: "first_name",  label: "Ism",        placeholder: "Ismingiz",          required: true },
-                      { name: "phone",       label: "Telefon",    placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
-                      { name: "email",       label: "Email",      placeholder: "example@mail.com",  required: true, type: "email" },
+                      { name: "full_name",   label: "Ism Familya", placeholder: "Ism Familyangiz",   required: true },
+                      { name: "email",       label: "Email",       placeholder: "example@mail.com",  required: true, type: "email" },
+                      { name: "phone",       label: "Telefon",     placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
                     ].map((f) => (
                       <div key={f.name}>
                         <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">

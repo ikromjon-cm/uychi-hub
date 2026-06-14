@@ -4,24 +4,24 @@ import { useState } from "react";
 import { Video, MessageCircle, Send, Users, Calendar, Clock } from "lucide-react";
 
 const PLATFORMS = [
-  { id: "zoom",     label: "Zoom",        icon: <Video          className="h-4 w-4" /> },
-  { id: "teams",    label: "MS Teams",    icon: <Users          className="h-4 w-4" /> },
-  { id: "meet",     label: "Google Meet", icon: <Video          className="h-4 w-4" /> },
-  { id: "whatsapp", label: "WhatsApp",    icon: <MessageCircle  className="h-4 w-4" /> },
-  { id: "telegram", label: "Telegram",    icon: <Send           className="h-4 w-4" /> },
+  { id: "zoom",     label: "Zoom",        icon: <Video         className="h-4 w-4" /> },
+  { id: "teams",    label: "MS Teams",    icon: <Users         className="h-4 w-4" /> },
+  { id: "meet",     label: "Google Meet", icon: <Video         className="h-4 w-4" /> },
+  { id: "whatsapp", label: "WhatsApp",    icon: <MessageCircle className="h-4 w-4" /> },
+  { id: "telegram", label: "Telegram",    icon: <Send          className="h-4 w-4" /> },
 ];
 
 const TIMES = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00"];
 
 const TOPICS = [
-  "Investment Opportunities",
-  "Partnership Proposal",
-  "Office Space / Relocation",
-  "Startup Incubation",
-  "AI Solutions Demo",
-  "Government & Regulatory",
-  "Media & Press",
-  "General Inquiry",
+  "Investitsiya imkoniyatlari",
+  "Hamkorlik taklifi",
+  "Ofis maydoni / Ko'chib kelish",
+  "Startap inkubatsiyasi",
+  "AI yechimlari demonstratsiyasi",
+  "Davlat va me'yoriy masalalar",
+  "Media va matbuot",
+  "Umumiy savol",
 ];
 
 export default function SchedulePage() {
@@ -61,53 +61,53 @@ export default function SchedulePage() {
         <div className="mb-12 text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-accent">
             <Calendar className="h-3 w-3" />
-            Meeting Booking
+            Uchrashuv Belgilash
           </div>
           <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold leading-tight tracking-tight text-foreground">
-            Schedule a Meeting
+            Jamoamiz bilan Uchrashing
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-muted">
-            Book a one-on-one session with our team. We respond within 2 hours and confirm your slot by email.
+            Mutaxassislarimiz bilan individual uchrashuv belgilang. 2 soat ichida javob beramiz va vaqtni email orqali tasdiqlaymiz.
           </p>
         </div>
 
         {sent ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-16 text-center">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10 text-2xl text-emerald-400">✓</div>
-            <h2 className="text-xl font-bold text-foreground">Meeting Requested!</h2>
-            <p className="mt-2 text-[14px] text-muted">Our team will confirm your slot within 2 hours.</p>
+            <h2 className="text-xl font-bold text-foreground">Uchrashuv So&apos;rovi Yuborildi!</h2>
+            <p className="mt-2 text-[14px] text-muted">Jamoamiz 2 soat ichida vaqtingizni tasdiqlaydi.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Full Name</label>
-                <input name="name" type="text" required placeholder="Your full name" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Ism Familya</label>
+                <input name="name" type="text" required placeholder="To'liq ismingiz" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
               </div>
               <div>
                 <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Email</label>
-                <input name="email" type="email" required placeholder="you@company.com" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
+                <input name="email" type="email" required placeholder="siz@kompaniya.uz" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Company</label>
-                <input name="company" type="text" placeholder="Your company" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Kompaniya</label>
+                <input name="company" type="text" placeholder="Kompaniyangiz nomi" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Phone</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Telefon</label>
                 <input name="phone" type="tel" placeholder="+998 XX XXX XX XX" className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
               </div>
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Meeting Topic</label>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Uchrashuv Mavzusi</label>
               <select name="topic" required className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none focus:border-accent/40">
-                <option value="">Select a topic</option>
+                <option value="">Mavzu tanlang</option>
                 {TOPICS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">Preferred Platform</label>
+              <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-muted">Qulay Platforma</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map((p) => (
                   <button key={p.id} type="button" onClick={() => setPlatform(p.id)}
@@ -121,13 +121,13 @@ export default function SchedulePage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                  <Calendar className="h-3 w-3" /> Preferred Date
+                  <Calendar className="h-3 w-3" /> Qulay Sana
                 </label>
                 <input name="date" type="date" required min={today} className="w-full rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none focus:border-accent/40" />
               </div>
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                  <Clock className="h-3 w-3" /> Preferred Time (UZT)
+                  <Clock className="h-3 w-3" /> Qulay Vaqt (UZT)
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {TIMES.map((t) => (
@@ -141,8 +141,8 @@ export default function SchedulePage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Additional Notes</label>
-              <textarea name="message" rows={3} placeholder="Anything you'd like us to know before the meeting..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">Qo&apos;shimcha Izoh</label>
+              <textarea name="message" rows={3} placeholder="Uchrashuv oldidan bilishimizni istagan narsangizni yozing..." className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3.5 text-[14px] text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" />
             </div>
 
             {error && (
@@ -150,9 +150,13 @@ export default function SchedulePage() {
             )}
 
             <button type="submit" disabled={sending}
-              className="group w-full rounded-full bg-accent py-4 text-[14px] font-bold text-black transition-all hover:bg-accent-dark hover:shadow-[0_0_35px_-5px_rgba(6,247,227,0.5)] disabled:opacity-60">
-              {sending ? "Scheduling..." : <>Schedule Meeting <span className="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span></>}
+              className="w-full rounded-full bg-accent py-4 text-[14px] font-bold text-white shadow-[0_4px_20px_rgba(79,70,229,0.35)] transition-all hover:bg-accent-dark disabled:opacity-60">
+              {sending ? "Yuborilmoqda..." : "Uchrashuv So'rovi Yuborish →"}
             </button>
+
+            <p className="text-center text-[12px] text-muted">
+              Ish soatlarimiz: Dushanba–Juma, 09:00–18:00 (UTC+5). Biz 2 soat ichida javob beramiz.
+            </p>
           </form>
         )}
       </div>

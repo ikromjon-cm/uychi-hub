@@ -47,17 +47,24 @@ export default function AdminInvestors() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    await apiPost("/investors/investors/", { ...form, status: "active" });
-    setAdded(prev => [{ ...form, id: Date.now(), status: "active", notes: "", created_at: new Date().toISOString() } as Investor, ...prev]);
-    setShowModal(false);
-    setForm(emptyForm);
-    setSaving(false);
+    try {
+      await apiPost("/investors/investors/", { ...form, status: "active" });
+      setAdded(prev => [{ ...form, id: Date.now(), status: "active", notes: "", created_at: new Date().toISOString() } as Investor, ...prev]);
+      setShowModal(false);
+      setForm(emptyForm);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function deleteInvestor(id: number) {
-    await apiDelete(`/investors/investors/${id}/`);
-    setAdded(prev => prev.filter(i => i.id !== id));
-    setOverrides(prev => { const n = { ...prev }; delete n[id]; return n; });
+    try {
+      await apiDelete(`/investors/investors/${id}/`);
+      setAdded(prev => prev.filter(i => i.id !== id));
+      setOverrides(prev => { const n = { ...prev }; delete n[id]; return n; });
+    } catch { /* error logged silently */ }
   }
 
   const activeCount = investors.filter(i => i.status === "active").length;

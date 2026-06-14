@@ -1,4 +1,6 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, serializers as drf_serializers
+from rest_framework.response import Response
+from rest_framework import status
 from .models import Subscriber
 from .serializers import SubscriberSerializer
 from apps.utils.email import newsletter_confirm
@@ -14,6 +16,21 @@ class SubscriberViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [permissions.IsAuthenticated]
         return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        email = request.data.get("email", "").strip().lower()
+        existing = Subscriber.objects.filter(email=email).first()
+        if existing:
+            if not existing.is_active:
+                existing.is_active = True
+                existing.name = request.data.get("name", existing.name)
+                existing.save(update_fields=["is_active", "name"])
+                try:
+                    newsletter_confirm(existing)
+                except Exception:
+                    pass
+            return Response({"detail": "Muvaffaqiyatli obuna bo'ldingiz."}, status=status.HTTP_200_OK)
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         subscriber = serializer.save()

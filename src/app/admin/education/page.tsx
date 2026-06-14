@@ -63,23 +63,30 @@ export default function AdminEducation() {
     e.preventDefault();
     setSaving(true);
     const payload = { ...form, lessons: Number(form.lessons), price: Number(form.price) };
-    if (editing) {
-      await apiPatch(`/education/courses/${editing.id}/`, payload);
-      setLocalC(courses.map(c => c.id === editing.id ? { ...c, ...payload } : c));
-    } else {
-      const slug = String(form.title).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
-      await apiPost("/education/courses/", { ...payload, slug, enrolled_count: 0, rating: "4.5", accent: "cyan", tags: [] });
-      setLocalC([{ ...payload, id: Date.now(), slug, enrolled_count: 0, rating: "4.5" } as Course, ...courses]);
+    try {
+      if (editing) {
+        await apiPatch(`/education/courses/${editing.id}/`, payload);
+        setLocalC(courses.map(c => c.id === editing.id ? { ...c, ...payload } : c));
+      } else {
+        const slug = String(form.title).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
+        await apiPost("/education/courses/", { ...payload, slug, enrolled_count: 0, rating: "4.5", accent: "cyan", tags: [] });
+        setLocalC([{ ...payload, id: Date.now(), slug, enrolled_count: 0, rating: "4.5" } as Course, ...courses]);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+      setShowAdd(false);
+      setEditing(null);
+      setForm({ ...EMPTY_COURSE });
     }
-    setSaving(false);
-    setShowAdd(false);
-    setEditing(null);
-    setForm({ ...EMPTY_COURSE });
   }
 
   async function deleteCourse(id: number) {
-    await apiDelete(`/education/courses/${id}/`);
-    setLocalC(courses.filter(c => c.id !== id));
+    try {
+      await apiDelete(`/education/courses/${id}/`);
+      setLocalC(courses.filter(c => c.id !== id));
+    } catch { /* silent */ }
   }
 
   async function updateAppStatus(id: number, status: string) {

@@ -7,15 +7,14 @@ from apps.utils.email import investor_admin, investor_confirm
 class InvestorViewSet(viewsets.ModelViewSet):
     queryset = Investor.objects.all()
     serializer_class = InvestorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_fields = ["investor_type", "status", "country"]
     search_fields = ["company", "contact_name", "email", "sectors"]
     ordering_fields = ["created_at", "company"]
 
     def get_permissions(self):
-        if self.action in ("create",):
-            self.permission_classes = [permissions.AllowAny]
-        return super().get_permissions()
+        if self.action == "create":
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
 
     def perform_create(self, serializer):
         investor = serializer.save()

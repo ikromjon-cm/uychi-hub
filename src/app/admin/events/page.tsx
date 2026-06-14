@@ -61,23 +61,30 @@ export default function AdminEvents() {
     ev.preventDefault();
     setSaving(true);
     const payload = { ...form, seats: Number(form.seats), end_date: form.end_date || "" };
-    if (editing) {
-      await apiPatch(`/events/events/${editing.id}/`, payload);
-      setLocalE(events.map(e => e.id === editing.id ? { ...e, ...payload } : e));
-    } else {
-      const slug = String(form.title).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
-      await apiPost("/events/events/", { ...payload, slug, registered_count: 0, accent: "cyan", tags: [] });
-      setLocalE([{ ...payload, end_date: form.end_date || "", id: Date.now(), slug, registered_count: 0 } as Event, ...events]);
+    try {
+      if (editing) {
+        await apiPatch(`/events/events/${editing.id}/`, payload);
+        setLocalE(events.map(e => e.id === editing.id ? { ...e, ...payload } : e));
+      } else {
+        const slug = String(form.title).toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-") + "-" + Date.now();
+        await apiPost("/events/events/", { ...payload, slug, registered_count: 0, accent: "cyan", tags: [] });
+        setLocalE([{ ...payload, end_date: form.end_date || "", id: Date.now(), slug, registered_count: 0 } as Event, ...events]);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+      setShowAdd(false);
+      setEditing(null);
+      setForm({ ...EMPTY_EVENT });
     }
-    setSaving(false);
-    setShowAdd(false);
-    setEditing(null);
-    setForm({ ...EMPTY_EVENT });
   }
 
   async function deleteEvent(id: number) {
-    await apiDelete(`/events/events/${id}/`);
-    setLocalE(events.filter(e => e.id !== id));
+    try {
+      await apiDelete(`/events/events/${id}/`);
+      setLocalE(events.filter(e => e.id !== id));
+    } catch { /* silent */ }
   }
 
   return (

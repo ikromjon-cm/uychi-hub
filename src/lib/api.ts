@@ -62,49 +62,45 @@ export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
 }
 
 export async function apiPost(endpoint: string, body: unknown) {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function apiFormPost(endpoint: string, body: unknown) {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => null);
-      throw new Error(err?.detail || `HTTP ${res.status}`);
-    }
-    return res.json();
+    return await apiPost(endpoint, body);
   } catch {
     const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
     submissions.push({ endpoint, body, timestamp: new Date().toISOString() });
     localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
-    return { ...(body as Record<string, unknown>), id: Date.now(), mock: true };
+    return { success: true, mock: true };
   }
 }
 
 export async function apiPatch(endpoint: string, body: unknown) {
-  try {
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-      method: "PATCH",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  } catch {
-    return { success: true, mock: true };
-  }
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
 export async function apiDelete(endpoint: string) {
-  try {
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-      method: "DELETE",
-      headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  } catch {
-    return { success: true, mock: true };
-  }
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "DELETE",
+    headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
 }
 
 export async function login(username: string, password: string) {

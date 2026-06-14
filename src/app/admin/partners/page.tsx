@@ -52,11 +52,16 @@ export default function AdminPartners() {
   async function handleAdd() {
     setSaving(true);
     setSaveError("");
-    await apiPost("/partners/partners/", form);
-    setAdded(prev => [{ ...form, id: Date.now() } as Partner, ...prev]);
-    setShowModal(false);
-    setForm(emptyForm);
-    setSaving(false);
+    try {
+      await apiPost("/partners/partners/", form);
+      setAdded(prev => [{ ...form, id: Date.now() } as Partner, ...prev]);
+      setShowModal(false);
+      setForm(emptyForm);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Xatolik yuz berdi");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (

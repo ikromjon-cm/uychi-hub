@@ -39,18 +39,11 @@ export const AI_FEATURES: NavLink[] = [
 ];
 
 export const MODULES: NavLink[] = [
-  { label: "Online Meeting Booking", href: "/schedule", description: "Schedule meetings instantly" },
-  { label: "Virtual Office Tour", href: "/tour", description: "Explore facilities in 3D" },
-  { label: "Investor Application", href: "/apply/investor", description: "Submit investment interest" },
-  { label: "Startup Application", href: "/apply/startup", description: "Join our incubator" },
-  { label: "AI Company Registration", href: "/register", description: "Register with AI assistance" },
-  { label: "Newsletter", href: "/newsletter", description: "Latest news & updates" },
-  { label: "Media Kit Download", href: "/media", description: "Brand assets & press kit" },
-  { label: "Analytics Dashboard", href: "/analytics", description: "Real-time ecosystem data" },
-  { label: "Live Statistics", href: "/stats", description: "Live counters & metrics" },
-  { label: "Document Center", href: "/documents", description: "Legal & compliance docs" },
-  { label: "Resource Library", href: "/resources", description: "Research, guides & templates" },
-  { label: "Public API", href: "/api-docs", description: "Integrate Uychi data" },
+  { label: "Uchrashuv Belgilash",   href: "/schedule",       description: "Jamoamiz bilan uchrashuv belgilang" },
+  { label: "Investor Arizasi",      href: "/apply/investor", description: "Investitsiya manfaatingizni yuboring" },
+  { label: "Startap Arizasi",       href: "/apply/startup",  description: "Inkubatorga qo'shiling" },
+  { label: "Galereya",              href: "/media",          description: "Rasm va videolar" },
+  { label: "Kutubxona",             href: "/library",        description: "Tadqiqotlar, qo'llanmalar va shablonlar" },
 ];
 
 export const ADMIN_NAV: NavLink[] = [
@@ -71,9 +64,9 @@ export const ADMIN_NAV: NavLink[] = [
 ];
 
 export const STATS = [
-  { value: "237,600+", label: "Tuman Aholisi" },
-  { value: "309", label: "Maydoni km²" },
-  { value: "47", label: "Maktablar" },
-  { value: "900+", label: "Kichik Korxona" },
-  { value: "5", label: "Sanoat Zonalari" },
+  { value: "241,300+", label: "Tuman Aholisi" },
+  { value: "300", label: "Maydoni km²" },
+  { value: "53", label: "Mahallalar" },
+  { value: "56.4", label: "Chegara km" },
+  { value: "1935", label: "Tashkil topgan" },
 ];

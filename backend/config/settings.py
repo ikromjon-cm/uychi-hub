@@ -94,6 +94,10 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Uychi AI & IT Hub API",
     "DESCRIPTION": "REST API for Uychi Hub platform",
     "VERSION": "1.0.0",
+    "ENUM_NAME_OVERRIDES": {
+        "AccentEnum": ["cyan", "violet", "emerald"],
+        "StatusEnum": ["pending", "review", "approved", "rejected", "active", "draft", "archived", "closed"],
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:3000", "http://localhost:3001"])

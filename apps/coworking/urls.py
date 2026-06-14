@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import CoworkingSpaceViewSet, BookingViewSet
 
 router = DefaultRouter()
-router.register(r"spaces", CoworkingSpaceViewSet)
+router.register(r"coworking-spaces", CoworkingSpaceViewSet)
 router.register(r"bookings", BookingViewSet)
 
 urlpatterns = [

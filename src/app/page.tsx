@@ -9,12 +9,13 @@ import { STATS } from "@/lib/constants";
 import { useApi } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 import { NEWS as MOCK_NEWS } from "@/lib/mock-data";
+import { UychiMap } from "@/components/UychiMap";
 import {
   ArrowRight, ArrowUpRight, Building2, Brain, Rocket, GraduationCap,
   CheckCircle, ChevronRight, AlertCircle, MapPin, Phone, Mail,
 } from "lucide-react";
 
-type Article = { id: number; title: string; category: string; summary: string; status: string; published_at: string };
+type Article = { id: number; slug: string; title: string; category: string; excerpt: string; status: string; published_at: string };
 
 /* ─── Motion variants ─────────────────────────────────────────────── */
 const fadeUp = {
@@ -86,14 +87,14 @@ export default function Home() {
   const [formError, setFormError] = useState("");
 
   const mockArticles: Article[] = MOCK_NEWS.map((n, i) => ({
-    id: i + 1, title: n.title, category: n.category,
-    summary: n.excerpt, status: "published", published_at: n.date,
+    id: i + 1, slug: n.id, title: n.title, category: n.category,
+    excerpt: n.excerpt, status: "published", published_at: n.date,
   }));
   const { data: articles } = useApi<Article[]>("/news/articles/", [], mockArticles);
   const { t } = useLang();
   const NEWS = articles.filter(a => a.status === "published").slice(0, 6);
 
-  const STAT_ICONS = ["👥", "📐", "🏫", "🏭", "🏗️"];
+  const STAT_ICONS = ["👥", "📐", "🏘️", "📏", "📅"];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -341,6 +342,122 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══ DISTRICT MAP ════════════════════════════════════════════════ */}
+      <section id="district" className="relative border-t border-border-subtle py-20 md:py-28">
+        <div className="pointer-events-none absolute left-0 top-0 h-[600px] w-[600px] rounded-full bg-emerald-500/4 blur-[150px]" />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={stagger}
+            className="mb-12 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div>
+              <motion.div variants={fadeUp}>
+                <SectionTag color="text-emerald-500 dark:text-emerald-400">Uychi Tumani</SectionTag>
+              </motion.div>
+              <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
+                Tuman haqida <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">umumiy ma&apos;lumot</span>
+              </motion.h2>
+            </div>
+            <motion.p variants={fadeUp} className="max-w-xs text-[13px] leading-relaxed text-muted lg:text-right">
+              Namangan viloyati Uychi tumani — 1935 yil 28 iyulda tashkil topgan
+            </motion.p>
+          </motion.div>
+
+          <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
+            {/* SVG Map */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <UychiMap />
+            </motion.div>
+
+            {/* Stats + borders */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={stagger}
+              className="flex flex-col gap-4"
+            >
+              {/* Stats grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { icon: "📅", label: "Tashkil topgan", value: "1935 yil 28 iyul", color: "text-violet-400" },
+                  { icon: "📐", label: "Maydon", value: "0,30 ming km²", color: "text-cyan-400" },
+                  { icon: "👥", label: "Aholi soni", value: "241,3 ming kishi", color: "text-emerald-400" },
+                  { icon: "🏘️", label: "Mahallalar", value: "53 ta", color: "text-amber-400" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    variants={fadeUp}
+                    className="rounded-2xl border border-border bg-card p-4 transition-all hover:border-emerald-500/25 hover:shadow-[0_4px_20px_-8px_rgba(52,211,153,0.2)]"
+                  >
+                    <span className="text-[20px]">{item.icon}</span>
+                    <p className={`mt-2 text-[15px] font-bold ${item.color}`}>{item.value}</p>
+                    <p className="mt-0.5 text-[11px] uppercase tracking-wider text-muted">{item.label}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Border info */}
+              <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-5">
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-[18px]">🗺️</span>
+                  <p className="text-[12px] font-bold uppercase tracking-wider text-muted">Chegara uzunligi — 56,4 km</p>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { name: "Qirg'iziston Respublikasi", km: 14.4, color: "bg-rose-400", pct: (14.4/56.4)*100 },
+                    { name: "Uchqo'rg'on tumani",       km: 24.0, color: "bg-violet-400", pct: (24.0/56.4)*100 },
+                    { name: "Namangan shahri",           km: 13.0, color: "bg-cyan-400",  pct: (13.0/56.4)*100 },
+                    { name: "Chortoq tumani",            km: 5.0,  color: "bg-amber-400", pct: (5.0/56.4)*100 },
+                  ].map((b) => (
+                    <div key={b.name}>
+                      <div className="mb-1 flex justify-between text-[12px]">
+                        <span className="text-muted">{b.name}</span>
+                        <span className="font-semibold text-foreground">{b.km} km</span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-border">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${b.pct}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                          className={`h-full rounded-full ${b.color}`}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Tuman info card */}
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-semibold text-foreground">Namangan viloyati · Uychi tumani</p>
+                    <p className="text-[11px] text-muted">IT Park a&apos;zosi · 2024 yildan</p>
+                  </div>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-400">Faol</span>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ══ STARTUPS ════════════════════════════════════════════════════ */}
       <section id="startups" className="relative border-t border-border-subtle py-24 md:py-32">
         <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-violet-500/4 blur-[140px]" />
@@ -555,25 +672,27 @@ export default function Home() {
               ][idx % 3];
               return (
                 <motion.div key={item.id} variants={fadeUp}>
-                  <HoverCard className="flex h-full flex-col p-6">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${catColors}`}>
-                        {item.category}
-                      </span>
-                      <time className="text-[11px] text-muted">
-                        {item.published_at?.slice(0, 10) || ""}
-                      </time>
-                    </div>
-                    <h3 className="mt-4 flex-1 text-[15px] font-bold leading-snug text-foreground">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-[13px] leading-relaxed text-muted line-clamp-3">
-                      {item.summary}
-                    </p>
-                    <div className="mt-5 flex items-center gap-1 text-[12px] font-semibold text-accent">
-                      {t.news.more} <ChevronRight className="h-3.5 w-3.5" />
-                    </div>
-                  </HoverCard>
+                  <Link href={`/news/${item.slug}`} className="block h-full">
+                    <HoverCard className="flex h-full flex-col p-6 cursor-pointer">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${catColors}`}>
+                          {item.category}
+                        </span>
+                        <time className="text-[11px] text-muted">
+                          {item.published_at?.slice(0, 10) || ""}
+                        </time>
+                      </div>
+                      <h3 className="mt-4 flex-1 text-[15px] font-bold leading-snug text-foreground">
+                        {item.title}
+                      </h3>
+                      <p className="mt-3 text-[13px] leading-relaxed text-muted line-clamp-3">
+                        {item.excerpt}
+                      </p>
+                      <div className="mt-5 flex items-center gap-1 text-[12px] font-semibold text-accent">
+                        {t.news.more} <ChevronRight className="h-3.5 w-3.5" />
+                      </div>
+                    </HoverCard>
+                  </Link>
                 </motion.div>
               );
             })}

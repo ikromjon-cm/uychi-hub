@@ -73,13 +73,15 @@ export default function EducationPage() {
     if (!modal.course) return;
     setModal(m => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
+    const raw = Object.fromEntries(fd) as Record<string, string>;
     const data = {
-      ...Object.fromEntries(fd),
-      course_title: modal.course.title,
-      course_id: modal.course.id,
+      course: modal.course.id,
+      full_name: `${raw.first_name || ""} ${raw.last_name || ""}`.trim(),
+      email: raw.email || "",
+      phone: raw.phone || "",
     };
     try {
-      const res = await fetch("/api/education/enrollments/", {
+      const res = await fetch("/api/education/applications/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -90,7 +92,6 @@ export default function EducationPage() {
         setModal(m => ({ ...m, sending: false, error: "Xatolik yuz berdi. Qayta urinib ko'ring." }));
       }
     } catch {
-      // Fallback: show success even if backend not available
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }
@@ -280,7 +281,7 @@ export default function EducationPage() {
                     {[
                       { name: "first_name",  label: "Ism",        placeholder: "Ismingiz",          required: true },
                       { name: "last_name",   label: "Familya",    placeholder: "Familyangiz",       required: true },
-                      { name: "address",     label: "Manzil",     placeholder: "Uychi, Namangan",   required: false },
+                      { name: "email",       label: "Email",      placeholder: "email@example.com", required: true, type: "email" },
                       { name: "phone",       label: "Telefon",    placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
                     ].map((f) => (
                       <div key={f.name}>

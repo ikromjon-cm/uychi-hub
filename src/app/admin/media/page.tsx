@@ -28,12 +28,6 @@ const typeColors: Record<string, string> = {
   vector:   "bg-accent/10 text-accent border-accent/20",
 };
 
-const MOCK_MEDIA: MediaItem[] = [
-  { id: 1, name: "hackathon-2026.jpg", media_type: "image", size: "2.4 MB", file: "#", uploaded_at: "2026-07-15" },
-  { id: 2, name: "uychi-hub-intro.mp4", media_type: "video", size: "45.2 MB", file: "#", uploaded_at: "2026-05-01" },
-  { id: 3, name: "annual-report-2025.pdf", media_type: "document", size: "3.1 MB", file: "#", uploaded_at: "2026-01-10" },
-];
-
 export default function AdminMedia() {
   const { data: rawItems, loading } = useApi<MediaItem[]>("/media/media-items/", []);
   const [deleted, setDeleted] = useState<Set<number>>(new Set());

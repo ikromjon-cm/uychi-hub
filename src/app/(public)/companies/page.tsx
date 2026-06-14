@@ -14,6 +14,15 @@ const IT_COMPANIES: ServiceCompany[] = [
   { id: 'cloudnet', name: 'CloudNet Uychi', tagline: 'IT infratuzilma va kiberxavfsizlik', services: ['Server infratuzilma', 'Tarmoq sozlash', 'Kiberxavfsizlik audit', 'Bulut xizmatlari'], stack: ['Linux', 'AWS', 'Docker', 'Kubernetes', 'Nginx'], projects: 35, employees: '15+', accent: 'cyan' },
   { id: 'digitalmind', name: 'DigitalMind', tagline: 'Raqamli marketing va SEO', services: ['SEO optimizatsiya', 'SMM boshqaruvi', 'Kontekstli reklama', 'Kontent marketing'], stack: ['Google Ads', 'Meta Ads', 'SEMrush', 'GA4', 'Ahrefs'], projects: 200, employees: '20+', accent: 'violet' },
   { id: 'gamelab', name: 'GameLab UZ', tagline: 'O\'yin ishlab chiqish va interaktiv media', services: ['Mobil o\'yinlar', 'Web o\'yinlar', 'VR/AR ilovalar', 'Gamifikatsiya'], stack: ['Unity', 'Unreal Engine', 'Godot', 'WebGL', 'Blender'], projects: 30, employees: '22+', accent: 'emerald' },
+  { id: 'namsoft', name: 'NamSoft', tagline: 'Korporativ web rivojlanishi va SaaS yechimlari', services: ['SaaS platformalar', 'B2B veb-ilovalar', 'Mikroservis arxitekturasi', 'Texnik konsalting'], stack: ['Vue.js', 'NestJS', 'TypeScript', 'MongoDB', 'RabbitMQ'], projects: 55, employees: '30+', accent: 'violet' },
+  { id: 'textilesoft', name: 'TextileSoft', tagline: 'To\'qimachilik sanoati uchun raqamli yechimlar', services: ['Ishlab chiqarishni boshqarish', 'Sifat nazorati tizimlari', 'Eksport hujjatlash', 'Ombor menejmenti'], stack: ['Python', 'FastAPI', 'React', 'MySQL', 'Power BI'], projects: 28, employees: '14+', accent: 'cyan' },
+  { id: 'smartagro', name: 'SmartAgro UZ', tagline: 'Qishloq xo\'jaligini raqamlashtirish va IoT', services: ['Dron monitoring', 'IoT sensori integratsiyasi', 'Hosil prognozi', 'Suv tizimlarini avtomatlashtirish'], stack: ['Python', 'TensorFlow', 'MQTT', 'InfluxDB', 'Grafana'], projects: 22, employees: '16+', accent: 'emerald' },
+  { id: 'healthnet', name: 'HealthNet UZ', tagline: 'Tibbiyot muassasalari uchun axborot tizimlari', services: ['Elektron tibbiy karta', 'Navbat boshqaruvi', 'Laboratoriya LIMS', 'Telemedicine platform'], stack: ['Java', 'Spring Boot', 'Angular', 'PostgreSQL', 'HL7 FHIR'], projects: 18, employees: '20+', accent: 'violet' },
+  { id: 'finflow', name: 'FinFlow', tagline: 'Moliyaviy texnologiyalar va to\'lov yechimlari', services: ['To\'lov integratsiyasi', 'Moliyaviy hisobot', 'Kredit skoringi', 'Mobile banking modul'], stack: ['Kotlin', 'Spring', 'React Native', 'Oracle', 'Kafka'], projects: 14, employees: '12+', accent: 'cyan' },
+  { id: 'buildsmart', name: 'BuildSmart', tagline: 'Qurilish loyiha menejmenti va BIM yechimlari', services: ['BIM loyihalash', 'Qurilish monitoring', 'Smeta va tender', 'GIS integratsiya'], stack: ['Revit API', 'AutoCAD', 'React', 'Node.js', 'PostgreSQL'], projects: 40, employees: '18+', accent: 'emerald' },
+  { id: 'voiceai', name: 'VoiceAI UZ', tagline: 'Sun\'iy intellekt va ovoz texnologiyalari', services: ['Chatbot yaratish', 'Ovozli asistentlar', 'O\'zbek NLP modellari', 'Sentiment tahlili'], stack: ['PyTorch', 'Hugging Face', 'FastAPI', 'Redis', 'Docker'], projects: 12, employees: '10+', accent: 'cyan' },
+  { id: 'educore', name: 'EduCore UZ', tagline: 'Ta\'lim texnologiyalari va LMS platformalari', services: ['LMS yaratish', 'Video darslik hosting', 'Online imtihon tizimi', 'Maktab MIS'], stack: ['Next.js', 'Django', 'FFmpeg', 'MinIO', 'Redis'], projects: 25, employees: '16+', accent: 'violet' },
+  { id: 'techsupport', name: 'TechSupport Pro', tagline: 'IT qo\'llab-quvvatlash va apparatni ta\'mirlash', services: ['IT autsorsing', 'Kompyuter diagnostika', 'Tarmoq montaj', 'Printer va MFU xizmati'], stack: ['Zabbix', 'GLPI', 'OPNsense', 'Proxmox', 'Ansible'], projects: 310, employees: '35+', accent: 'emerald' },
 ];
 
 type AccentKey = "cyan" | "violet" | "emerald";
@@ -23,19 +32,21 @@ const A: Record<AccentKey, { border: string; badge: string; text: string; glow: 
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", glow: "hover:shadow-[0_0_25px_-5px_rgba(52,211,153,0.15)]" },
 };
 
-const SERVICE_CATEGORIES = ["Barchasi", "Web & Mobile", "ERP & CRM", "Dizayn", "Infratuzilma", "Marketing", "O'yin"];
+const SERVICE_CATEGORIES = ["Barchasi", "Web & Mobile", "AI & IoT", "ERP & CRM", "Dizayn", "Infratuzilma", "Marketing", "O'yin"];
 
 function matchCategory(services: string[], cat: string): boolean {
   if (cat === "Barchasi") return true;
   const map: Record<string, string[]> = {
-    "Web & Mobile": ["Web", "Mobil", "iOS", "Android", "API"],
-    "ERP & CRM": ["ERP", "CRM", "1C", "Biznes"],
-    "Dizayn": ["Dizayn", "UI", "UX", "Brend"],
-    "Infratuzilma": ["Server", "Tarmoq", "Kiberxavfsizlik", "Bulut", "Cloud"],
-    "Marketing": ["SEO", "SMM", "Marketing", "Kontent", "Reklama"],
-    "O'yin": ["O'yin", "VR", "AR", "Gamif"],
+    "Web & Mobile": ["web", "mobil", "ios", "android", "api", "saas", "b2b", "lms", "mobile"],
+    "AI & IoT": ["chatbot", "nlp", "ai", "ml", "dron", "iot", "sensor", "telemedicine", "kredit", "sentiment"],
+    "ERP & CRM": ["erp", "crm", "1c", "biznes", "ombor", "hujjat", "smeta", "bim", "to'lov", "moliyaviy"],
+    "Dizayn": ["dizayn", "ui", "ux", "brend"],
+    "Infratuzilma": ["server", "tarmoq", "kiberxavfsizlik", "bulut", "cloud", "autsorsing", "diagnostika"],
+    "Marketing": ["seo", "smm", "marketing", "kontent", "reklama"],
+    "O'yin": ["o'yin", "vr", "ar", "gamif"],
   };
-  return (map[cat] || []).some((kw) => services.some((s) => s.includes(kw)));
+  const keywords = map[cat] || [];
+  return keywords.some((kw) => services.some((s) => s.toLowerCase().includes(kw)));
 }
 
 export default function CompaniesPage() {
@@ -67,7 +78,7 @@ export default function CompaniesPage() {
           {/* Stats */}
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Rezident kompaniyalar", value: "50+", color: "text-violet-400" },
+              { label: "Katalogdagi kompaniyalar", value: `${IT_COMPANIES.length}`, color: "text-violet-400" },
               { label: "Jami loyihalar", value: `${totalProjects}+`, color: "text-accent" },
               { label: "IT mutaxassislar", value: "400+", color: "text-emerald-400" },
               { label: "Tuman korxonalari", value: "900+", color: "text-violet-400" },

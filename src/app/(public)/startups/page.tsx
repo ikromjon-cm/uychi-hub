@@ -3,11 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useApi } from "@/lib/api";
-import { MOCK_STARTUPS } from "@/lib/mock-data";
+import { useLang } from "@/lib/i18n";
 
-function toSlug(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
+type HubStartup = {
+  id: number;
+  title: string;
+  sector: string;
+  problem_en: string;
+  problem_uz: string;
+  problem_ru: string;
+  solution_en: string;
+  solution_uz: string;
+  solution_ru: string;
+  image: string | null;
+  tech_stack: string;
+};
+
+const ACCENTS = ["emerald", "cyan", "violet"] as const;
+type AccentKey = typeof ACCENTS[number];
+
+const A: Record<AccentKey, { border: string; badge: string; text: string; dot: string; glow: string }> = {
+  cyan:    { border: "border-accent/20 hover:border-accent/40",    badge: "bg-accent/10 text-accent border-accent/20",    text: "text-accent",    dot: "bg-accent",    glow: "hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.15)]" },
+  violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  dot: "bg-violet-400",  glow: "hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.15)]" },
+  emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", dot: "bg-emerald-400", glow: "hover:shadow-[0_0_30px_-5px_rgba(52,211,153,0.15)]" },
+};
 
 function StartupAvatar({ name, idx }: { name: string; idx: number }) {
   const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
@@ -26,64 +45,18 @@ function StartupAvatar({ name, idx }: { name: string; idx: number }) {
   );
 }
 
-type Startup = {
-  id: number;
-  startup_name: string;
-  sector: string;
-  stage: string;
-  status: string;
-  founder_name: string;
-  team_size: number | string;
-  funding_needed: string;
-  description: string;
-  tech_stack: string;
-};
-
-const ACCENTS = ["emerald", "cyan", "violet"] as const;
-type AccentKey = typeof ACCENTS[number];
-
-const A: Record<AccentKey, { border: string; badge: string; text: string; dot: string; glow: string }> = {
-  cyan:    { border: "border-accent/20 hover:border-accent/40",    badge: "bg-accent/10 text-accent border-accent/20",    text: "text-accent",    dot: "bg-accent",    glow: "hover:shadow-[0_0_30px_-5px_rgba(6,247,227,0.15)]" },
-  violet:  { border: "border-violet-400/20 hover:border-violet-400/40", badge: "bg-violet-500/10 text-violet-400 border-violet-400/20", text: "text-violet-400",  dot: "bg-violet-400",  glow: "hover:shadow-[0_0_30px_-5px_rgba(167,139,250,0.15)]" },
-  emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400", dot: "bg-emerald-400", glow: "hover:shadow-[0_0_30px_-5px_rgba(52,211,153,0.15)]" },
-};
-
-const STAGE_COLORS: Record<string, string> = {
-  "Idea": "text-muted border-border bg-card",
-  "Pre-Seed": "text-amber-400 border-amber-400/20 bg-amber-500/8",
-  "MVP": "text-blue-400 border-blue-400/20 bg-blue-500/8",
-  "Seed": "text-violet-400 border-violet-400/20 bg-violet-500/8",
-  "Series A": "text-emerald-400 border-emerald-400/20 bg-emerald-500/8",
-};
-
-const STAGES = ["Barchasi", "Idea", "Pre-Seed", "MVP", "Seed", "Series A"];
-
 export default function StartupsPage() {
-  const mockStartups: Startup[] = MOCK_STARTUPS.map((s, i) => ({
-    id: i + 1,
-    startup_name: s.name,
-    sector: s.sector,
-    stage: s.stage,
-    status: "approved",
-    founder_name: s.founder,
-    team_size: s.teamSize,
-    funding_needed: s.fundingNeeded,
-    description: s.desc,
-    tech_stack: s.techStack,
-  }));
-  const { data: all, loading } = useApi<Startup[]>("/startups/startup-applications/", [], mockStartups);
-  const [stage, setStage] = useState("Barchasi");
+  const { lang } = useLang();
+  const { data: all, loading } = useApi<HubStartup[]>("/hub/startups/", []);
   const [sector, setSector] = useState("Barchasi");
   const [search, setSearch] = useState("");
 
-  const visible = all.filter(s => s.status !== "rejected");
-  const sectors = ["Barchasi", ...Array.from(new Set(visible.map(s => s.sector)))];
+  const sectors = ["Barchasi", ...Array.from(new Set(all.map(s => s.sector)))];
 
-  const filtered = visible.filter((s) => {
-    const matchStage = stage === "Barchasi" || s.stage === stage;
+  const filtered = all.filter((s) => {
     const matchSector = sector === "Barchasi" || s.sector === sector;
-    const matchSearch = !search || s.startup_name.toLowerCase().includes(search.toLowerCase()) || s.description.toLowerCase().includes(search.toLowerCase());
-    return matchStage && matchSector && matchSearch;
+    const matchSearch = !search || s.title.toLowerCase().includes(search.toLowerCase());
+    return matchSector && matchSearch;
   });
 
   return (
@@ -114,9 +87,6 @@ export default function StartupsPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-wrap gap-2">
-          {STAGES.map(s => (
-            <button key={s} onClick={() => setStage(s)} className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${stage === s ? "border-violet-400/40 bg-violet-500/10 text-violet-400" : "border-border bg-card text-muted hover:text-foreground"}`}>{s}</button>
-          ))}
           {sectors.map(s => (
             <button key={s} onClick={() => setSector(s)} className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${sector === s ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card text-muted hover:text-foreground"}`}>{s}</button>
           ))}
@@ -131,49 +101,55 @@ export default function StartupsPage() {
         {!loading && filtered.length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
             <p className="text-[15px] text-muted">Startap topilmadi</p>
-            <button onClick={() => { setStage("Barchasi"); setSector("Barchasi"); setSearch(""); }} className="mt-3 text-[13px] text-violet-400 hover:underline">Filtrni tozalash</button>
+            <button onClick={() => { setSector("Barchasi"); setSearch(""); }} className="mt-3 text-[13px] text-violet-400 hover:underline">Filtrni tozalash</button>
           </div>
         ) : !loading && (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((s, idx) => {
               const c = A[ACCENTS[idx % 3]];
               const techTags = s.tech_stack ? s.tech_stack.split(",").slice(0, 4) : [];
+              const problem = s[`problem_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || s.problem_en;
+              const solution = s[`solution_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || s.solution_en;
               return (
-                <Link key={s.id} href={`/startups/${s.id}`} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
+                <div key={s.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
                   <div className="flex items-start justify-between">
                     <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${c.badge}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> {s.sector}
                     </span>
-                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${STAGE_COLORS[s.stage] || "text-muted border-border"}`}>{s.stage}</span>
                   </div>
                   <div className="flex items-center gap-3 mt-4">
-                    <StartupAvatar name={s.startup_name} idx={idx} />
-                    <h3 className="text-[16px] font-bold text-foreground group-hover:text-accent transition-colors">{s.startup_name}</h3>
+                    <StartupAvatar name={s.title} idx={idx} />
+                    <h3 className="text-[16px] font-bold text-foreground group-hover:text-accent transition-colors">{s.title}</h3>
                   </div>
-                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">{s.description}</p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {techTags.map((t, i) => <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] text-muted">{t.trim()}</span>)}
+                  <div className="mt-3 space-y-2 text-[13px]">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Muammo</span>
+                      <p className="mt-0.5 text-muted">{problem}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Yechim</span>
+                      <p className="mt-0.5 text-muted">{solution}</p>
+                    </div>
                   </div>
-                  <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border-subtle pt-4 text-[12px]">
-                    <div><span className="text-muted">Asoschisi</span><p className="font-medium text-foreground">{s.founder_name}</p></div>
-                    <div><span className="text-muted">Jamoa</span><p className="font-medium text-foreground">{s.team_size} kishi</p></div>
-                    <div><span className="text-muted">Moliya</span><p className={`font-bold ${c.text}`}>{s.funding_needed || "—"}</p></div>
-                  </div>
+                  {techTags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {techTags.map((t, i) => <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] text-muted">{t.trim()}</span>)}
+                    </div>
+                  )}
                   <div className={`mt-3 flex items-center gap-1 text-[11px] font-semibold ${c.text}`}>
                     Batafsil ko&apos;rish →
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
         )}
 
         {!loading && (
-          <div className="mt-12 grid grid-cols-3 gap-4 rounded-2xl border border-border bg-card p-6 text-center">
+          <div className="mt-12 grid grid-cols-2 gap-4 rounded-2xl border border-border bg-card p-6 text-center">
             {[
-              { label: "Jami startaplar", value: String(visible.length) },
+              { label: "Jami startaplar", value: String(all.length) },
               { label: "Sektorlar", value: String(sectors.length - 1) },
-              { label: "Bosqichlar", value: String(STAGES.length - 1) },
             ].map(s => (
               <div key={s.label}>
                 <p className="text-2xl font-bold text-violet-400">{s.value}</p>

@@ -1,23 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useApi, apiPost } from "@/lib/api";
-import { MOCK_JOBS } from "@/lib/mock-data";
+import { useApi, apiFormPost } from "@/lib/api";
+import { useLang } from "@/lib/i18n";
 import { X, CheckCircle } from "lucide-react";
 
-type Job = {
+type HubJob = {
   id: number;
-  title: string;
+  title_en: string;
+  title_uz: string;
+  title_ru: string;
   department: string;
-  employment_type: string;
-  location: string;
-  status: string;
-  salary_range: string;
-  description: string;
-  requirements: string;
-  applicants_count: number;
-  created_at: string;
+  image: string | null;
+  type: string;
+  salary: string;
 };
+
+type ApplyModal = { open: boolean; job: HubJob | null; sent: boolean; sending: boolean; error: string };
 
 const ACCENTS = ["cyan", "violet", "emerald"] as const;
 type AccentKey = typeof ACCENTS[number];
@@ -27,50 +26,28 @@ const A: Record<AccentKey, { border: string; badge: string; text: string }> = {
   emerald: { border: "border-emerald-400/20 hover:border-emerald-400/40", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-400/20", text: "text-emerald-400" },
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  "Full-time": "text-accent border-accent/20 bg-accent/8",
-  "Part-time": "text-violet-400 border-violet-400/20 bg-violet-500/8",
-  "Internship": "text-emerald-400 border-emerald-400/20 bg-emerald-500/8",
-  "Contract": "text-amber-400 border-amber-400/20 bg-amber-500/8",
-};
-
 const TYPE_LABELS: Record<string, string> = {
-  "Full-time": "To'liq stavka",
-  "Part-time": "Qisman stavka",
-  "Internship": "Stajyorlik",
-  "Contract": "Shartnoma",
+  fulltime: "To'liq stavka",
+  parttime: "Qisman stavka",
+  remote: "Remote",
+  contract: "Shartnoma",
 };
 
 const FILTER_TYPES = [
   { key: "all", label: "Barchasi" },
-  { key: "Full-time", label: "To'liq stavka" },
-  { key: "Internship", label: "Stajyorlik" },
-  { key: "Part-time", label: "Qisman stavka" },
-  { key: "Contract", label: "Shartnoma" },
+  { key: "fulltime", label: "To'liq stavka" },
+  { key: "remote", label: "Remote" },
+  { key: "contract", label: "Shartnoma" },
 ];
 
-type ApplyModal = { open: boolean; job: Job | null; sent: boolean; sending: boolean; error: string };
-
 export default function JobsPage() {
-  const mockJobs: Job[] = MOCK_JOBS.map((j, i) => ({
-    id: i + 1,
-    title: j.title,
-    department: j.department,
-    employment_type: j.employment_type,
-    location: j.location,
-    status: j.status,
-    salary_range: j.salary_range,
-    description: j.description,
-    requirements: j.requirements,
-    applicants_count: j.applicants_count,
-    created_at: j.created_at,
-  }));
-  const { data: allJobs, loading } = useApi<Job[]>("/careers/job-postings/", [], mockJobs);
+  const { lang } = useLang();
+  const { data: allJobs, loading } = useApi<HubJob[]>("/hub/jobs/", []);
   const [typeFilter, setTypeFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ApplyModal>({ open: false, job: null, sent: false, sending: false, error: "" });
 
-  function openModal(job: Job) {
+  function openModal(job: HubJob) {
     setModal({ open: true, job, sent: false, sending: false, error: "" });
     document.body.style.overflow = "hidden";
   }
@@ -85,29 +62,32 @@ export default function JobsPage() {
     setModal(m => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
     const body = {
-      job: modal.job.id,
+      title_en: modal.job.title_en,
+      title_uz: modal.job.title_uz,
+      title_ru: modal.job.title_ru,
+      department: modal.job.department,
+      type: modal.job.type,
+      salary: modal.job.salary,
       full_name: fd.get("full_name"),
       email: fd.get("email"),
       phone: fd.get("phone") || "",
-      experience_years: Number(fd.get("experience_years") || 0),
       cover_letter: fd.get("cover_letter") || "",
     };
     try {
-      await apiPost("/careers/job-applications/", body);
+      await apiFormPost("/hub/jobs/apply/", body);
     } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/careers/job-applications/", body, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+      /* silent */
     } finally {
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }
 
-  const activeJobs = allJobs.filter(j => j.status === "active");
-
-  const filtered = activeJobs.filter((j) => {
-    const matchType = typeFilter === "all" || j.employment_type === typeFilter;
-    const matchSearch = !search || j.title.toLowerCase().includes(search.toLowerCase()) || j.department.toLowerCase().includes(search.toLowerCase());
+  const filtered = allJobs.filter((j) => {
+    const matchType = typeFilter === "all" || j.type === typeFilter;
+    const title = j[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || j.title_en;
+    const matchSearch = !search ||
+      title.toLowerCase().includes(search.toLowerCase()) ||
+      j.department.toLowerCase().includes(search.toLowerCase());
     return matchType && matchSearch;
   });
 
@@ -126,9 +106,8 @@ export default function JobsPage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Ochiq vakansiyalar", value: loading ? "—" : String(activeJobs.length), color: "text-emerald-400" },
-              { label: "Bo'limlar", value: loading ? "—" : String(new Set(activeJobs.map(j => j.department)).size), color: "text-accent" },
-              { label: "Ariza berganlar", value: loading ? "—" : String(activeJobs.reduce((s, j) => s + j.applicants_count, 0)) + "+", color: "text-violet-400" },
+              { label: "Ochiq vakansiyalar", value: loading ? "—" : String(filtered.length), color: "text-emerald-400" },
+              { label: "Bo'limlar", value: loading ? "—" : String(new Set(allJobs.map(j => j.department)).size), color: "text-accent" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -169,7 +148,8 @@ export default function JobsPage() {
           <div className="space-y-4">
             {filtered.map((job, idx) => {
               const c = A[ACCENTS[idx % 3]];
-              const typeColor = TYPE_COLORS[job.employment_type] || "text-muted border-border bg-card";
+              const title = job[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || job.title_en;
+              const typeColor = `text-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-400" : job.type === "contract" ? "amber-400" : "emerald-400"} border-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-400" : job.type === "contract" ? "amber-400" : "emerald-400"}/20 bg-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-500" : job.type === "contract" ? "amber-500" : "emerald-500"}/8`;
               return (
                 <div key={job.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 sm:flex-row sm:items-center sm:gap-6 ${c.border}`}>
                   <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-base font-bold ${c.badge}`}>
@@ -177,21 +157,17 @@ export default function JobsPage() {
                   </div>
                   <div className="mt-4 flex-1 sm:mt-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className={`text-[16px] font-bold ${c.text}`}>{job.title}</h3>
-                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${typeColor}`}>{TYPE_LABELS[job.employment_type] || job.employment_type}</span>
+                      <h3 className={`text-[16px] font-bold ${c.text}`}>{title}</h3>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${typeColor}`}>{TYPE_LABELS[job.type] || job.type}</span>
                     </div>
-                    <p className="mt-1 text-[13px] text-muted">{job.department} · {job.location}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {job.requirements.split(",").slice(0, 4).map((req, i) => (
-                        <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] font-medium text-muted">{req.trim()}</span>
-                      ))}
-                    </div>
+                    <p className="mt-1 text-[13px] text-muted">{job.department}</p>
                   </div>
                   <div className="mt-4 flex items-center justify-between gap-4 sm:mt-0 sm:flex-col sm:items-end">
-                    <div className="text-right">
-                      <p className={`text-[15px] font-bold ${c.text}`}>{job.salary_range}</p>
-                      <p className="mt-0.5 text-[11px] font-medium text-muted">{job.applicants_count} ariza</p>
-                    </div>
+                    {job.salary && (
+                      <div className="text-right">
+                        <p className={`text-[15px] font-bold ${c.text}`}>{job.salary}</p>
+                      </div>
+                    )}
                     <button onClick={() => openModal(job)} className={`rounded-xl border px-5 py-2 text-[12px] font-bold transition-all ${c.badge} hover:opacity-80`}>
                       Ariza topshirish
                     </button>
@@ -212,7 +188,7 @@ export default function JobsPage() {
           </a>
         </div>
       </div>
-      {/* Apply Modal */}
+
       {modal.open && modal.job && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
@@ -237,7 +213,7 @@ export default function JobsPage() {
                   </div>
                   <h3 className="text-xl font-bold text-foreground">Arizangiz qabul qilindi!</h3>
                   <p className="mt-2 text-[13px] text-muted">
-                    <strong className="text-foreground">{modal.job.title}</strong> vakansiyasi uchun ariza qabul qilindi.
+                    <strong className="text-foreground">{modal.job.title_en}</strong> vakansiyasi uchun ariza qabul qilindi.
                     24 soat ichida aloqaga chiqamiz.
                   </p>
                   <button
@@ -251,8 +227,8 @@ export default function JobsPage() {
                 <>
                   <div className="mb-5">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-accent">Vakansiyaga ariza topshirish</p>
-                    <h3 className="mt-1 text-[16px] font-bold text-foreground">{modal.job.title}</h3>
-                    <p className="mt-0.5 text-[12px] text-muted">{modal.job.department} · {modal.job.location}</p>
+                    <h3 className="mt-1 text-[16px] font-bold text-foreground">{modal.job.title_en}</h3>
+                    <p className="mt-0.5 text-[12px] text-muted">{modal.job.department}</p>
                   </div>
 
                   <form onSubmit={handleApply} className="space-y-3">
@@ -275,12 +251,8 @@ export default function JobsPage() {
                       </div>
                     ))}
                     <div>
-                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">Tajriba (yil)</label>
-                      <input name="experience_years" type="number" min="0" max="50" placeholder="mas. 2" className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
-                    </div>
-                    <div>
                       <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">Motivatsiya xati</label>
-                      <textarea name="cover_letter" rows={3} placeholder="Nega bu lavozim siz uchun mos? Qanday tajribangiz bor?..." className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
+                      <textarea name="cover_letter" rows={3} placeholder="Nega bu lavozim siz uchun mos?" className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
                     </div>
 
                     {modal.error && (

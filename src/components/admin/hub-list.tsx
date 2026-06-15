@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useApi, apiPost, apiPatch, apiDelete } from "@/lib/api";
-import { Search, Plus, X, Loader2, Trash2, Eye } from "lucide-react";
+import { Search, Plus, X, Loader2, Trash2, Eye, Check, XCircle } from "lucide-react";
 
 type FieldDef = {
   key: string;
@@ -36,6 +36,20 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
       String(item[f.key] || "").toLowerCase().includes(search.toLowerCase()),
     ),
   );
+
+  async function handleStatus(id: number, status: string) {
+    try {
+      const res = await apiPatch(`${endpoint}${id}/`, { status });
+      setLocal(items.map((i) => (i.id === id ? { ...i, ...res } : i)));
+      setSelected(null);
+    } catch { /* silent */ }
+  }
+
+  function statusBadge(status: string) {
+    if (status === "approved") return <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-[11px] font-semibold text-green-400">Approved</span>;
+    if (status === "rejected") return <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-400">Rejected</span>;
+    return <span className="rounded-full bg-yellow-500/10 px-2 py-0.5 text-[11px] font-semibold text-yellow-400">Pending</span>;
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -134,8 +148,9 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
               className="cursor-pointer rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-accent/30 hover:shadow-[0_0_20px_-5px_rgba(6,247,227,0.15)]"
               onClick={() => setSelected(item)}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-2">
                 <h3 className="text-[15px] font-bold text-foreground">{titleVal}</h3>
+                {item.status ? statusBadge(item.status as string) : null}
               </div>
               {descVal && (
                 <p className="mt-1 text-[13px] text-muted line-clamp-2">{descVal}</p>
@@ -192,7 +207,29 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
                   </div>
                 ))}
             </div>
-            <div className="mt-6 flex gap-2 border-t border-border pt-5">
+            {selected.status ? (
+              <div className="mt-4">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Status</span>
+                <div className="mt-1">{statusBadge(selected.status as string)}</div>
+              </div>
+            ) : null}
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+              {(selected.status as string) === "pending" && (
+                <>
+                  <button
+                    onClick={() => handleStatus(Number(selected.id), "approved")}
+                    className="flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-[13px] font-bold text-black hover:bg-green-400"
+                  >
+                    <Check className="h-4 w-4" /> Approve
+                  </button>
+                  <button
+                    onClick={() => handleStatus(Number(selected.id), "rejected")}
+                    className="flex items-center gap-2 rounded-xl bg-red-500/20 px-4 py-2.5 text-[13px] text-red-400 hover:bg-red-500/30"
+                  >
+                    <XCircle className="h-4 w-4" /> Reject
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => openEdit(selected)}
                 className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-[13px] font-bold text-black hover:bg-accent-dark"

@@ -28,7 +28,7 @@ export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
     const token = getToken();
 
     const doFetch = (withAuth: boolean): Promise<unknown> =>
-      fetch(url, { headers: withAuth && token ? { Authorization: `Bearer ${token}` } : {} })
+      fetch(url, { cache: "no-store", headers: withAuth && token ? { Authorization: `Bearer ${token}` } : {} })
         .then((r) => {
           if (r.status === 401 && withAuth) return doFetch(false);
           if (!r.ok) throw new Error(`HTTP ${r.status}`);

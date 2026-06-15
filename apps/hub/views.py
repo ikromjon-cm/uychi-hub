@@ -4,6 +4,8 @@ from .serializers import (
     HeroVideoSerializer, NewsSerializer, AnnouncementSerializer,
     StartupSerializer, JobSerializer, LeadSerializer,
     StatSerializer, PartnerSerializer,
+    AdminNewsSerializer, AdminAnnouncementSerializer,
+    AdminStartupSerializer, AdminJobSerializer,
 )
 
 
@@ -26,25 +28,25 @@ class HeroVideoViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = News.objects.all()
+    queryset = News.objects.filter(status="approved")
     serializer_class = NewsSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.filter(status="approved")
     serializer_class = AnnouncementSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class StartupViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Startup.objects.all()
+    queryset = Startup.objects.filter(status="approved")
     serializer_class = StartupSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class JobViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Job.objects.all()
+    queryset = Job.objects.filter(status="approved")
     serializer_class = JobSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -52,6 +54,18 @@ class JobViewSet(viewsets.ReadOnlyModelViewSet):
 class LeadCreateView(generics.CreateAPIView):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class StartupCreateView(generics.CreateAPIView):
+    queryset = Startup.objects.all()
+    serializer_class = StartupSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class JobCreateView(generics.CreateAPIView):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
     permission_classes = [permissions.AllowAny]
 
 
@@ -75,25 +89,25 @@ class AdminHeroVideoViewSet(viewsets.ModelViewSet):
 
 class AdminNewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    serializer_class = AdminNewsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class AdminAnnouncementViewSet(viewsets.ModelViewSet):
     queryset = Announcement.objects.all()
-    serializer_class = AnnouncementSerializer
+    serializer_class = AdminAnnouncementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class AdminStartupViewSet(viewsets.ModelViewSet):
     queryset = Startup.objects.all()
-    serializer_class = StartupSerializer
+    serializer_class = AdminStartupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class AdminJobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all()
-    serializer_class = JobSerializer
+    serializer_class = AdminJobSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

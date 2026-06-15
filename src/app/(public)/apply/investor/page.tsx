@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { apiFormPost } from "@/lib/api";
 
 const T = {
   UZ: {
@@ -83,16 +84,9 @@ export default function InvestorApplyPage() {
     const fd = new FormData(e.currentTarget as HTMLFormElement);
     const body = Object.fromEntries(fd);
     try {
-      const res = await fetch("/api/investors/investors/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error();
+      await apiFormPost("/hub/leads/", { ...body, lead_type: "investor" });
     } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/investors/investors/", body, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+      /* silent */
     }
     setSent(true);
     setSending(false);

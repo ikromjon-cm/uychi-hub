@@ -1,5 +1,11 @@
 from django.db import models
 
+STATUS_CHOICES = [
+    ("pending", "Pending"),
+    ("approved", "Approved"),
+    ("rejected", "Rejected"),
+]
+
 
 class Stat(models.Model):
     title = models.CharField(max_length=255)
@@ -41,6 +47,7 @@ class News(models.Model):
     body_uz = models.TextField(blank=True)
     body_ru = models.TextField(blank=True)
     image = models.ImageField(upload_to="news/", blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -59,6 +66,7 @@ class Announcement(models.Model):
     body_ru = models.TextField(blank=True)
     image = models.ImageField(upload_to="announcements/", blank=True)
     date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
     class Meta:
         ordering = ["-date"]
@@ -78,6 +86,7 @@ class Startup(models.Model):
     solution_ru = models.TextField(blank=True)
     image = models.ImageField(upload_to="startups/", blank=True)
     tech_stack = models.CharField(max_length=500, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
     class Meta:
         ordering = ["id"]
@@ -95,6 +104,7 @@ class Job(models.Model):
     image = models.ImageField(upload_to="jobs/", blank=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="fulltime")
     salary = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
     class Meta:
         ordering = ["id"]

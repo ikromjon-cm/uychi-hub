@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Zap } from "lucide-react";
-import { apiPost } from "@/lib/api";
+import { apiFormPost } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 
 const T = {
@@ -86,11 +86,9 @@ export default function StartupApplyPage() {
     const fd = new FormData(e.currentTarget as HTMLFormElement);
     const body = Object.fromEntries(fd.entries());
     try {
-      await apiPost("/startups/startup-applications/", body);
+      await apiFormPost("/hub/startups/apply/", body);
     } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/startups/startup-applications/", body, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+      /* silent */
     } finally {
       setSent(true);
       setSending(false);

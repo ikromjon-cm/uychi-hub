@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { collectionOf, idOf, lsGet, lsSet, lsAdd, lsUpdate, lsRemove } from "./local-store";
 
 const API_BASE = "/api";
 
@@ -39,17 +40,33 @@ export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
         if (!cancelled) {
           const j = json as Record<string, unknown>;
           const result = (j.results ?? json) as T;
-          if (Array.isArray(result) && result.length === 0 && mockFallback) {
-            setData(mockFallback);
+          if (Array.isArray(result) && result.length === 0) {
+            // API returned empty — check local store before mock
+            const stored = lsGet<unknown>(endpoint);
+            if (stored && stored.length > 0) {
+              setData(stored as T);
+            } else if (mockFallback) {
+              setData(mockFallback);
+            }
           } else {
             setData(result);
+            // Cache non-empty API results for offline use
+            if (Array.isArray(result) && result.length > 0) {
+              lsSet(endpoint, result as Record<string, unknown>[]);
+            }
           }
         }
       })
       .catch((e: Error) => {
         if (!cancelled) {
           setError(e.message);
-          if (mockFallback) setData(mockFallback);
+          // On error: check local store, then mock
+          const stored = lsGet<unknown>(endpoint);
+          if (stored && stored.length > 0) {
+            setData(stored as T);
+          } else if (mockFallback) {
+            setData(mockFallback);
+          }
         }
       })
       .finally(() => {
@@ -71,13 +88,19 @@ export async function apiPost(endpoint: string, body: unknown) {
     const err = await res.json().catch(() => null);
     throw new Error(err?.detail || `HTTP ${res.status}`);
   }
-  return res.json();
+  const data = await res.json() as Record<string, unknown>;
+  // Save to local store on success so main site can show it
+  lsAdd(endpoint, { ...(body as Record<string, unknown>), ...data });
+  return data;
 }
 
 export async function apiFormPost(endpoint: string, body: unknown) {
   try {
     return await apiPost(endpoint, body);
   } catch {
+    // Offline fallback: save to local store so main site can show it
+    const item = { ...(body as Record<string, unknown>), id: Date.now() };
+    lsAdd(endpoint, item);
     const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
     submissions.push({ endpoint, body, timestamp: new Date().toISOString() });
     localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
@@ -92,7 +115,11 @@ export async function apiPatch(endpoint: string, body: unknown) {
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  const data = await res.json() as Record<string, unknown>;
+  // Update local store
+  const id = idOf(endpoint);
+  if (id !== null) lsUpdate(collectionOf(endpoint), id, data);
+  return data;
 }
 
 export async function apiDelete(endpoint: string) {
@@ -101,6 +128,9 @@ export async function apiDelete(endpoint: string) {
     headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  // Remove from local store
+  const id = idOf(endpoint);
+  if (id !== null) lsRemove(collectionOf(endpoint), id);
 }
 
 export async function login(username: string, password: string) {

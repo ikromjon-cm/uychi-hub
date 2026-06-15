@@ -40,6 +40,7 @@ export default function AdminLoginPage() {
             UYCHI<span className="text-accent">.</span>ADMIN
           </Link>
           <p className="mt-2 text-[13px] text-muted">Boshqaruv paneliga kirish</p>
+          <p className="mt-1 text-[11px] text-muted-foreground">Kirish: <span className="font-mono text-accent">uychi</span> / <span className="font-mono text-accent">uychi123</span></p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-7">

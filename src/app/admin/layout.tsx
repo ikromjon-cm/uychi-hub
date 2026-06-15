@@ -22,6 +22,14 @@ const NAV_MAIN = [
   { label: "Hamkorlar", href: "/admin/partners", icon: Handshake },
 ];
 
+const NAV_HUB = [
+  { label: "Statistika", href: "/admin/hub/stats", icon: BarChart2 },
+  { label: "Hub Startaplar", href: "/admin/hub/startups", icon: Rocket },
+  { label: "Hub Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
+  { label: "Murojaatlar", href: "/admin/hub/leads", icon: Mail },
+  { label: "Yo'nalishlar", href: "/admin/hub/hubs", icon: Building2 },
+];
+
 const NAV_MANAGE = [
   { label: "Ish O'rinlari", href: "/admin/careers", icon: Briefcase },
   { label: "Ta'lim", href: "/admin/education", icon: BookOpen },
@@ -115,6 +123,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Asosiy</div>
           <ul className="space-y-0.5">
             {NAV_MAIN.map(({ label, href, icon: Icon }) => (
+              <li key={href}>
+                <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
+                  <Icon className="h-4 w-4 flex-shrink-0" />{label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Hub</div>
+          <ul className="space-y-0.5">
+            {NAV_HUB.map(({ label, href, icon: Icon }) => (
               <li key={href}>
                 <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
                   <Icon className="h-4 w-4 flex-shrink-0" />{label}

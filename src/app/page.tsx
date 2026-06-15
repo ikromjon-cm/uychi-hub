@@ -6,7 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { STATS } from "@/lib/constants";
-import { useApi } from "@/lib/api";
+import { useApi, apiFormPost } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 import { NEWS as MOCK_NEWS } from "@/lib/mock-data";
 import { UychiMap } from "@/components/UychiMap";
@@ -108,16 +108,7 @@ export default function Home() {
     if (!name || name.length < 2)                               { setFormError("Ismingizni to'liq kiriting (kamida 2 harf)"); setSending(false); return; }
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { setFormError("Email manzili noto'g'ri formatda"); setSending(false); return; }
     if (phone && !/^[\+\d\s\-\(\)]{7,20}$/.test(phone))        { setFormError("Telefon raqam noto'g'ri formatda"); setSending(false); return; }
-    try {
-      const res = await fetch("/api/contact/submissions/", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error((await res.text().catch(() => "")) || "Yuborishda xatolik yuz berdi");
-    } catch {
-      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
-      submissions.push({ endpoint: "/contact/submissions/", body: data, timestamp: new Date().toISOString() });
-      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
-    }
+    await apiFormPost("/hub/leads/", { ...data, lead_type: "contact" });
     setSent(true);
     setSending(false);
   }

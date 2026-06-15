@@ -52,6 +52,7 @@ core_patterns = [
     path("events/", include("apps.events.urls")),
     path("coworking/", include("apps.coworking.urls")),
     path("students/", include("apps.students.urls")),
+    path("hub/", include("apps.hub.urls")),
 ]
 
 auth_patterns = [

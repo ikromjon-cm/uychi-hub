@@ -55,7 +55,7 @@ function Marquee({ items, reverse = false, speed = 35 }: { items: Partner[]; rev
 }
 
 export function PartnersSection() {
-  const { data: partners, loading } = useApi<Partner[]>("/partners/partners/", []);
+  const { data: partners, loading } = useApi<Partner[]>("/hub/partners/", []);
   const row1 = partners.slice(0, Math.ceil(partners.length / 2));
   const row2 = partners.slice(Math.ceil(partners.length / 2));
 

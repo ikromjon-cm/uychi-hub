@@ -8,17 +8,13 @@ import { staggerContainer, fadeUp } from "@/components/ui/animated-section";
 
 type HStartup = {
   id: number;
+  title: string;
   sector: string;
-  tagline: string;
   problem: string;
   solution: string;
-  tech_stack: string;
-  accent: string;
-  primary_metric_label: string;
-  primary_metric_value: string;
-  secondary_metric_label: string;
-  secondary_metric_value: string;
-  order: number;
+  technologies: string;
+  users: string;
+  partners: string;
 };
 
 
@@ -65,8 +61,8 @@ const accentMap: Record<string, {
 };
 
 function StartupCard({ startup, className = "" }: { startup: HStartup; className?: string }) {
-  const c = accentMap[startup.accent] || accentMap.cyan;
-  const techTags = startup.tech_stack.split(",").map(t => t.trim()).filter(Boolean);
+  const c = accentMap.cyan;
+  const techTags = startup.technologies.split(",").map(t => t.trim()).filter(Boolean);
 
   return (
     <motion.div
@@ -80,12 +76,9 @@ function StartupCard({ startup, className = "" }: { startup: HStartup; className
             <span className={`h-1.5 w-1.5 rounded-full ${c.badgeDot}`} />
             {startup.sector}
           </span>
-          <Link href="/startups" className={`flex items-center gap-1 text-[11px] font-semibold opacity-0 transition-all duration-200 group-hover:opacity-100 ${c.learnMore}`}>
-            Batafsil <ArrowUpRight className="h-3 w-3" />
-          </Link>
         </div>
         <div>
-          <h3 className="text-[15px] font-bold text-foreground leading-snug">{startup.tagline}</h3>
+          <h3 className="text-[15px] font-bold text-foreground leading-snug">{startup.title}</h3>
         </div>
         <div className="flex flex-1 flex-col gap-3 text-[13px]">
           <div>
@@ -105,12 +98,12 @@ function StartupCard({ startup, className = "" }: { startup: HStartup; className
           </div>
           <div className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{startup.primary_metric_label}</p>
-              <p className={`mt-0.5 text-lg font-bold ${c.metricText}`}>{startup.primary_metric_value}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Foydalanuvchilar</p>
+              <p className={`mt-0.5 text-lg font-bold ${c.metricText}`}>{startup.users}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{startup.secondary_metric_label}</p>
-              <p className="mt-0.5 text-[15px] font-bold text-foreground/70">{startup.secondary_metric_value}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Hamkorlar</p>
+              <p className="mt-0.5 text-[15px] font-bold text-foreground/70">{startup.partners}</p>
             </div>
           </div>
         </div>
@@ -120,8 +113,7 @@ function StartupCard({ startup, className = "" }: { startup: HStartup; className
 }
 
 export function StartupsSection() {
-  const { data: startups, loading } = useApi<HStartup[]>("/core/startups/", []);
-  const sorted = [...startups].sort((a, b) => a.order - b.order);
+  const { data: startups, loading } = useApi<HStartup[]>("/hub/startups/", []);
 
   return (
     <section id="startups" className="relative border-t border-border-subtle bg-background px-6 py-24 md:py-32">
@@ -157,7 +149,7 @@ export function StartupsSection() {
             variants={staggerContainer}
             className="grid grid-cols-1 gap-4 md:grid-cols-3"
           >
-            {sorted.map((s) => <StartupCard key={s.id} startup={s} />)}
+            {startups.map((s) => <StartupCard key={s.id} startup={s} />)}
           </motion.div>
         )}
 

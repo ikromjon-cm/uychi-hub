@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
 import { useApi } from "@/lib/api";
 
-type StatItem = { id: number; label: string; value: string; suffix: string; order: number };
+type StatItem = { id: number; title: string; value: string };
 
 const MOCK_STATS: StatItem[] = [
-  { id: 1, label: "Rezident Startaplar", value: "30", suffix: "+", order: 1 },
-  { id: 2, label: "IT Mutaxassislar",    value: "500", suffix: "+", order: 2 },
-  { id: 3, label: "Ish O'rinlari",       value: "1200", suffix: "+", order: 3 },
-  { id: 4, label: "Xalqaro Hamkorlar",   value: "30", suffix: "+", order: 4 },
-  { id: 5, label: "AI Yechimlar",        value: "25", suffix: "+", order: 5 },
+  { id: 1, title: "IT Startaplari", value: "24+" },
+  { id: 2, title: "Faol foydalanuvchilar", value: "3K+" },
+  { id: 3, title: "Ish O'rinlari", value: "350+" },
+  { id: 4, title: "Hamkor tashkilotlar", value: "20+" },
+  { id: 5, title: "AI Yechimlar", value: "12+" },
 ];
 
 const ACCENTS = ["cyan", "violet", "emerald", "cyan", "violet"] as const;
@@ -34,19 +34,13 @@ function CountUp({ to, suffix, active }: { to: number; suffix: string; active: b
     });
     return () => controls.stop();
   }, [active, to]);
-  const isThousands = to >= 1000;
-  const display = isThousands
-    ? count >= 1000 ? `${(count / 1000).toFixed(1).replace(".0", "")}K` : count.toString()
-    : count.toString();
-  return <span>{display}{suffix}</span>;
+  return <span>{to}{suffix}</span>;
 }
 
 export function StatsSection() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const { data: stats, loading } = useApi<StatItem[]>("/core/stats/", [], MOCK_STATS);
-
-  const sorted = [...stats].sort((a, b) => a.order - b.order);
+  const { data: stats, loading } = useApi<StatItem[]>("/hub/stats/", [], MOCK_STATS);
 
   return (
     <section className="relative border-t border-border-subtle bg-card px-6 py-20 md:py-28">
@@ -71,10 +65,13 @@ export function StatsSection() {
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-background" />
               ))
-            : sorted.map((stat, i) => {
+            : stats.map((stat, i) => {
                 const accent = ACCENTS[i % ACCENTS.length] as AccentKey;
                 const c = accentClasses[accent];
-                const numericValue = parseFloat(stat.value.replace(/[^0-9.]/g, "")) || 0;
+                const numericValue = parseInt(stat.value) || 0;
+                const match = stat.value.match(/^(\d+)(.*)$/);
+                const num = match ? parseInt(match[1]) : 0;
+                const sfx = match ? match[2] : stat.value;
                 return (
                   <motion.div
                     key={stat.id}
@@ -86,9 +83,9 @@ export function StatsSection() {
                   >
                     <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_70%)] bg-[radial-gradient(circle_at_50%_0%,rgba(0,0,0,0.02),transparent_70%)]" />
                     <div className={`text-2xl font-bold tracking-tight md:text-3xl ${c.num}`}>
-                      <CountUp to={numericValue} suffix={stat.suffix} active={inView} />
+                      <CountUp to={num} suffix={sfx} active={inView} />
                     </div>
-                    <div className="mt-2 text-[13px] font-semibold text-foreground">{stat.label}</div>
+                    <div className="mt-2 text-[13px] font-semibold text-foreground">{stat.title}</div>
                   </motion.div>
                 );
               })}

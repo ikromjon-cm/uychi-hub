@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "apps.events",
     "apps.coworking",
     "apps.students",
+    "apps.hub",
 ]
 
 MIDDLEWARE = [

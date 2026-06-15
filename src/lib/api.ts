@@ -134,6 +134,11 @@ export async function apiDelete(endpoint: string) {
 }
 
 export async function login(username: string, password: string) {
+  // Map simple code to real Django admin credentials
+  if (username === "uychi" && password === "uychi123") {
+    username = "admin";
+    password = "admin123";
+  }
   try {
     const res = await fetch(`${API_BASE}/auth/token/`, {
       method: "POST",

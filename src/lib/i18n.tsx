@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 
 export type Lang = "UZ" | "RU" | "EN";
 
@@ -407,15 +407,26 @@ const LangContext = createContext<LangContextValue>({
   t: translations.UZ,
 });
 
+const VALID: Lang[] = ["UZ", "RU", "EN"];
+
+function subscribe(cb: () => void) {
+  window.addEventListener("storage", cb);
+  return () => window.removeEventListener("storage", cb);
+}
+function getSnapshot(): Lang {
+  const v = localStorage.getItem("uychi-lang") as Lang | null;
+  return VALID.includes(v as Lang) ? (v as Lang) : "UZ";
+}
+function getServerSnapshot(): Lang {
+  return "UZ";
+}
+
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "UZ";
-    return (localStorage.getItem("uychi-lang") as Lang) || "UZ";
-  });
+  const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setLang = (l: Lang) => {
-    setLangState(l);
     localStorage.setItem("uychi-lang", l);
+    window.dispatchEvent(new StorageEvent("storage", { key: "uychi-lang", newValue: l }));
   };
 
   return (

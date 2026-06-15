@@ -36,8 +36,15 @@ function formatDate(str: string | null): string {
   return str.slice(0, 10);
 }
 
+const T = {
+  UZ: { badge: "/ IT Yangiliklar Portali", title1: "Uychi IT Ekotizimidan", title2: "So'nggi Yangiliklar", subtitle: "Uychi tumanidagi IT park, startaplar, ta'lim dasturlari va texnologik tadbirlar haqida eng so'nggi ma'lumotlar.", search: "Yangilik qidirish...", notFound: "Yangilik topilmadi", clear: "Filtrni tozalash", tag: "Yangilik", other: "Boshqa yangiliklar" },
+  RU: { badge: "/ Портал IT новостей", title1: "Из IT экосистемы Уйчи", title2: "Последние новости", subtitle: "Самые свежие сведения об IT-парке, стартапах, образовательных программах и технологических событиях Уйчинского района.", search: "Поиск новости...", notFound: "Новости не найдены", clear: "Сбросить фильтр", tag: "Новость", other: "Другие новости" },
+  EN: { badge: "/ IT News Portal", title1: "From the Uychi IT", title2: "Ecosystem — Latest News", subtitle: "The latest on the IT park, startups, education programs and tech events in Uychi District.", search: "Search news...", notFound: "No news found", clear: "Clear filter", tag: "News", other: "Other news" },
+} as const;
+
 export default function NewsPage() {
   const { lang } = useLang();
+  const t = T[lang];
   const { data: allArticles, loading } = useApi<NewsItem[]>("/hub/news/", []);
   const [activeCategory, setActiveCategory] = useState("Barchasi");
   const [search, setSearch] = useState("");
@@ -59,18 +66,18 @@ export default function NewsPage() {
       <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ IT Yangiliklar Portali</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">{t.badge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            Uychi IT Ekotizimidan<br />
-            <span className="bg-gradient-to-r from-accent via-violet-400 to-emerald-400 bg-clip-text text-transparent">So'nggi Yangiliklar</span>
+            {t.title1}<br />
+            <span className="bg-gradient-to-r from-accent via-violet-400 to-emerald-400 bg-clip-text text-transparent">{t.title2}</span>
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            Uychi districtidagi IT park, startaplar, ta&apos;lim dasturlari va texnologik tadbirlar haqida eng so&apos;nggi ma&apos;lumotlar.
+            {t.subtitle}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 sm:w-72">
               <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Yangilik qidirish..." className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.search} className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
             </div>
           </div>
         </div>
@@ -85,8 +92,8 @@ export default function NewsPage() {
 
         {!loading && filtered.length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
-            <p className="text-[15px] text-muted">Yangilik topilmadi</p>
-            <button onClick={() => setSearch("")} className="mt-3 text-[13px] text-accent hover:underline">Filtrni tozalash</button>
+            <p className="text-[15px] text-muted">{t.notFound}</p>
+            <button onClick={() => setSearch("")} className="mt-3 text-[13px] text-accent hover:underline">{t.clear}</button>
           </div>
         ) : !loading && (
           <>
@@ -94,7 +101,7 @@ export default function NewsPage() {
               <Link href={`/news/${featured.id}`} className="mb-10 block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1">
                 <div className="grid md:grid-cols-2">
                   <div className="p-8">
-                    <span className={`badge ${A[getAccent(0)].badge}`}>Yangilik</span>
+                    <span className={`badge ${A[getAccent(0)].badge}`}>{t.tag}</span>
                     <h2 className="mt-3 text-2xl font-bold text-foreground leading-tight">
                       {featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_uz || featured.title_en}
                     </h2>
@@ -119,7 +126,7 @@ export default function NewsPage() {
               <>
                 <div className="mb-6 flex items-center gap-3">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">Boshqa yangiliklar</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">{t.other}</span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -128,7 +135,7 @@ export default function NewsPage() {
                     return (
                       <Link key={item.id} href={`/news/${item.id}`} className={`group flex flex-col rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1 cursor-pointer ${c.border}`}>
                         <span className={`inline-flex items-center gap-1.5 self-start rounded-full border px-2.5 py-1 text-[10px] font-bold ${c.badge}`}>
-                          <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> Yangilik
+                          <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> {t.tag}
                         </span>
                         <h3 className={`mt-3 text-[15px] font-bold leading-snug text-foreground group-hover:${c.text} transition-colors`}>
                           {item[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.title_uz || item.title_en}

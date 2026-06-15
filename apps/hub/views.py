@@ -1,24 +1,15 @@
-from rest_framework import viewsets, permissions, generics, status
-from rest_framework.response import Response
-from .models import Stat, Hub, Startup, Partner, Lead
-from .serializers import StatSerializer, HubSerializer, StartupSerializer, PartnerSerializer, LeadSerializer
+from rest_framework import viewsets, permissions, generics
+from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner
+from .serializers import (
+    HeroVideoSerializer, NewsSerializer, AnnouncementSerializer,
+    StartupSerializer, JobSerializer, LeadSerializer,
+    StatSerializer, PartnerSerializer,
+)
 
 
 class StatViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Stat.objects.all()
     serializer_class = StatSerializer
-    permission_classes = [permissions.AllowAny]
-
-
-class HubViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Hub.objects.all()
-    serializer_class = HubSerializer
-    permission_classes = [permissions.AllowAny]
-
-
-class StartupViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Startup.objects.all()
-    serializer_class = StartupSerializer
     permission_classes = [permissions.AllowAny]
 
 
@@ -28,24 +19,40 @@ class PartnerViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 
+class HeroVideoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = HeroVideo.objects.filter(is_active=True)
+    serializer_class = HeroVideoSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class NewsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Announcement.objects.all()
+    serializer_class = AnnouncementSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class StartupViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Startup.objects.all()
+    serializer_class = StartupSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class JobViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+    permission_classes = [permissions.AllowAny]
+
+
 class LeadCreateView(generics.CreateAPIView):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
     permission_classes = [permissions.AllowAny]
-
-    def create(self, request, *args, **kwargs):
-        name = request.data.get("name", "").strip()
-        email = request.data.get("email", "").strip()
-        message = request.data.get("message", "").strip()
-        if not name or not email or not message:
-            return Response({"detail": "Ism, email va xabar majburiy."}, status=status.HTTP_400_BAD_REQUEST)
-        if len(name) < 2 or len(message) < 10:
-            return Response({"detail": "Ism kamida 2 ta, xabar kamida 10 ta belgi bo'lishi kerak."}, status=status.HTTP_400_BAD_REQUEST)
-        lead_type = request.data.get("lead_type", "contact")
-        allowed_types = dict(Lead.TYPE_CHOICES).keys()
-        if lead_type not in allowed_types:
-            return Response({"detail": "Noto'g'ri lead turi."}, status=status.HTTP_400_BAD_REQUEST)
-        return super().create(request, *args, **kwargs)
 
 
 class AdminStatViewSet(viewsets.ModelViewSet):
@@ -54,9 +61,27 @@ class AdminStatViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AdminHubViewSet(viewsets.ModelViewSet):
-    queryset = Hub.objects.all()
-    serializer_class = HubSerializer
+class AdminPartnerViewSet(viewsets.ModelViewSet):
+    queryset = Partner.objects.all()
+    serializer_class = PartnerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AdminHeroVideoViewSet(viewsets.ModelViewSet):
+    queryset = HeroVideo.objects.all()
+    serializer_class = HeroVideoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AdminNewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AdminAnnouncementViewSet(viewsets.ModelViewSet):
+    queryset = Announcement.objects.all()
+    serializer_class = AnnouncementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -66,9 +91,9 @@ class AdminStartupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AdminPartnerViewSet(viewsets.ModelViewSet):
-    queryset = Partner.objects.all()
-    serializer_class = PartnerSerializer
+class AdminJobViewSet(viewsets.ModelViewSet):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

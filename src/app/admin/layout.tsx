@@ -8,7 +8,7 @@ import {
   Handshake, Briefcase, Image, Search, BarChart2, Shield,
   Key, ScrollText, Database, Menu, X, Bell, Settings, LogOut,
   Sun, Moon, BookOpen, CalendarDays, Building2, GraduationCap,
-  MessageSquare, Mail,
+  MessageSquare, Mail, Video, Megaphone,
 } from "lucide-react";
 import { logout, getMe } from "@/lib/api";
 import { useTheme } from "@/lib/theme-provider";
@@ -24,10 +24,13 @@ const NAV_MAIN = [
 
 const NAV_HUB = [
   { label: "Statistika", href: "/admin/hub/stats", icon: BarChart2 },
-  { label: "Hub Startaplar", href: "/admin/hub/startups", icon: Rocket },
-  { label: "Hub Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
+  { label: "Hero Video", href: "/admin/hub/hero-video", icon: Video },
+  { label: "Yangiliklar", href: "/admin/hub/news", icon: Newspaper },
+  { label: "E'lonlar", href: "/admin/hub/announcements", icon: Megaphone },
+  { label: "Startaplar", href: "/admin/hub/startups", icon: Rocket },
+  { label: "Ish O'rinlari", href: "/admin/hub/jobs", icon: Briefcase },
+  { label: "Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
   { label: "Murojaatlar", href: "/admin/hub/leads", icon: Mail },
-  { label: "Yo'nalishlar", href: "/admin/hub/hubs", icon: Building2 },
 ];
 
 const NAV_MANAGE = [

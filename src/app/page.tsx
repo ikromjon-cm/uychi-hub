@@ -1,829 +1,581 @@
-"use client";
+"use client"
 
-import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { STATS } from "@/lib/constants";
-import { useApi, apiFormPost } from "@/lib/api";
-import { useLang } from "@/lib/i18n";
-import { NEWS as MOCK_NEWS } from "@/lib/mock-data";
-import { UychiMap } from "@/components/UychiMap";
-import { StatsSection } from "@/components/sections/StatsSection";
-import {
-  ArrowRight, ArrowUpRight, Building2, Brain, Rocket, GraduationCap,
-  CheckCircle, ChevronRight, AlertCircle, MapPin, Phone, Mail,
-} from "lucide-react";
+import { useState, useRef, useEffect } from "react"
+import Link from "next/link"
+import { motion, useInView } from "framer-motion"
+import { Navbar } from "@/components/layout/Navbar"
+import { Footer } from "@/components/layout/Footer"
+import { useApi, apiFormPost } from "@/lib/api"
+import { useLang } from "@/lib/i18n"
+import { ArrowRight, ArrowUpRight, Play, Mail, Phone, MapPin, Calendar, Clock, Users, Briefcase, DollarSign, ChevronRight, CheckCircle, Loader2 } from "lucide-react"
 
-type Article = { id: number; slug: string; title: string; category: string; excerpt: string; status: string; published_at: string };
-
-/* ─── Motion variants ─────────────────────────────────────────────── */
 const fadeUp = {
-  hidden:  { opacity: 0, y: 32, filter: "blur(4px)" },
+  hidden: { opacity: 0, y: 32, filter: "blur(4px)" },
   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
-};
+}
+
 const stagger = {
-  hidden:  {},
+  hidden: {},
   visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
-};
-const slideLeft = {
-  hidden:  { opacity: 0, x: -32 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
-};
-const slideRight = {
-  hidden:  { opacity: 0, x: 32 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
-};
+}
 
-/* ─── CountUp ──────────────────────────────────────────────────────── */
-function CountUp({ to }: { to: string }) {
-  const ref    = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
-  const num    = parseFloat(to.replace(/[^\d.]/g, "")) || 0;
-  const suffix = to.replace(/[\d.,]/g, "");
-  const [val, setVal] = useState(0);
+const ACCENTS = ["cyan", "emerald", "violet", "amber"] as const
 
+type AccentKey = typeof ACCENTS[number]
+
+const accentClasses: Record<AccentKey, { bg: string; border: string; num: string; glow: string }> = {
+  cyan:    { bg: "bg-accent/5",   border: "border-accent/15",   num: "text-accent",    glow: "hover:shadow-[0_0_50px_-10px_rgba(6,247,227,0.22)]" },
+  emerald: { bg: "bg-emerald-500/5",  border: "border-emerald-400/15",  num: "text-emerald-400",  glow: "hover:shadow-[0_0_50px_-10px_rgba(52,211,153,0.22)]" },
+  violet:  { bg: "bg-violet-500/5",   border: "border-violet-400/15",   num: "text-violet-400",   glow: "hover:shadow-[0_0_50px_-10px_rgba(167,139,250,0.22)]" },
+  amber:   { bg: "bg-amber-500/5",    border: "border-amber-400/15",    num: "text-amber-400",    glow: "hover:shadow-[0_0_50px_-10px_rgba(251,191,36,0.22)]" },
+}
+
+type NewsItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; created_at: string }
+type AnnouncementItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; date: string }
+type StartupItem = { id: number; title: string; sector: string; problem_en: string; problem_uz: string; problem_ru: string; solution_en: string; solution_uz: string; solution_ru: string; image: string; tech_stack: string }
+type JobItem = { id: number; title_en: string; title_uz: string; title_ru: string; department: string; image: string; type: string; salary: string }
+type StatItem = { id: number; title: string; value: string }
+
+const CATEGORY_LABEL: Record<string, string> = { "Government": "Davlat", "Corporate": "Korporatsiya", "University": "Universitet", "Accelerator": "Akselerator", "International": "Xalqaro", "Tech Park": "Tech Park" }
+const CATEGORY_BADGE: Record<string, string> = { "Government": "border-accent/15 text-accent/60", "Corporate": "border-emerald-400/15 text-emerald-400/60", "University": "border-violet-400/15 text-violet-400/60", "Accelerator": "border-amber-400/15 text-amber-400/60", "International": "border-pink-400/15 text-pink-400/60", "Tech Park": "border-blue-400/15 text-blue-400/60" }
+
+function CountUp({ to, suffix = "", active }: { to: number; suffix?: string; active: boolean }) {
+  const [val, setVal] = useState(0)
   useEffect(() => {
-    if (!inView) return;
-    let raf: number;
-    let start: number | null = null;
-    const dur = 1600;
-    const step = (ts: number) => {
-      if (start === null) start = ts;
-      const prog = Math.min((ts - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - prog, 3);
-      setVal(Math.round(ease * num));
-      if (prog < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, num]);
-
-  return <span ref={ref}>{to.includes(",") ? val.toLocaleString() : val}{suffix}</span>;
+    if (!active) return
+    let start = 0
+    const dur = 1200
+    const step = 16
+    const inc = Math.ceil(to / (dur / step))
+    const timer = setInterval(() => {
+      start += inc
+      if (start >= to) { setVal(to); clearInterval(timer) }
+      else setVal(start)
+    }, step)
+    return () => clearInterval(timer)
+  }, [to, active])
+  return <>{val}{suffix}</>
 }
 
-/* ─── Section heading ──────────────────────────────────────────────── */
-function SectionTag({ color, children }: { color?: string; children: React.ReactNode }) {
-  return (
-    <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] ${color ?? "text-accent"}`}>
-      <span className="h-px w-5 bg-current opacity-60" />
-      {children}
-    </span>
-  );
-}
-
-/* ─── Hover card ───────────────────────────────────────────────────── */
-function HoverCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`group rounded-2xl border border-border bg-card card-shadow transition-all duration-300 hover:border-accent/25 ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════ */
 export default function Home() {
-  const [sending,   setSending]   = useState(false);
-  const [sent,      setSent]      = useState(false);
-  const [formError, setFormError] = useState("");
+  const { lang, t } = useLang()
+  const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [formError, setFormError] = useState("")
 
-  const mockArticles: Article[] = MOCK_NEWS.map((n, i) => ({
-    id: i + 1, slug: n.id, title: n.title, category: n.category,
-    excerpt: n.excerpt, status: "published", published_at: n.date,
-  }));
-  const { data: articles } = useApi<Article[]>("/news/articles/", [], mockArticles);
-  const { t } = useLang();
-  const NEWS = articles.filter(a => a.status === "published").slice(0, 6);
+  const heroRef = useRef<HTMLDivElement>(null)
+  const heroInView = useInView(heroRef, { once: true })
+  const statsRef = useRef<HTMLDivElement>(null)
+  const statsInView = useInView(statsRef, { once: true, margin: "-100px" })
 
-  const STAT_ICONS = ["👥", "📐", "🏘️", "📏", "📅"];
+  const { data: heroVideos } = useApi<{ id: number; video_file: string; video_url: string }[]>("/hub/hero-video/", [])
+  const { data: news } = useApi<NewsItem[]>("/hub/news/", [])
+  const { data: announcements } = useApi<AnnouncementItem[]>("/hub/announcements/", [])
+  const { data: startups } = useApi<StartupItem[]>("/hub/startups/", [])
+  const { data: jobs } = useApi<JobItem[]>("/hub/jobs/", [])
+  const { data: partners } = useApi<{ id: number; name: string; category: string }[]>("/hub/partners/", [])
+  const { data: stats } = useApi<StatItem[]>("/hub/stats/", [])
+
+  const heroVideo = heroVideos[0]
+  const partnerRow1 = partners.slice(0, Math.ceil(partners.length / 2))
+  const partnerRow2 = partners.slice(Math.ceil(partners.length / 2))
+
+  function tl(fields: Record<string, string>): string {
+    return fields[`${lang.toLowerCase()}` as keyof typeof fields] || fields.en || Object.values(fields)[0] || ""
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormError("");
-    setSending(true);
-    const fd   = new FormData(e.currentTarget);
-    const data = Object.fromEntries(fd);
-    const { email, phone, name } = data as Record<string, string>;
-    if (!name || name.length < 2)                               { setFormError("Ismingizni to'liq kiriting (kamida 2 harf)"); setSending(false); return; }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { setFormError("Email manzili noto'g'ri formatda"); setSending(false); return; }
-    if (phone && !/^[\+\d\s\-\(\)]{7,20}$/.test(phone))        { setFormError("Telefon raqam noto'g'ri formatda"); setSending(false); return; }
-    await apiFormPost("/hub/leads/", { ...data, lead_type: "contact" });
-    setSent(true);
-    setSending(false);
+    e.preventDefault()
+    setFormError("")
+    setSending(true)
+    const fd = new FormData(e.currentTarget)
+    const data = Object.fromEntries(fd) as Record<string, string>
+    if (!data.name || data.name.length < 2) { setFormError("Ismingizni to'liq kiriting"); setSending(false); return }
+    if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { setFormError("Email noto'g'ri"); setSending(false); return }
+    await apiFormPost("/hub/leads/", { ...data, lead_type: "contact" }).catch(() => {})
+    setSent(true)
+    setSending(false)
   }
 
   return (
-    <div className="flex flex-col bg-background text-foreground">
+    <div className="cyber-grid flex flex-col">
       <Navbar />
 
-      {/* ══ HERO — split layout ══════════════════════════════════════════ */}
-      <section className="relative min-h-screen overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 hero-mesh" />
-        <div className="absolute inset-0 dot-grid opacity-30" />
-        {/* Accent orbs */}
+      <section ref={heroRef} className="hero">
+        <div className="hero-mesh absolute inset-0" />
+        <div className="dot-grid pointer-events-none absolute inset-0 opacity-30" />
         <div className="pointer-events-none absolute -left-40 top-20 h-[500px] w-[500px] rounded-full bg-indigo-500/6 blur-[120px]" />
         <div className="pointer-events-none absolute -right-20 top-1/3 h-[400px] w-[400px] rounded-full bg-violet-500/5 blur-[100px]" />
 
         <div className="relative mx-auto flex min-h-screen max-w-7xl items-center px-6 pb-12 pt-28">
           <div className="grid w-full items-center gap-16 lg:grid-cols-2">
-
-            {/* Left — content */}
             <motion.div initial="hidden" animate="visible" variants={stagger}>
               <motion.div variants={fadeUp}>
-                <SectionTag>Uychi · Namangan · 2026</SectionTag>
+                <span className="badge">{t.hero.badge}</span>
               </motion.div>
-
-              <motion.h1
-                variants={fadeUp}
-                className="mt-5 text-[clamp(2.4rem,5.5vw,4.2rem)] font-extrabold leading-[1.04] tracking-[-0.025em] text-foreground"
-              >
-                {t.hero.title.split("IT")[0]}
-                <span className="gradient-text">IT</span>
-                {t.hero.title.split("IT")[1]}
+              <motion.h1 variants={fadeUp} className="mt-5 text-[clamp(2.4rem,5.5vw,4.2rem)] font-extrabold leading-[1.04] tracking-[-0.025em] text-foreground">
+                {t.hero.title}
               </motion.h1>
-
-              <motion.p
-                variants={fadeUp}
-                className="mt-6 max-w-lg text-[1rem] leading-[1.75] text-muted"
-              >
+              <motion.p variants={fadeUp} className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
                 {t.hero.desc}
               </motion.p>
-
-              <motion.div variants={fadeUp} className="mt-9 flex flex-wrap gap-3">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/apply/startup"
-                    className="btn-ripple inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-[14px] font-bold text-white shadow-[0_4px_20px_rgba(79,70,229,0.4)] transition-all hover:bg-accent-dark hover:shadow-[0_6px_28px_rgba(79,70,229,0.5)]"
-                  >
-                    {t.hero.apply}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/#contact"
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-7 py-3.5 text-[14px] font-semibold text-foreground transition-all hover:border-accent/30 hover:bg-card-hover"
-                  >
-                    {t.hero.reach}
-                  </Link>
-                </motion.div>
-              </motion.div>
-
-              {/* Trust badges */}
-              <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2">
-                {[
-                  { icon: "🏆", label: "IT Park a'zosi" },
-                  { icon: "🎓", label: "42,400 o'quvchi" },
-                  { icon: "🚀", label: "30+ startap" },
-                ].map((b) => (
-                  <span key={b.label} className="flex items-center gap-1.5 text-[13px] text-muted">
-                    <span>{b.icon}</span>
-                    <span>{b.label}</span>
-                  </span>
-                ))}
+              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/#contact" className="btn btn-primary gap-2 rounded-full bg-accent px-6 py-3 text-[14px] font-bold text-black shadow-[0_2px_20px_rgba(79,70,229,0.3)] transition-all hover:bg-accent-dark hover:shadow-[0_4px_30px_rgba(79,70,229,0.45)]">
+                  {t.hero.reach} <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="/apply/startup" className="btn btn-outline gap-2 rounded-full border border-border px-6 py-3 text-[14px] font-semibold text-muted transition-all hover:border-accent/40 hover:text-foreground">
+                  {t.hero.apply} <ArrowUpRight className="h-4 w-4" />
+                </Link>
               </motion.div>
             </motion.div>
 
-            {/* Right — stats visual */}
             <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={slideRight}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="relative hidden lg:block"
             >
-              {/* Background card */}
-              <div className="relative rounded-3xl border border-border bg-card/60 p-8 backdrop-blur-sm">
-                {/* Gradient accent top */}
-                <div className="absolute inset-x-0 top-0 h-px rounded-t-3xl bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
-
-                <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
-                  Tuman Ko&apos;rsatkichlari
-                </p>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {STATS.map((s, i) => (
-                    <motion.div
-                      key={s.label}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                      className={`rounded-2xl border border-border bg-background p-5 ${i === 0 ? "col-span-2" : ""}`}
-                    >
-                      <span className="text-[22px]">{STAT_ICONS[i]}</span>
-                      <p className="mt-2 text-[1.6rem] font-extrabold leading-none tracking-tight text-foreground">
-                        <CountUp to={s.value} />
-                      </p>
-                      <p className="mt-1.5 text-[12px] font-medium uppercase tracking-wider text-muted">
-                        {s.label}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* HUB badge */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8, duration: 0.4 }}
-                  className="mt-4 flex items-center justify-between rounded-2xl border border-indigo-500/20 bg-indigo-500/8 px-5 py-4"
-                >
-                  <div>
-                    <p className="text-[13px] font-bold text-accent">UYCHI IT HUB</p>
-                    <p className="mt-0.5 text-[12px] text-muted">Namangan viloyati, O'zbekiston</p>
-                  </div>
-                  <span className="flex items-center gap-1.5 text-[12px] font-semibold text-emerald-500">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Faol
-                  </span>
-                </motion.div>
-              </div>
-
-              {/* Floating mini card */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-6 -top-6 rounded-2xl border border-border bg-card px-4 py-3 shadow-lg"
-              >
-                <p className="text-[11px] text-muted">Yangi startap</p>
-                <p className="mt-0.5 text-[13px] font-bold text-foreground">AgroSmart Uychi</p>
-                <p className="mt-0.5 text-[11px] font-medium text-emerald-500">✓ Qabul qilindi</p>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                className="absolute -bottom-4 -left-6 rounded-2xl border border-border bg-card px-4 py-3 shadow-lg"
-              >
-                <p className="text-[11px] text-muted">Sug'orish tejash</p>
-                <p className="mt-0.5 text-[18px] font-extrabold text-accent">40%</p>
-                <p className="text-[11px] text-muted">IoT + AI orqali</p>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Bottom scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-[11px] uppercase tracking-widest text-muted">Ko&apos;proq</span>
-          <motion.div
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="h-5 w-px bg-gradient-to-b from-muted to-transparent"
-          />
-        </motion.div>
-      </section>
-
-      {/* ══ INFRASTRUCTURE ══════════════════════════════════════════════ */}
-      <section id="about" className="relative border-t border-border-subtle bg-card py-24 md:py-32">
-        <div className="absolute inset-0 dot-grid opacity-20" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="mb-16 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
-          >
-            <div>
-              <motion.div variants={fadeUp}>
-                <SectionTag>{t.infra.badge.replace("/ ", "")}</SectionTag>
-              </motion.div>
-              <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-                {t.infra.title}
-              </motion.h2>
-            </div>
-            <motion.p variants={fadeUp} className="max-w-md text-[15px] leading-relaxed text-muted lg:text-right">
-              {t.infra.desc}
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            {t.infra.items.map((item, i) => {
-              const Icon = [Building2, Brain, Rocket, GraduationCap][i];
-              const colors = [
-                { bg: "bg-indigo-500/10", text: "text-indigo-500", dark: "dark:text-indigo-400" },
-                { bg: "bg-violet-500/10", text: "text-violet-600", dark: "dark:text-violet-400" },
-                { bg: "bg-rose-500/10",   text: "text-rose-600",   dark: "dark:text-rose-400" },
-                { bg: "bg-amber-500/10",  text: "text-amber-600",  dark: "dark:text-amber-400" },
-              ][i];
-              return (
-                <motion.div key={i} variants={fadeUp}>
-                  <HoverCard className="h-full p-6">
-                    <div className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl ${colors.bg}`}>
-                      <Icon className={`h-5.5 w-5.5 ${colors.text} ${colors.dark}`} />
+              <div className="perspective-1000">
+                <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl">
+                  {heroVideo?.video_url ? (
+                    <video
+                      src={heroVideo.video_url}
+                      autoPlay muted loop playsInline
+                      className="w-full aspect-video object-cover"
+                    />
+                  ) : heroVideo?.video_file ? (
+                    <video
+                      src={heroVideo.video_file}
+                      autoPlay muted loop playsInline
+                      className="w-full aspect-video object-cover"
+                    />
+                  ) : (
+                    <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-pink-500/10">
+                      <Play className="h-16 w-16 text-accent/40" />
                     </div>
-                    <h3 className="text-[15px] font-bold">{item.title}</h3>
-                    <p className="mt-2.5 text-[13px] leading-relaxed text-muted">{item.desc}</p>
-                  </HoverCard>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══ DISTRICT MAP ════════════════════════════════════════════════ */}
-      <section id="district" className="relative border-t border-border-subtle py-20 md:py-28">
-        <div className="pointer-events-none absolute left-0 top-0 h-[600px] w-[600px] rounded-full bg-emerald-500/4 blur-[150px]" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="mb-12 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between"
-          >
-            <div>
-              <motion.div variants={fadeUp}>
-                <SectionTag color="text-emerald-500 dark:text-emerald-400">Uychi Tumani</SectionTag>
-              </motion.div>
-              <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-                Tuman haqida <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">umumiy ma&apos;lumot</span>
-              </motion.h2>
-            </div>
-            <motion.p variants={fadeUp} className="max-w-xs text-[13px] leading-relaxed text-muted lg:text-right">
-              Namangan viloyati Uychi tumani — 1935 yil 28 iyulda tashkil topgan
-            </motion.p>
-          </motion.div>
-
-          <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
-            {/* SVG Map */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <UychiMap />
-            </motion.div>
-
-            {/* Stats + borders */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              variants={stagger}
-              className="flex flex-col gap-4"
-            >
-              {/* Stats grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { icon: "📅", label: "Tashkil topgan", value: "1935 yil 28 iyul", color: "text-violet-400" },
-                  { icon: "📐", label: "Maydon", value: "0,30 ming km²", color: "text-cyan-400" },
-                  { icon: "👥", label: "Aholi soni", value: "241,3 ming kishi", color: "text-emerald-400" },
-                  { icon: "🏘️", label: "Mahallalar", value: "53 ta", color: "text-amber-400" },
-                ].map((item, i) => (
-                  <motion.div
-                    key={i}
-                    variants={fadeUp}
-                    className="rounded-2xl border border-border bg-card p-4 transition-all hover:border-emerald-500/25 hover:shadow-[0_4px_20px_-8px_rgba(52,211,153,0.2)]"
-                  >
-                    <span className="text-[20px]">{item.icon}</span>
-                    <p className={`mt-2 text-[15px] font-bold ${item.color}`}>{item.value}</p>
-                    <p className="mt-0.5 text-[11px] uppercase tracking-wider text-muted">{item.label}</p>
-                  </motion.div>
-                ))}
+                  )}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-accent/10" />
+                </div>
               </div>
-
-              {/* Border info */}
-              <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-5">
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="text-[18px]">🗺️</span>
-                  <p className="text-[12px] font-bold uppercase tracking-wider text-muted">Chegara uzunligi — 56,4 km</p>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { name: "Qirg'iziston Respublikasi", km: 14.4, color: "bg-rose-400", pct: (14.4/56.4)*100 },
-                    { name: "Uchqo'rg'on tumani",       km: 24.0, color: "bg-violet-400", pct: (24.0/56.4)*100 },
-                    { name: "Namangan shahri",           km: 13.0, color: "bg-cyan-400",  pct: (13.0/56.4)*100 },
-                    { name: "Chortoq tumani",            km: 5.0,  color: "bg-amber-400", pct: (5.0/56.4)*100 },
-                  ].map((b) => (
-                    <div key={b.name}>
-                      <div className="mb-1 flex justify-between text-[12px]">
-                        <span className="text-muted">{b.name}</span>
-                        <span className="font-semibold text-foreground">{b.km} km</span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-border">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${b.pct}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                          className={`h-full rounded-full ${b.color}`}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Tuman info card */}
-              <motion.div
-                variants={fadeUp}
-                className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-foreground">Namangan viloyati · Uychi tumani</p>
-                    <p className="text-[11px] text-muted">IT Park a&apos;zosi · 2024 yildan</p>
-                  </div>
-                </div>
-                <span className="text-[11px] font-bold text-emerald-400">Faol</span>
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ══ LIVE STATS ══════════════════════════════════════════════════ */}
-      <StatsSection />
-
-      {/* ══ STARTUPS ════════════════════════════════════════════════════ */}
-      <section id="startups" className="relative border-t border-border-subtle py-24 md:py-32">
-        <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-violet-500/4 blur-[140px]" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="mb-16 max-w-xl"
-          >
-            <motion.div variants={fadeUp}>
-              <SectionTag color="text-violet-500 dark:text-violet-400">{t.startups.badge.replace("/ ", "")}</SectionTag>
-            </motion.div>
-            <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-              {t.startups.title}
-            </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-[15px] leading-relaxed text-muted">
-              {t.startups.desc}
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="grid gap-5 md:grid-cols-3"
-          >
-            {t.startups.items.map((s, i) => {
-              const accents = [
-                { badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500", border: "border-emerald-500/15 hover:border-emerald-500/35" },
-                { badge: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",   dot: "bg-indigo-500",  border: "border-indigo-500/15 hover:border-indigo-500/35" },
-                { badge: "bg-violet-500/10 text-violet-600 dark:text-violet-400",   dot: "bg-violet-500",  border: "border-violet-500/15 hover:border-violet-500/35" },
-              ][i];
-              return (
-                <motion.div key={i} variants={fadeUp}>
-                  <div className={`group flex h-full flex-col rounded-2xl border bg-card p-6 card-shadow transition-all duration-300 ${accents.border}`}>
-                    <span className={`inline-flex items-center gap-1.5 self-start rounded-full px-3 py-1 text-[11px] font-bold tracking-wide ${accents.badge}`}>
-                      <motion.span
-                        animate={{ scale: [1, 1.4, 1], opacity: [1, 0.4, 1] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
-                        className={`h-1.5 w-1.5 rounded-full ${accents.dot}`}
-                      />
-                      {s.sector}
-                    </span>
-
-                    <h3 className="mt-4 text-[17px] font-bold text-foreground">{s.name}</h3>
-
-                    <div className="mt-4 flex flex-1 flex-col gap-3 text-[13px]">
-                      <div className="flex items-start gap-2.5">
-                        <span className="mt-0.5 shrink-0 text-[16px]">⚡</span>
-                        <p className="text-muted">{s.problem}</p>
-                      </div>
-                      <div className="flex items-start gap-2.5">
-                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                        <p className="text-muted">{s.solution}</p>
-                      </div>
-                      <div className="mt-auto rounded-xl border border-border bg-background px-4 py-3">
-                        <p className="text-[12px] font-medium text-muted">{s.users}</p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══ HOW IT WORKS ════════════════════════════════════════════════ */}
-      <section id="how" className="relative border-t border-border-subtle bg-card py-24 md:py-32">
-        <div className="absolute inset-0 line-grid opacity-60" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="mb-16 text-center"
-          >
-            <motion.div variants={fadeUp} className="flex justify-center">
-              <SectionTag color="text-amber-600 dark:text-amber-400">{t.how.badge.replace("/ ", "")}</SectionTag>
-            </motion.div>
-            <motion.h2 variants={fadeUp} className="mx-auto mt-4 max-w-xl text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-              {t.how.title}
-            </motion.h2>
-            <motion.p variants={fadeUp} className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-muted">
-              {t.how.desc}
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            {/* Connector line for desktop */}
-            <div className="pointer-events-none absolute left-[calc(12.5%+1px)] top-10 hidden h-px w-[75%] bg-gradient-to-r from-indigo-500/20 via-violet-500/20 to-amber-500/20 lg:block" />
-
-            {t.how.steps.map((item, i) => {
-              const colors = [
-                "border-indigo-500/20 bg-indigo-500/8 text-indigo-500 dark:text-indigo-400",
-                "border-violet-500/20 bg-violet-500/8 text-violet-600 dark:text-violet-400",
-                "border-rose-500/20 bg-rose-500/8 text-rose-600 dark:text-rose-400",
-                "border-amber-500/20 bg-amber-500/8 text-amber-600 dark:text-amber-400",
-              ][i];
-              const numColors = [
-                "text-indigo-500/15 dark:text-indigo-400/15",
-                "text-violet-500/15 dark:text-violet-400/15",
-                "text-rose-500/15 dark:text-rose-400/15",
-                "text-amber-500/15 dark:text-amber-400/15",
-              ][i];
-              const titleColors = [
-                "text-indigo-600 dark:text-indigo-400",
-                "text-violet-600 dark:text-violet-400",
-                "text-rose-600 dark:text-rose-400",
-                "text-amber-600 dark:text-amber-400",
-              ][i];
-              return (
-                <motion.div
-                  key={item.step}
-                  variants={fadeUp}
-                  whileHover={{ y: -6, transition: { duration: 0.22 } }}
-                  className="relative rounded-2xl border border-border bg-background p-6"
-                >
-                  {/* Step badge */}
-                  <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border text-[13px] font-black ${colors}`}>
-                    {item.step}
-                  </span>
-                  {/* Large number watermark */}
-                  <span className={`pointer-events-none absolute right-4 top-2 text-[5rem] font-black leading-none ${numColors}`}>
-                    {item.step}
-                  </span>
-                  <h3 className={`mt-4 text-[16px] font-bold ${titleColors}`}>{item.title}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted">{item.desc}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-
+      <section className="section cyber-grid-glow">
+        <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-12 max-w-xl"
           >
-            <Link
-              href="/apply/startup"
-              className="btn-ripple inline-flex items-center gap-2 rounded-full bg-accent px-8 py-3.5 text-[13px] font-bold text-white shadow-[0_4px_18px_rgba(79,70,229,0.38)] transition-all hover:bg-accent-dark"
-            >
-              {t.how.applyBtn} <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-            <Link
-              href="/apply/investor"
-              className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 px-8 py-3.5 text-[13px] font-semibold text-violet-600 transition-all hover:border-violet-500/55 dark:text-violet-400"
-            >
-              {t.how.investorBtn}
-            </Link>
-            <Link
-              href="/education"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-[13px] font-semibold text-muted transition-all hover:text-foreground"
-            >
-              {t.how.educationBtn}
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══ NEWS ════════════════════════════════════════════════════════ */}
-      <section id="news" className="relative border-t border-border-subtle py-24 md:py-32">
-        <div className="pointer-events-none absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-emerald-500/4 blur-[130px]" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="mb-16 flex items-end justify-between"
-          >
-            <div>
-              <motion.div variants={fadeUp}>
-                <SectionTag color="text-emerald-600 dark:text-emerald-400">{t.news.badge.replace("/ ", "")}</SectionTag>
-              </motion.div>
-              <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-                {t.news.title}
-              </motion.h2>
-            </div>
-            <Link
-              href="/news"
-              className="hidden items-center gap-1.5 text-[13px] font-semibold text-accent transition-colors hover:text-accent-dark sm:flex"
-            >
-              Barchasini ko&apos;rish <ArrowUpRight className="h-3.5 w-3.5" />
-            </Link>
+            <span className="badge">/ {t.stats.badge.replace("/ ", "")}</span>
+            <h2 className="title mt-3">{t.stats.title}</h2>
+            <p className="desc">{t.stats.desc}</p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={stagger}
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {NEWS.map((item, idx) => {
-              const catColors = [
-                "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-                "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-                "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-              ][idx % 3];
+          <div ref={statsRef} className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {stats.map((stat, i) => {
+              const accent = ACCENTS[i % ACCENTS.length] as AccentKey
+              const c = accentClasses[accent]
+              const match = stat.value.match(/^(\d+)(.*)$/)
+              const num = match ? parseInt(match[1]) : 0
+              const sfx = match ? match[2] : ""
               return (
-                <motion.div key={item.id} variants={fadeUp}>
-                  <Link href={`/news/${item.slug}`} className="block h-full">
-                    <HoverCard className="flex h-full flex-col p-6 cursor-pointer">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${catColors}`}>
-                          {item.category}
-                        </span>
-                        <time className="text-[11px] text-muted">
-                          {item.published_at?.slice(0, 10) || ""}
-                        </time>
-                      </div>
-                      <h3 className="mt-4 flex-1 text-[15px] font-bold leading-snug text-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 text-[13px] leading-relaxed text-muted line-clamp-3">
-                        {item.excerpt}
-                      </p>
-                      <div className="mt-5 flex items-center gap-1 text-[12px] font-semibold text-accent">
-                        {t.news.more} <ChevronRight className="h-3.5 w-3.5" />
-                      </div>
-                    </HoverCard>
-                  </Link>
+                <motion.div
+                  key={stat.id}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: i * 0.1, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                  className={`card ${c.bg} ${c.border} ${c.glow}`}
+                >
+                  <div className={`text-2xl font-bold tracking-tight md:text-3xl ${c.num}`}>
+                    <CountUp to={num} suffix={sfx} active={statsInView} />
+                  </div>
+                  <div className="mt-2 text-[13px] font-semibold text-foreground">{stat.title}</div>
                 </motion.div>
-              );
+              )
             })}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ══ CONTACT — 2-column layout ════════════════════════════════════ */}
-      <section id="contact" className="relative border-t border-border-subtle bg-card py-24 md:py-32">
-        <div className="pointer-events-none absolute bottom-0 right-0 h-[450px] w-[450px] rounded-full bg-indigo-500/5 blur-[130px]" />
-        <div className="relative mx-auto max-w-7xl px-6">
-          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+      {heroVideo && (
+        <section className="section">
+          <div className="mx-auto max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-10 text-center"
+            >
+              <span className="badge">{t.video.badge}</span>
+              <h2 className="title mt-3">{t.video.title}</h2>
+              <p className="desc mx-auto">{t.video.desc}</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="video shadow-2xl"
+            >
+              <video
+                src={heroVideo.video_url || heroVideo.video_file}
+                controls
+                className="w-full aspect-video object-cover"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
 
-            {/* Left — info */}
+      <section className="section">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-12"
+          >
+            <span className="badge">{t.news.badge}</span>
+            <h2 className="title mt-3">{t.news.title}</h2>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={stagger}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            {news.slice(0, 6).map((item) => (
+              <motion.div key={item.id} variants={fadeUp} className="card group">
+                {item.image && (
+                  <img src={item.image} alt="" className="card-image" loading="lazy" />
+                )}
+                {item.created_at && (
+                  <span className="mb-2 text-[11px] font-medium text-muted-foreground">
+                    {item.created_at.slice(0, 10)}
+                  </span>
+                )}
+                <h3 className="text-[15px] font-bold text-foreground leading-snug">
+                  {tl({ en: item.title_en, uz: item.title_uz, ru: item.title_ru })}
+                </h3>
+                <p className="mt-2 text-[13px] text-muted line-clamp-2">
+                  {tl({ en: item.body_en, uz: item.body_uz, ru: item.body_ru })}
+                </p>
+                <div className="mt-auto pt-3">
+                  <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-accent opacity-0 transition-all group-hover:opacity-100">
+                    {t.news.more} <ChevronRight className="h-3 w-3" />
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {news.length > 6 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-8 text-center"
+            >
+              <Link href="/news" className="btn btn-outline gap-2 rounded-full border border-border px-6 py-2.5 text-[13px] font-semibold text-muted transition-all hover:border-accent/30 hover:text-foreground">
+                {t.news.more} <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {announcements.length > 0 && (
+        <section className="section">
+          <div className="mx-auto max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-12"
+            >
+              <span className="badge">{t.announcements.badge}</span>
+              <h2 className="title mt-3">{t.announcements.title}</h2>
+              <p className="desc">{t.announcements.desc}</p>
+            </motion.div>
+
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
               variants={stagger}
+              className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
             >
-              <motion.div variants={fadeUp}>
-                <SectionTag>{t.contact.badge.replace("/ ", "")}</SectionTag>
-              </motion.div>
-              <motion.h2 variants={fadeUp} className="mt-4 text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-tight tracking-tight">
-                {t.contact.title}
-              </motion.h2>
-              <motion.p variants={fadeUp} className="mt-4 text-[15px] leading-relaxed text-muted">
-                {t.contact.desc}
-              </motion.p>
+              {announcements.slice(0, 6).map((item) => (
+                <motion.div key={item.id} variants={fadeUp} className="card">
+                  <div className="flex items-start justify-between">
+                    <span className="badge text-[10px]">
+                      <Calendar className="h-3 w-3" />
+                      {item.date?.slice(0, 10) || ""}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-[15px] font-bold text-foreground leading-snug">
+                    {tl({ en: item.title_en, uz: item.title_uz, ru: item.title_ru })}
+                  </h3>
+                  <p className="mt-2 text-[13px] text-muted line-clamp-3">
+                    {tl({ en: item.body_en, uz: item.body_uz, ru: item.body_ru })}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
 
-              <motion.div variants={fadeUp} className="mt-8 space-y-4">
-                {[
-                  { icon: MapPin,  label: "Manzil",   value: "Istiqlol ko'chasi 15, Uychi, Namangan",  href: undefined },
-                  { icon: Phone,   label: "Telefon",  value: "+998 79 224 00 00",                        href: "tel:+998792240000" },
-                  { icon: Mail,    label: "Email",    value: "info@uychi.uz",                            href: "mailto:info@uychi.uz" },
-                ].map(({ icon: Icon, label, value, href }) => (
-                  <div key={label} className="flex items-start gap-4 rounded-2xl border border-border bg-background p-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10">
-                      <Icon className="h-4.5 w-4.5 text-accent" />
+      <section className="section">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-12"
+          >
+            <span className="badge">{t.startups.badge}</span>
+            <h2 className="title mt-3">{t.startups.title}</h2>
+            <p className="desc">{t.startups.desc}</p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={stagger}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            {startups.slice(0, 6).map((item) => {
+              const accent = ACCENTS[Math.floor(Math.random() * ACCENTS.length)] as AccentKey
+              const c = accentClasses[accent]
+              const techs = item.tech_stack?.split(",").map(t => t.trim()).filter(Boolean) || []
+              return (
+                <motion.div key={item.id} variants={fadeUp} className={`card ${c.border} ${c.glow}`}>
+                  {item.image && <img src={item.image} alt="" className="card-image" loading="lazy" />}
+                  <span className={`badge ${c.bg} ${c.border}`}>{item.sector}</span>
+                  <h3 className="mt-3 text-[15px] font-bold text-foreground">{item.title}</h3>
+                  <div className="mt-3 space-y-2 text-[13px]">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{t.startups.problem}</span>
+                      <p className="mt-0.5 text-muted">{tl({ en: item.problem_en, uz: item.problem_uz, ru: item.problem_ru })}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">{label}</p>
-                      {href ? (
-                        <a href={href} className="mt-0.5 text-[14px] font-medium text-foreground transition-colors hover:text-accent">
-                          {value}
-                        </a>
-                      ) : (
-                        <p className="mt-0.5 text-[14px] font-medium text-foreground">{value}</p>
-                      )}
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{t.startups.solution}</span>
+                      <p className="mt-0.5 text-muted">{tl({ en: item.solution_en, uz: item.solution_uz, ru: item.solution_ru })}</p>
                     </div>
                   </div>
-                ))}
-              </motion.div>
+                  {techs.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {techs.map((tech) => (
+                        <span key={tech} className={`rounded-lg border ${c.border} px-2.5 py-1 text-[11px] font-medium ${c.num}`}>{tech}</span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )
+            })}
+          </motion.div>
 
-              <motion.div variants={fadeUp} className="mt-8 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
-                <p className="text-[13px] font-bold text-accent">Ish vaqti</p>
-                <p className="mt-1 text-[13px] text-muted">Dushanba – Juma: 09:00 – 18:00</p>
-                <p className="text-[13px] text-muted">Shanba: 09:00 – 13:00</p>
-              </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+          >
+            <Link href="/apply/startup" className="btn btn-outline gap-2 rounded-full border border-border px-6 py-2.5 text-[13px] font-semibold text-muted transition-all hover:border-accent/30 hover:text-foreground">
+              {t.how.applyBtn} <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+            <Link href="/apply/investor" className="btn btn-outline gap-2 rounded-full border border-violet-400/20 px-6 py-2.5 text-[13px] font-semibold text-violet-400 transition-all hover:border-violet-400/40">
+              {t.how.investorBtn} <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {jobs.length > 0 && (
+        <section className="section">
+          <div className="mx-auto max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-12"
+            >
+              <span className="badge">{t.careers.badge}</span>
+              <h2 className="title mt-3">{t.careers.title}</h2>
+              <p className="desc">{t.careers.desc}</p>
             </motion.div>
 
-            {/* Right — form */}
             <motion.div
-              initial={{ opacity: 0, x: 32 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              variants={stagger}
+              className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+            >
+              {jobs.slice(0, 6).map((item) => (
+                <motion.div key={item.id} variants={fadeUp} className="card">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-[14px] font-bold text-accent">
+                        <Briefcase className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-[15px] font-bold text-foreground leading-snug">
+                          {tl({ en: item.title_en, uz: item.title_uz, ru: item.title_ru })}
+                        </h3>
+                        {item.department && (
+                          <p className="text-[12px] text-muted">{item.department}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-muted-foreground">
+                    {item.type && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {item.type === "fulltime" ? "Full-time" : item.type === "parttime" ? "Part-time" : item.type === "remote" ? "Remote" : "Contract"}
+                      </span>
+                    )}
+                    {item.salary && (
+                      <span className="flex items-center gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        {item.salary}
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {partners.length > 0 && (
+        <section className="section overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto mb-12 max-w-6xl px-6 text-center"
+          >
+            <span className="badge">/ {t.nav.partners}</span>
+            <h2 className="title mt-2.5">{t.nav.partners}</h2>
+          </motion.div>
+          <div className="mx-auto max-w-7xl space-y-3">
+            <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_12%,black_88%,transparent_100%)]">
+              <div className="flex animate-marquee gap-3 whitespace-nowrap" style={{ animationDuration: "35s" }}>
+                {[...partnerRow1, ...partnerRow1].map((p, i) => (
+                  <div key={`${p.id}-${i}`} className="flex shrink-0 items-center gap-2.5 rounded-xl border border-border bg-card px-5 py-3 transition-all duration-300 hover:border-border hover:bg-card-hover">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-foreground/8 text-[10px] font-bold text-foreground">
+                      {p.name.charAt(0)}
+                    </div>
+                    <span className="whitespace-nowrap text-[13px] font-semibold text-muted">{p.name}</span>
+                    <span className={`hidden rounded-full border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider sm:block ${CATEGORY_BADGE[p.category] || "border-zinc-500/15 text-muted/60"}`}>
+                      {CATEGORY_LABEL[p.category] || p.category}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section id="contact" className="section">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid items-start gap-12 lg:grid-cols-5">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:col-span-2"
+            >
+              <span className="badge">{t.contact.badge}</span>
+              <h2 className="title mt-3 text-[clamp(1.6rem,3vw,2.2rem)]">{t.contact.title}</h2>
+              <p className="desc">{t.contact.desc}</p>
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center gap-3 text-[13px] text-muted">
+                  <MapPin className="h-4 w-4 shrink-0 text-accent" />
+                  <span>Istiqlol ko'chasi 15, Uychi, Namangan viloyati</span>
+                </div>
+                <div className="flex items-center gap-3 text-[13px] text-muted">
+                  <Mail className="h-4 w-4 shrink-0 text-accent" />
+                  <a href="mailto:info@uychi.uz" className="hover:text-foreground">info@uychi.uz</a>
+                </div>
+                <div className="flex items-center gap-3 text-[13px] text-muted">
+                  <Phone className="h-4 w-4 shrink-0 text-accent" />
+                  <a href="tel:+998792240000" className="hover:text-foreground">+998 79 224 00 00</a>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:col-span-3"
             >
               {sent ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex h-full flex-col items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-16 text-center"
-                >
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 18 }}
-                    className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 text-3xl"
-                  >
-                    ✓
-                  </motion.div>
-                  <h3 className="text-xl font-bold">{t.contact.successTitle}</h3>
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card px-6 py-16 text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
+                    <CheckCircle className="h-8 w-8 text-accent" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-bold text-foreground">{t.contact.successTitle}</h3>
                   <p className="mt-2 text-[14px] text-muted">{t.contact.successDesc}</p>
-                </motion.div>
+                </div>
               ) : (
-                <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-                  {([
-                    { label: t.contact.fields.name,    name: "name",    type: "text",  placeholder: t.contact.fields.namePh,    span: 1 },
-                    { label: t.contact.fields.company, name: "company", type: "text",  placeholder: t.contact.fields.companyPh, span: 1 },
-                    { label: t.contact.fields.country, name: "country", type: "text",  placeholder: t.contact.fields.countryPh, span: 1 },
-                    { label: t.contact.fields.email,   name: "email",   type: "email", placeholder: t.contact.fields.emailPh,   span: 1 },
-                    { label: t.contact.fields.phone,   name: "phone",   type: "tel",   placeholder: t.contact.fields.phonePh,   span: 2 },
-                  ] as const).map((f) => (
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {[
+                    { label: t.contact.fields.name, name: "name", type: "text", placeholder: t.contact.fields.namePh, span: 1 },
+                    { label: t.contact.fields.company, name: "company", type: "text", placeholder: t.contact.fields.companyPh, span: 1 },
+                    { label: t.contact.fields.country, name: "country", type: "text", placeholder: t.contact.fields.countryPh, span: 1 },
+                    { label: t.contact.fields.email, name: "email", type: "email", placeholder: t.contact.fields.emailPh, span: 1 },
+                    { label: t.contact.fields.phone, name: "phone", type: "tel", placeholder: t.contact.fields.phonePh, span: 2 },
+                    { label: t.contact.fields.message, name: "message", type: "textarea", placeholder: t.contact.fields.messagePh, span: 2 },
+                  ].map((f) => (
                     <div key={f.name} className={f.span === 2 ? "sm:col-span-2" : ""}>
-                      <label htmlFor={`c-${f.name}`} className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">
-                        {f.label}
-                      </label>
-                      <input
-                        id={`c-${f.name}`} name={f.name} type={f.type}
-                        placeholder={f.placeholder} required
-                        className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)]"
-                      />
+                      <label className="mb-1.5 block text-[12px] font-medium text-muted">{f.label}</label>
+                      {f.type === "textarea" ? (
+                        <textarea name={f.name} placeholder={f.placeholder} rows={3} required
+                          className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-accent/40 focus:ring-1 focus:ring-accent/20"
+                        />
+                      ) : (
+                        <input type={f.type} name={f.name} placeholder={f.placeholder} required={f.name === "name"}
+                          className="w-full rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-accent/40 focus:ring-1 focus:ring-accent/20"
+                        />
+                      )}
                     </div>
                   ))}
-                  <div className="sm:col-span-2">
-                    <label htmlFor="c-message" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted">
-                      {t.contact.fields.message}
-                    </label>
-                    <textarea
-                      id="c-message" name="message" rows={5}
-                      placeholder={t.contact.fields.messagePh} required
-                      className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)]"
-                    />
-                  </div>
                   {formError && (
-                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="sm:col-span-2">
-                      <div className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/8 px-4 py-3 text-[13px] text-red-500">
-                        <AlertCircle className="h-4 w-4 shrink-0" /> {formError}
-                      </div>
-                    </motion.div>
+                    <div className="sm:col-span-2 rounded-xl border border-red-500/20 bg-red-500/8 px-4 py-3 text-[13px] text-red-400">{formError}</div>
                   )}
-                  <div className="sm:col-span-2">
-                    <motion.button
-                      type="submit"
-                      disabled={sending}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="btn-ripple w-full rounded-full bg-accent py-4 text-[14px] font-bold text-white shadow-[0_4px_18px_rgba(79,70,229,0.35)] transition-all hover:bg-accent-dark hover:shadow-[0_6px_28px_rgba(79,70,229,0.45)] disabled:opacity-60"
+                  <div className="sm:col-span-2 pt-1">
+                    <button type="submit" disabled={sending}
+                      className="btn btn-primary w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-[14px] font-bold text-black shadow-[0_2px_16px_rgba(79,70,229,0.25)] transition-all hover:bg-accent-dark disabled:opacity-60"
                     >
-                      {sending ? t.contact.sending : (
-                        <>{t.contact.send} <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.4, repeat: Infinity }} className="ml-2 inline-block">→</motion.span></>
-                      )}
-                    </motion.button>
+                      {sending && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {sending ? t.contact.sending : t.contact.send}
+                    </button>
                   </div>
                 </form>
               )}
@@ -834,5 +586,5 @@ export default function Home() {
 
       <Footer />
     </div>
-  );
+  )
 }

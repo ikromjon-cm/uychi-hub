@@ -80,6 +80,24 @@ const translations = {
       investorBtn: "Investor Arizasi",
       educationBtn: "Ta'lim Dasturlari",
     },
+    video: {
+      badge: "/ Promo Video",
+      title: "Uychi IT Hub Haqida",
+      desc: "Uychi tumanida yaratilayotgan IT va AI markazi haqida qisqa video.",
+    },
+    announcements: {
+      badge: "/ E'lonlar",
+      title: "Tadbirlar va Forumlar",
+      desc: "Uychi IT Hub tomonidan o'tkaziladigan tadbirlar, forumlar va musobaqalar.",
+      date: "Sana",
+    },
+    careers: {
+      badge: "/ Ish O'rinlari",
+      title: "Karyera Imkoniyatlari",
+      desc: "IT Hub va undagi kompaniyalarda bo'sh ish o'rinlari.",
+      type: "Turi",
+      salary: "Maosh",
+    },
     news: {
       badge: "/ Yangiliklar",
       title: "Uychi IT Ekotizimidan So'nggi Yangiliklar",
@@ -191,6 +209,24 @@ const translations = {
       investorBtn: "Заявка инвестора",
       educationBtn: "Учебные программы",
     },
+    video: {
+      badge: "/ Промо Видео",
+      title: "О Uychi IT Hub",
+      desc: "Короткое видео об IT и AI центре, создаваемом в Уйчинском районе.",
+    },
+    announcements: {
+      badge: "/ Объявления",
+      title: "Мероприятия и Форумы",
+      desc: "Мероприятия, форумы и конкурсы, проводимые Uychi IT Hub.",
+      date: "Дата",
+    },
+    careers: {
+      badge: "/ Вакансии",
+      title: "Карьерные Возможности",
+      desc: "Открытые вакансии в IT Hub и компаниях-резидентах.",
+      type: "Тип",
+      salary: "Зарплата",
+    },
     news: {
       badge: "/ Новости",
       title: "Последние новости из IT-экосистемы Уйчи",
@@ -301,6 +337,24 @@ const translations = {
       applyBtn: "Submit Application",
       investorBtn: "Investor Application",
       educationBtn: "Education Programmes",
+    },
+    video: {
+      badge: "/ Promo Video",
+      title: "About Uychi IT Hub",
+      desc: "A short video about the IT & AI hub being built in Uychi district.",
+    },
+    announcements: {
+      badge: "/ Announcements",
+      title: "Events & Forums",
+      desc: "Events, forums and competitions organised by Uychi IT Hub.",
+      date: "Date",
+    },
+    careers: {
+      badge: "/ Careers",
+      title: "Career Opportunities",
+      desc: "Open positions at the IT Hub and resident companies.",
+      type: "Type",
+      salary: "Salary",
     },
     news: {
       badge: "/ News",

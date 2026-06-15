@@ -1,22 +1,40 @@
 from rest_framework import serializers
-from .models import Stat, Hub, Startup, Partner, Lead
+from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner
 
 
-class StatSerializer(serializers.ModelSerializer):
+class HeroVideoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stat
+        model = HeroVideo
         fields = "__all__"
 
 
-class HubSerializer(serializers.ModelSerializer):
+class NewsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Hub
+        model = News
+        fields = "__all__"
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
         fields = "__all__"
 
 
 class StartupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Startup
+        fields = "__all__"
+
+
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        fields = "__all__"
+
+
+class StatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stat
         fields = "__all__"
 
 

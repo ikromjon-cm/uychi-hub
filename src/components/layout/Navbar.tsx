@@ -56,11 +56,12 @@ export function Navbar() {
         <Logo size={34} />
 
         {/* Desktop nav */}
-        <nav className="hidden items-center lg:flex">
+        <nav aria-label="Asosiy navigatsiya" className="hidden items-center lg:flex">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={`relative mx-0.5 px-3.5 py-2 text-[13.5px] font-medium transition-colors duration-200 ${
                 isActive(item.href)
                   ? "text-accent"
@@ -69,7 +70,7 @@ export function Navbar() {
             >
               {item.label}
               {isActive(item.href) && (
-                <span className="absolute bottom-0 left-1/2 h-[2px] w-4 -translate-x-1/2 rounded-full bg-accent" />
+                <span className="absolute bottom-0 left-1/2 h-[2px] w-4 -translate-x-1/2 rounded-full bg-accent" aria-hidden="true" />
               )}
             </Link>
           ))}
@@ -82,42 +83,46 @@ export function Navbar() {
           <div className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
+              aria-label={`Til: ${currentLang.label}`}
+              aria-expanded={langOpen}
+              aria-haspopup="listbox"
               className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-[12px] font-semibold text-muted transition-colors hover:text-foreground"
             >
-              <span>{currentLang.flag}</span>
+              <span aria-hidden="true">{currentLang.flag}</span>
               <span>{currentLang.code}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} aria-hidden="true" />
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+              <ul role="listbox" aria-label="Til tanlash" className="absolute right-0 top-full mt-2 w-40 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
                 {LANGUAGES.map((l) => (
-                  <button
-                    key={l.code}
-                    onClick={() => { setLang(l.code); setLangOpen(false); }}
-                    className={`flex w-full items-center gap-2.5 px-3.5 py-2.5 text-[13px] transition-colors hover:bg-card-hover ${
-                      lang === l.code ? "text-accent" : "text-muted"
-                    }`}
-                  >
-                    <span>{l.flag}</span>
-                    <span>{l.label}</span>
-                    {lang === l.code && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" />}
-                  </button>
+                  <li key={l.code} role="option" aria-selected={lang === l.code}>
+                    <button
+                      onClick={() => { setLang(l.code); setLangOpen(false); }}
+                      className={`flex w-full items-center gap-2.5 px-3.5 py-2.5 text-[13px] transition-colors hover:bg-card-hover ${
+                        lang === l.code ? "text-accent" : "text-muted"
+                      }`}
+                    >
+                      <span aria-hidden="true">{l.flag}</span>
+                      <span>{l.label}</span>
+                      {lang === l.code && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />}
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
 
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            aria-label="Toggle theme"
+            aria-label={themeMounted ? (theme === "dark" ? "Yorug' rejimga o'tish" : "Qorong'i rejimga o'tish") : "Tema o'zgartirish"}
             suppressHydrationWarning
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-colors hover:text-foreground"
           >
             {themeMounted && (theme === "dark" ? (
-              <Sun className="h-3.5 w-3.5" />
+              <Sun className="h-3.5 w-3.5" aria-hidden="true" />
             ) : (
-              <Moon className="h-3.5 w-3.5" />
+              <Moon className="h-3.5 w-3.5" aria-hidden="true" />
             ))}
           </button>
 
@@ -132,7 +137,7 @@ export function Navbar() {
             href="/#contact"
             className="btn-ripple inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-[13px] font-bold text-white shadow-[0_2px_12px_rgba(79,70,229,0.35)] transition-all hover:bg-accent-dark hover:shadow-[0_4px_20px_rgba(79,70,229,0.45)]"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-white/50 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-white/50 animate-pulse" aria-hidden="true" />
             {t.nav.contact}
           </Link>
         </div>
@@ -141,52 +146,57 @@ export function Navbar() {
         <div className="flex items-center gap-2 lg:hidden">
           <button
             onClick={toggleTheme}
-            aria-label="Tema"
+            aria-label={themeMounted ? (theme === "dark" ? "Yorug' rejim" : "Qorong'i rejim") : "Tema"}
             suppressHydrationWarning
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted"
           >
-            {themeMounted && (theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />)}
+            {themeMounted && (theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />)}
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Yopish" : "Menyu"}
+            aria-label={mobileOpen ? "Menyuni yopish" : "Menyuni ochish"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground"
           >
-            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {mobileOpen ? <X className="h-4 w-4" aria-hidden="true" /> : <Menu className="h-4 w-4" aria-hidden="true" />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border bg-nav px-5 pb-6 pt-4 backdrop-blur-2xl lg:hidden">
-          <nav className="flex flex-col gap-1">
+        <div id="mobile-menu" className="border-t border-border bg-nav px-5 pb-6 pt-4 backdrop-blur-2xl lg:hidden">
+          <nav aria-label="Mobil navigatsiya" className="flex flex-col gap-1">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors ${
                   isActive(item.href)
                     ? "bg-accent/10 text-accent"
                     : "text-muted hover:bg-card-hover hover:text-foreground"
                 }`}
               >
-                {isActive(item.href) && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
+                {isActive(item.href) && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />}
                 {item.label}
               </Link>
             ))}
 
-            <div className="mt-3 flex gap-1 rounded-xl border border-border bg-card p-1">
+            <div role="group" aria-label="Til tanlash" className="mt-3 flex gap-1 rounded-xl border border-border bg-card p-1">
               {LANGUAGES.map((l) => (
                 <button
                   key={l.code}
                   onClick={() => setLang(l.code)}
+                  aria-label={l.label}
+                  aria-pressed={lang === l.code}
                   className={`flex-1 rounded-lg py-2 text-[12px] font-bold transition-colors ${
                     lang === l.code ? "bg-accent/12 text-accent" : "text-muted"
                   }`}
                 >
-                  {l.flag} {l.code}
+                  <span aria-hidden="true">{l.flag}</span> {l.code}
                 </button>
               ))}
             </div>

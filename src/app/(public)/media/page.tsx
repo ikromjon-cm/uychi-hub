@@ -1,6 +1,46 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/lib/i18n";
+
+const T = {
+  UZ: {
+    badge: "/ Media Galereya", h1a: "Uychi IT Hub", h1b: "Ko'rgazmasi",
+    desc: "Tadbirlar, startaplar, infratuzilma va Uychi IT ekotizimidan foto va video materiallar.",
+    stat1: "Jami rasmlar", stat2: "Videolar", stat3: "Dron suratlar",
+    tabPhotos: "📷 Rasmlar", tabVideos: "🎬 Videolar",
+    featured: "Asosiy rasm", views: "ko'rishlar",
+    pressBadge: "/ Press Kit", pressTitle: "Media Materiallar Paketi",
+    pressDesc: "Logotiplar, brendbuk, press-relizlar va yuqori sifatli rasmlar to'plamini yuklab oling.",
+    pressBtn: "Press Kit (ZIP)", mediaBtn: "Media So'rovi",
+  },
+  RU: {
+    badge: "/ Медиа Галерея", h1a: "Uychi IT Hub", h1b: "Галерея",
+    desc: "Фото и видеоматериалы с мероприятий, стартапов, инфраструктуры и экосистемы Uychi IT.",
+    stat1: "Всего фото", stat2: "Видео", stat3: "Аэросъёмки",
+    tabPhotos: "📷 Фото", tabVideos: "🎬 Видео",
+    featured: "Главное фото", views: "просмотров",
+    pressBadge: "/ Пресс-кит", pressTitle: "Медиапакет",
+    pressDesc: "Скачайте логотипы, брендбук, пресс-релизы и высококачественные фотографии.",
+    pressBtn: "Пресс-кит (ZIP)", mediaBtn: "Медиазапрос",
+  },
+  EN: {
+    badge: "/ Media Gallery", h1a: "Uychi IT Hub", h1b: "Gallery",
+    desc: "Photos and videos from events, startups, infrastructure, and the Uychi IT ecosystem.",
+    stat1: "Total photos", stat2: "Videos", stat3: "Drone shots",
+    tabPhotos: "📷 Photos", tabVideos: "🎬 Videos",
+    featured: "Featured photo", views: "views",
+    pressBadge: "/ Press Kit", pressTitle: "Media Package",
+    pressDesc: "Download logos, brand guidelines, press releases, and high-quality photos.",
+    pressBtn: "Press Kit (ZIP)", mediaBtn: "Media Request",
+  },
+};
+
+const CATEGORY_LABELS_I18N: Record<string, Record<string, string>> = {
+  UZ: { all: "Barchasi", events: "Tadbirlar", startup: "Startaplar", team: "Jamoa", infra: "Infratuzilma", drone: "Dron suratlar" },
+  RU: { all: "Все", events: "Мероприятия", startup: "Стартапы", team: "Команда", infra: "Инфраструктура", drone: "Аэросъёмки" },
+  EN: { all: "All", events: "Events", startup: "Startups", team: "Team", infra: "Infrastructure", drone: "Drone shots" },
+};
 
 type MediaCategory = "all" | "events" | "startup" | "team" | "infra" | "drone";
 
@@ -70,6 +110,9 @@ const A = {
 export default function MediaPage() {
   const [photoFilter, setPhotoFilter] = useState<MediaCategory>("all");
   const [activeTab, setActiveTab] = useState<"photos" | "videos">("photos");
+  const { lang } = useLang();
+  const t = T[lang];
+  const catLabels = CATEGORY_LABELS_I18N[lang];
 
   const filteredPhotos = PHOTOS.filter(
     (p) => photoFilter === "all" || p.category === photoFilter
@@ -84,22 +127,20 @@ export default function MediaPage() {
       <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Media Galereya</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">{t.badge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            Uychi IT Hub
+            {t.h1a}
             <br />
             <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-              Ko&apos;rgazmasi
+              {t.h1b}
             </span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            Tadbirlar, startaplar, infratuzilma va Uychi IT ekotizimidan foto va video materiallar.
-          </p>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">{t.desc}</p>
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Jami rasmlar", value: String(PHOTOS.length), color: "text-violet-400" },
-              { label: "Videolar", value: String(VIDEOS.length), color: "text-accent" },
-              { label: "Dron suratlar", value: String(PHOTOS.filter((p) => p.category === "drone").length), color: "text-emerald-400" },
+              { label: t.stat1, value: String(PHOTOS.length), color: "text-violet-400" },
+              { label: t.stat2, value: String(VIDEOS.length), color: "text-accent" },
+              { label: t.stat3, value: String(PHOTOS.filter((p) => p.category === "drone").length), color: "text-emerald-400" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -120,7 +161,7 @@ export default function MediaPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`relative px-5 py-4 text-[13px] font-semibold transition-colors ${activeTab === tab ? "text-violet-400" : "text-muted hover:text-foreground"}`}
               >
-                {tab === "photos" ? "📷 Rasmlar" : "🎬 Videolar"}
+                {tab === "photos" ? t.tabPhotos : t.tabVideos}
                 {activeTab === tab && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-violet-400 rounded-full" />}
               </button>
             ))}
@@ -139,7 +180,7 @@ export default function MediaPage() {
                   onClick={() => setPhotoFilter(cat)}
                   className={`rounded-full border px-4 py-2 text-[12px] font-semibold transition-all ${photoFilter === cat ? "border-violet-400/40 bg-violet-500/10 text-violet-400" : "border-border bg-card text-muted hover:text-foreground"}`}
                 >
-                  {CATEGORY_LABELS[cat]}
+                  {catLabels[cat] ?? CATEGORY_LABELS[cat]}
                 </button>
               ))}
             </div>
@@ -152,7 +193,7 @@ export default function MediaPage() {
                     <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border text-3xl ${A[featuredPhoto.accent].border} ${A[featuredPhoto.accent].bg}`}>
                       📸
                     </div>
-                    <p className={`mt-3 text-sm font-semibold ${A[featuredPhoto.accent].text}`}>Asosiy rasm</p>
+                    <p className={`mt-3 text-sm font-semibold ${A[featuredPhoto.accent].text}`}>{t.featured}</p>
                   </div>
                 </div>
                 <div className="p-5">
@@ -223,7 +264,7 @@ export default function MediaPage() {
                     <h3 className="text-[14px] font-bold leading-snug text-foreground">{video.title}</h3>
                     <div className="mt-2 flex items-center justify-between">
                       <p className="text-[11px] text-muted">{video.date}</p>
-                      <p className={`text-[11px] font-semibold ${c.text}`}>{video.views} ko&apos;rishlar</p>
+                      <p className={`text-[11px] font-semibold ${c.text}`}>{video.views} {t.views}</p>
                     </div>
                   </div>
                 </div>
@@ -236,18 +277,16 @@ export default function MediaPage() {
         <div className="mt-16 rounded-2xl border border-violet-400/15 bg-gradient-to-br from-background to-card p-8">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Press Kit</p>
-              <h3 className="mt-1 text-xl font-bold text-foreground">Media Materiallar Paketi</h3>
-              <p className="mt-2 max-w-lg text-[13px] leading-relaxed text-muted">
-                Logotiplar, brendbuk, press-relizlar va yuqori sifatli rasmlar to&apos;plamini yuklab oling.
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">{t.pressBadge}</p>
+              <h3 className="mt-1 text-xl font-bold text-foreground">{t.pressTitle}</h3>
+              <p className="mt-2 max-w-lg text-[13px] leading-relaxed text-muted">{t.pressDesc}</p>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <a href="mailto:media@uychi.uz?subject=Press Kit so'rovi" className="rounded-xl border border-violet-400/30 bg-violet-500/10 px-6 py-3 text-[13px] font-bold text-violet-400 transition-all hover:bg-violet-500/15 whitespace-nowrap">
-                Press Kit (ZIP)
+                {t.pressBtn}
               </a>
               <a href="mailto:media@uychi.uz?subject=Media so'rovi" className="rounded-xl border border-border px-6 py-3 text-[13px] font-semibold text-muted transition-all hover:text-foreground whitespace-nowrap">
-                Media So&apos;rovi
+                {t.mediaBtn}
               </a>
             </div>
           </div>

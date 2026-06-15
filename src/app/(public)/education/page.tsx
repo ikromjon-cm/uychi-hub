@@ -226,7 +226,7 @@ export default function EducationPage() {
           {[
             { title: "O'quv dasturlari", desc: "Frontend, Backend, AI, Mobile va boshqa yo'nalishlar bo'yicha sertifikatli kurslar — Uychi va Namangan yoshlari uchun.", accent: "cyan", icon: "📚" },
             { title: "Sertifikat tizimi", desc: "Kurs yakunida IT Park Uzbekistan va Uychi IT Hub birgalikdagi sertifikati beriladi.", accent: "violet", icon: "🏆" },
-            { title: "Career Center", desc: "Kurs bitirganlarni Uychi tumani IT kompaniyalari va Namangan bozoriga ishga joylashtirish.", accent: "emerald", icon: "💼" },
+            { title: "Karyera Markazi", desc: "Kurs bitirganlarni Uychi tumani IT kompaniyalari va Namangan bozoriga ishga joylashtirish.", accent: "emerald", icon: "💼" },
           ].map((item) => (
             <div key={item.title} className={`rounded-2xl border p-6 ${item.accent === "cyan" ? "border-accent/15 bg-accent/5" : item.accent === "violet" ? "border-violet-400/15 bg-violet-500/5" : "border-emerald-400/15 bg-emerald-500/5"}`}>
               <div className="mb-3 text-3xl">{item.icon}</div>

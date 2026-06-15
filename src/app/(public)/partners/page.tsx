@@ -3,6 +3,40 @@
 import { useState } from "react";
 import { useApi } from "@/lib/api";
 import { PARTNERS_LIST } from "@/lib/mock-data";
+import { useLang } from "@/lib/i18n";
+
+const T = {
+  UZ: {
+    badge: "/ Hamkorlar Tarmog'i",
+    h1a: "Global Hamkorlik,", h1b: "Mahalliy Ta'sir",
+    desc: "Uychi IT Hub — Uychi tumani hokimligi, Namangan viloyati hokimligi, IT Park Uzbekistan, yetakchi universitetlar va texnologiya kompaniyalari bilan mustahkam hamkorlikda ishlaydi.",
+    website: "Sayt →",
+    ctaBadge: "/ Hamkorlik Taklifi", ctaTitle: "Hamkorlarimiz Qatoriga Qo'shiling",
+    ctaDesc: "Uychi IT Hub bilan hamkorlik orqali Uychi tumanidagi 900+ korxona, 47 maktab va 237,600 aholiga ega bozorga kirish imkoniyatiga ega bo'ling.",
+    ctaApply: "Hamkorlik Arizasi", ctaSchedule: "Uchrashuv Belgilash",
+    filters: { all: "Barchasi", Government: "Davlat", University: "Universitetlar", International: "Xalqaro", Corporate: "Korporatsiya", Accelerator: "Akselerator" },
+  },
+  RU: {
+    badge: "/ Сеть Партнёров",
+    h1a: "Глобальное Партнёрство,", h1b: "Местное Влияние",
+    desc: "Uychi IT Hub работает в тесном партнёрстве с хокимиятами Uychi и Наманганской области, IT Park Uzbekistan, ведущими университетами и технологическими компаниями.",
+    website: "Сайт →",
+    ctaBadge: "/ Предложение о Партнёрстве", ctaTitle: "Присоединяйтесь к Нашим Партнёрам",
+    ctaDesc: "Через партнёрство с Uychi IT Hub получите доступ к рынку с 900+ предприятиями, 47 школами и 237 600 жителями района Uychi.",
+    ctaApply: "Заявка на Партнёрство", ctaSchedule: "Записаться на Встречу",
+    filters: { all: "Все", Government: "Государство", University: "Университеты", International: "Международные", Corporate: "Корпорации", Accelerator: "Акселераторы" },
+  },
+  EN: {
+    badge: "/ Partner Network",
+    h1a: "Global Partnership,", h1b: "Local Impact",
+    desc: "Uychi IT Hub works in close partnership with Uychi district and Namangan regional government, IT Park Uzbekistan, leading universities, and technology companies.",
+    website: "Website →",
+    ctaBadge: "/ Partnership Offer", ctaTitle: "Join Our Partners",
+    ctaDesc: "Through partnership with Uychi IT Hub, gain access to a market of 900+ enterprises, 47 schools, and 237,600 residents in Uychi district.",
+    ctaApply: "Partnership Application", ctaSchedule: "Schedule a Meeting",
+    filters: { all: "All", Government: "Government", University: "Universities", International: "International", Corporate: "Corporate", Accelerator: "Accelerators" },
+  },
+};
 
 type Partner = { id: number; name: string; country: string; category: string; tier: string; website: string; logo: string };
 
@@ -49,6 +83,8 @@ const FILTER_OPTIONS = [
 ];
 
 export default function PartnersPage() {
+  const { lang } = useLang();
+  const t = T[lang];
   const CATEGORY_MAP: Record<string, string> = {
     government: "Government",
     university: "University",
@@ -78,14 +114,12 @@ export default function PartnersPage() {
       <section className="relative border-b border-border-subtle px-6 py-20">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Hamkorlar Tarmog&apos;i</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">{t.badge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            Global Hamkorlik,<br />
-            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Mahalliy Ta&apos;sir</span>
+            {t.h1a}<br />
+            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">{t.h1b}</span>
           </h1>
-          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
-            Uychi IT Hub — Uychi tumani hokimligi, Namangan viloyati hokimligi, IT Park Uzbekistan, yetakchi universitetlar va texnologiya kompaniyalari bilan mustahkam hamkorlikda ishlaydi.
-          </p>
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">{t.desc}</p>
           <div className="mt-10 flex flex-wrap gap-4">
             {FILTER_OPTIONS.slice(1).map((cat) => (
               <div key={cat.key} className="rounded-xl border border-border bg-card px-5 py-3">
@@ -102,7 +136,7 @@ export default function PartnersPage() {
           {FILTER_OPTIONS.map((f) => (
             <button key={f.key} onClick={() => setFilter(f.key)}
               className={`rounded-full border px-4 py-2 text-[12px] font-semibold transition-all ${filter === f.key ? "border-violet-400/40 bg-violet-500/10 text-violet-400" : "border-border bg-card text-muted hover:text-foreground"}`}>
-              {f.label}
+              {t.filters[f.key as keyof typeof t.filters] ?? f.label}
               {f.key !== "all" && <span className="ml-1.5 opacity-60">{countByCategory[f.key] || 0}</span>}
             </button>
           ))}
@@ -133,7 +167,7 @@ export default function PartnersPage() {
                       {CATEGORY_LABELS[partner.category] || partner.category}
                     </span>
                     {partner.website ? (
-                      <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted hover:text-violet-400">Sayt →</a>
+                      <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted hover:text-violet-400">{t.website}</a>
                     ) : null}
                   </div>
                 </div>
@@ -143,17 +177,15 @@ export default function PartnersPage() {
         )}
 
         <div className="mt-16 overflow-hidden rounded-2xl border border-violet-400/15 bg-gradient-to-br from-background to-card p-10 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ Hamkorlik Taklifi</p>
-          <h3 className="mt-3 text-3xl font-bold text-foreground">Hamkorlarimiz Qatoriga Qo&apos;shiling</h3>
-          <p className="mx-auto mt-4 max-w-lg text-[14px] leading-relaxed text-muted">
-            Uychi IT Hub bilan hamkorlik orqali Uychi tumanidagi 900+ korxona, 47 maktab va 237,600 aholiga ega bozorga kirish imkoniyatiga ega bo&apos;ling.
-          </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">{t.ctaBadge}</p>
+          <h3 className="mt-3 text-3xl font-bold text-foreground">{t.ctaTitle}</h3>
+          <p className="mx-auto mt-4 max-w-lg text-[14px] leading-relaxed text-muted">{t.ctaDesc}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <a href="mailto:partners@uychi.uz" className="inline-flex items-center gap-2 rounded-full bg-violet-400 px-8 py-3.5 text-[14px] font-bold text-black hover:bg-violet-300">
-              Hamkorlik Arizasi
+              {t.ctaApply}
             </a>
             <a href="/schedule" className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-[14px] font-semibold text-muted hover:border-border hover:text-foreground">
-              Uchrashuv Belgilash
+              {t.ctaSchedule}
             </a>
           </div>
         </div>

@@ -1,6 +1,52 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/lib/i18n";
+
+const T = {
+  UZ: {
+    badge: "/ Raqamli Kutubxona", h1a: "IT Bilimlar", h1b: "Markazi",
+    desc: "Kitoblar, ilmiy maqolalar, hisobotlar va amaliy qo'llanmalar — Uychi tumanining 34 jamoat kutubxonasi va 545,500 kitob fondiga asoslangan raqamli resurs bazasi.",
+    stat1: "Jami resurslar", stat2: "Bepul resurslar", stat3: "Jami yuklab olingan",
+    searchPh: "Nom yoki muallif bo'yicha qidirish...", freeOnly: "Faqat bepul",
+    types: { all: "Barcha turdagi", book: "Kitoblar", paper: "Maqolalar", report: "Hisobotlar", guide: "Qo'llanmalar" },
+    results: (n: number) => `${n} ta resurs topildi`,
+    empty: "Resurs topilmadi", clearFilter: "Filtrni tozalash",
+    pages: "bet", downloads: "K yuklab",
+    free: "Bepul", download: "Yuklab olish", buy: "Sotib olish",
+    ctaBadge: "/ Kutubxonaga Hissa Qo'shing", ctaTitle: "Bilimingizni Ulashing",
+    ctaDesc: "O'zingizning kitob, maqola yoki qo'llanmangizni kutubxonaga qo'shish uchun ariza yuboring. Mualliflik huquqingiz saqlanadi.",
+    ctaBtn: "Resurs Yuborish",
+  },
+  RU: {
+    badge: "/ Цифровая Библиотека", h1a: "Центр", h1b: "IT Знаний",
+    desc: "Книги, научные статьи, отчёты и практические руководства — цифровая база ресурсов на основе 34 публичных библиотек и фонда в 545 500 книг в районе Uychi.",
+    stat1: "Всего ресурсов", stat2: "Бесплатных ресурсов", stat3: "Всего скачиваний",
+    searchPh: "Поиск по названию или автору...", freeOnly: "Только бесплатные",
+    types: { all: "Все типы", book: "Книги", paper: "Статьи", report: "Отчёты", guide: "Руководства" },
+    results: (n: number) => `Найдено ресурсов: ${n}`,
+    empty: "Ресурсы не найдены", clearFilter: "Очистить фильтр",
+    pages: "стр.", downloads: "K скачиваний",
+    free: "Бесплатно", download: "Скачать", buy: "Купить",
+    ctaBadge: "/ Внесите Вклад в Библиотеку", ctaTitle: "Поделитесь Знаниями",
+    ctaDesc: "Отправьте заявку на добавление вашей книги, статьи или руководства в библиотеку. Авторские права сохраняются.",
+    ctaBtn: "Отправить Ресурс",
+  },
+  EN: {
+    badge: "/ Digital Library", h1a: "IT Knowledge", h1b: "Center",
+    desc: "Books, research papers, reports, and practical guides — a digital resource base built on 34 public libraries and a 545,500-book collection in Uychi district.",
+    stat1: "Total resources", stat2: "Free resources", stat3: "Total downloads",
+    searchPh: "Search by title or author...", freeOnly: "Free only",
+    types: { all: "All types", book: "Books", paper: "Papers", report: "Reports", guide: "Guides" },
+    results: (n: number) => `${n} resources found`,
+    empty: "No resources found", clearFilter: "Clear filter",
+    pages: "pages", downloads: "K downloads",
+    free: "Free", download: "Download", buy: "Purchase",
+    ctaBadge: "/ Contribute to the Library", ctaTitle: "Share Your Knowledge",
+    ctaDesc: "Submit your book, paper, or guide for inclusion in the library. Your copyright is retained.",
+    ctaBtn: "Submit Resource",
+  },
+};
 
 type ResourceType = "book" | "paper" | "report" | "guide";
 
@@ -268,6 +314,8 @@ export default function LibraryPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [freeOnly, setFreeOnly] = useState(false);
   const [search, setSearch] = useState("");
+  const { lang } = useLang();
+  const t = T[lang];
 
   const filtered = RESOURCES.filter((r) => {
     const matchCat = category === "Barchasi" || r.category === category;
@@ -285,21 +333,19 @@ export default function LibraryPage() {
       <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(6,247,227,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ Raqamli Kutubxona</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">{t.badge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            IT Bilimlar <br />
+            {t.h1a} <br />
             <span className="bg-gradient-to-r from-accent via-violet-400 to-emerald-400 bg-clip-text text-transparent">
-              Markazi
+              {t.h1b}
             </span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            Kitoblar, ilmiy maqolalar, hisobotlar va amaliy qo'llanmalar — Uychi tumanining 34 jamoat kutubxonasi va 545,500 kitob fondiga asoslangan raqamli resurs bazasi.
-          </p>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">{t.desc}</p>
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Jami resurslar", value: String(RESOURCES.length), color: "text-accent" },
-              { label: "Bepul resurslar", value: String(RESOURCES.filter((r) => r.free).length), color: "text-emerald-400" },
-              { label: "Jami yuklab olingan", value: `${(totalDownloads / 1000).toFixed(1)}K+`, color: "text-violet-400" },
+              { label: t.stat1, value: String(RESOURCES.length), color: "text-accent" },
+              { label: t.stat2, value: String(RESOURCES.filter((r) => r.free).length), color: "text-emerald-400" },
+              { label: t.stat3, value: `${(totalDownloads / 1000).toFixed(1)}K+`, color: "text-violet-400" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -316,21 +362,21 @@ export default function LibraryPage() {
           {/* Search */}
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
             <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom yoki muallif bo'yicha qidirish..." className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.searchPh} className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
             {search && <button onClick={() => setSearch("")} className="text-muted hover:text-foreground">✕</button>}
           </div>
 
           {/* Type + Free toggle */}
           <div className="flex flex-wrap items-center gap-2">
-            {TYPES.map((t) => (
-              <button key={t.key} onClick={() => setTypeFilter(t.key)} className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${typeFilter === t.key ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card text-muted hover:text-foreground"}`}>
-                {t.label}
+            {TYPES.map((tp) => (
+              <button key={tp.key} onClick={() => setTypeFilter(tp.key)} className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${typeFilter === tp.key ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card text-muted hover:text-foreground"}`}>
+                {t.types[tp.key as keyof typeof t.types] ?? tp.label}
               </button>
             ))}
             <div className="ml-auto flex items-center gap-2">
               <button onClick={() => setFreeOnly(!freeOnly)} className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all ${freeOnly ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400" : "border-border bg-card text-muted hover:text-foreground"}`}>
                 <span className={`h-2 w-2 rounded-full ${freeOnly ? "bg-emerald-400" : "bg-muted-foreground"}`} />
-                Faqat bepul
+                {t.freeOnly}
               </button>
             </div>
           </div>
@@ -346,13 +392,13 @@ export default function LibraryPage() {
         </div>
 
         {/* Results count */}
-        <p className="mb-5 text-[12px] text-muted">{filtered.length} ta resurs topildi</p>
+        <p className="mb-5 text-[12px] text-muted">{t.results(filtered.length)}</p>
 
         {/* Resources grid */}
         {filtered.length === 0 ? (
           <div className="py-20 text-center">
-            <p className="text-muted">Resurs topilmadi</p>
-            <button onClick={() => { setSearch(""); setCategory("Barchasi"); setTypeFilter("all"); setFreeOnly(false); }} className="mt-3 text-[13px] text-accent hover:underline">Filtrni tozalash</button>
+            <p className="text-muted">{t.empty}</p>
+            <button onClick={() => { setSearch(""); setCategory("Barchasi"); setTypeFilter("all"); setFreeOnly(false); }} className="mt-3 text-[13px] text-accent hover:underline">{t.clearFilter}</button>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -368,7 +414,7 @@ export default function LibraryPage() {
                     <div className="flex gap-1.5">
                       {res.free && (
                         <span className="rounded-full border border-emerald-400/20 bg-emerald-500/8 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-400">
-                          Bepul
+                          {t.free}
                         </span>
                       )}
                       <span className="text-sm">{LANG_FLAG[res.lang]}</span>
@@ -384,14 +430,14 @@ export default function LibraryPage() {
                   {/* Footer */}
                   <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-4">
                     <div className="flex gap-3 text-[11px] text-muted">
-                      <span>{res.pages} bet</span>
+                      <span>{res.pages} {t.pages}</span>
                       <span>·</span>
                       <span className={c.text}>{TYPE_LABELS[res.type]}</span>
                       <span>·</span>
-                      <span>{(res.downloads / 1000).toFixed(1)}K yuklab</span>
+                      <span>{(res.downloads / 1000).toFixed(1)}{t.downloads}</span>
                     </div>
-                    <a href={`mailto:library@uychi.uz?subject=${res.free ? "Yuklab olish" : "Sotib olish"}: ${encodeURIComponent(res.title)}`} className={`rounded-lg border px-3 py-1.5 text-[11px] font-bold transition-all ${c.badge} hover:opacity-80`}>
-                      {res.free ? "Yuklab olish" : "Sotib olish"}
+                    <a href={`mailto:library@uychi.uz?subject=${res.free ? t.download : t.buy}: ${encodeURIComponent(res.title)}`} className={`rounded-lg border px-3 py-1.5 text-[11px] font-bold transition-all ${c.badge} hover:opacity-80`}>
+                      {res.free ? t.download : t.buy}
                     </a>
                   </div>
                 </div>
@@ -402,13 +448,11 @@ export default function LibraryPage() {
 
         {/* Contribute CTA */}
         <div className="mt-16 rounded-2xl border border-accent/15 bg-gradient-to-br from-background to-card p-8 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">/ Kutubxonaga Hissa Qo&apos;shing</p>
-          <h3 className="mt-2 text-2xl font-bold text-foreground">Bilimingizni Ulashing</h3>
-          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">
-            O&apos;zingizning kitob, maqola yoki qo&apos;llanmangizni kutubxonaga qo&apos;shish uchun ariza yuboring. Mualliflik huquqingiz saqlanadi.
-          </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">{t.ctaBadge}</p>
+          <h3 className="mt-2 text-2xl font-bold text-foreground">{t.ctaTitle}</h3>
+          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">{t.ctaDesc}</p>
           <a href="mailto:library@uychi.uz?subject=Resurs yuborish" className="mt-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-accent/10 px-8 py-3.5 text-[14px] font-bold text-accent transition-all hover:bg-accent/15">
-            Resurs Yuborish
+            {t.ctaBtn}
           </a>
         </div>
       </div>

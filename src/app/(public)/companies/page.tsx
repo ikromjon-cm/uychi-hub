@@ -1,6 +1,49 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/lib/i18n";
+
+const T = {
+  UZ: {
+    badge: "/ IT Kompaniyalar Katalogi",
+    h1a: "Uychi IT Hubning", h1b: "Rezident Kompaniyalari",
+    desc: "Uychi tumanidagi 900+ kichik korxona va IT Park rezident kompaniyalari — xizmatlar, texnologiyalar va bog'lanish ma'lumotlari.",
+    search: "Kompaniya yoki xizmat qidirish...",
+    empty: "Kompaniya topilmadi", clearFilter: "Filtrni tozalash",
+    resident: "IT Park rezidenti", projects: "loyiha", contact: "Bog'lanish",
+    ctaBadge: "/ IT Park Rezidenti Bo'ling", ctaTitle: "Kompaniyangizni Katalogga Qo'shing",
+    ctaDesc: "IT Park rezidenti sifatida soliq imtiyozlari, infratuzilma va biznes rivojlanish xizmatlaridan foydalaning. Uychi tumanidagi 5 sanoat zonasida ofis ochish imkoniyati.",
+    ctaApply: "Ariza topshirish", ctaItpark: "IT Park haqida",
+    cats: { "Barchasi": "Barchasi", "Web & Mobile": "Web & Mobile", "AI & IoT": "AI & IoT", "ERP & CRM": "ERP & CRM", "Dizayn": "Dizayn", "Infratuzilma": "Infratuzilma", "Marketing": "Marketing", "O'yin": "O'yin" },
+    stat1: "Katalogdagi kompaniyalar", stat2: "Jami loyihalar", stat3: "IT mutaxassislar", stat4: "Tuman korxonalari",
+  },
+  RU: {
+    badge: "/ Каталог IT Компаний",
+    h1a: "Резидентские Компании", h1b: "Uychi IT Hub",
+    desc: "Более 900 малых предприятий и компаний-резидентов IT Park в Uychi — услуги, технологии и контактные данные.",
+    search: "Поиск компании или услуги...",
+    empty: "Компании не найдены", clearFilter: "Очистить фильтр",
+    resident: "Резидент IT Park", projects: "проектов", contact: "Связаться",
+    ctaBadge: "/ Стать Резидентом IT Park", ctaTitle: "Добавьте Компанию в Каталог",
+    ctaDesc: "Как резидент IT Park, пользуйтесь налоговыми льготами, инфраструктурой и услугами по развитию бизнеса. Возможность открыть офис в 5 промышленных зонах района Uychi.",
+    ctaApply: "Подать заявку", ctaItpark: "Об IT Park",
+    cats: { "Barchasi": "Все", "Web & Mobile": "Web & Mobile", "AI & IoT": "AI & IoT", "ERP & CRM": "ERP & CRM", "Dizayn": "Дизайн", "Infratuzilma": "Инфраструктура", "Marketing": "Маркетинг", "O'yin": "Игры" },
+    stat1: "Компаний в каталоге", stat2: "Всего проектов", stat3: "IT специалистов", stat4: "Предприятий района",
+  },
+  EN: {
+    badge: "/ IT Companies Catalog",
+    h1a: "Uychi IT Hub", h1b: "Resident Companies",
+    desc: "900+ small businesses and IT Park resident companies in Uychi district — services, technologies, and contact info.",
+    search: "Search company or service...",
+    empty: "No companies found", clearFilter: "Clear filter",
+    resident: "IT Park resident", projects: "projects", contact: "Contact",
+    ctaBadge: "/ Become an IT Park Resident", ctaTitle: "Add Your Company to the Catalog",
+    ctaDesc: "As an IT Park resident, enjoy tax incentives, infrastructure, and business development services. Open an office in one of 5 industrial zones in Uychi district.",
+    ctaApply: "Apply now", ctaItpark: "About IT Park",
+    cats: { "Barchasi": "All", "Web & Mobile": "Web & Mobile", "AI & IoT": "AI & IoT", "ERP & CRM": "ERP & CRM", "Dizayn": "Design", "Infratuzilma": "Infrastructure", "Marketing": "Marketing", "O'yin": "Gaming" },
+    stat1: "Companies in catalog", stat2: "Total projects", stat3: "IT specialists", stat4: "District enterprises",
+  },
+};
 
 interface ServiceCompany {
   id: string; name: string; tagline: string; services: string[];
@@ -52,6 +95,8 @@ function matchCategory(services: string[], cat: string): boolean {
 export default function CompaniesPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Barchasi");
+  const { lang } = useLang();
+  const t = T[lang];
 
   const filtered = IT_COMPANIES.filter((c) => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.tagline.toLowerCase().includes(search.toLowerCase());
@@ -66,22 +111,20 @@ export default function CompaniesPage() {
       <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(167,139,250,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">/ IT Kompaniyalar Katalogi</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-400">{t.badge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            Uychi IT Hubning<br />
-            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Rezident Kompaniyalari</span>
+            {t.h1a}<br />
+            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">{t.h1b}</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            Uychi tumanidagi 900+ kichik korxona va IT Park rezident kompaniyalari — xizmatlar, texnologiyalar va bog'lanish ma'lumotlari.
-          </p>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">{t.desc}</p>
 
           {/* Stats */}
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Katalogdagi kompaniyalar", value: `${IT_COMPANIES.length}`, color: "text-violet-400" },
-              { label: "Jami loyihalar", value: `${totalProjects}+`, color: "text-accent" },
-              { label: "IT mutaxassislar", value: "400+", color: "text-emerald-400" },
-              { label: "Tuman korxonalari", value: "900+", color: "text-violet-400" },
+              { label: t.stat1, value: `${IT_COMPANIES.length}`, color: "text-violet-400" },
+              { label: t.stat2, value: `${totalProjects}+`, color: "text-accent" },
+              { label: t.stat3, value: "400+", color: "text-emerald-400" },
+              { label: t.stat4, value: "900+", color: "text-violet-400" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -97,7 +140,7 @@ export default function CompaniesPage() {
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
           <div className="flex flex-1 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
             <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Kompaniya yoki xizmat qidirish..." className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.search} className="flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted" />
           </div>
           <div className="flex flex-wrap gap-2">
             {SERVICE_CATEGORIES.map((cat) => (
@@ -110,7 +153,7 @@ export default function CompaniesPage() {
                     : "border-border bg-card text-muted hover:border-violet-400/30 hover:text-foreground"
                 }`}
               >
-                {cat}
+                {t.cats[cat as keyof typeof t.cats] ?? cat}
               </button>
             ))}
           </div>
@@ -119,8 +162,8 @@ export default function CompaniesPage() {
         {/* Companies grid */}
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center py-20 text-center">
-            <p className="text-[15px] text-muted">Kompaniya topilmadi</p>
-            <button onClick={() => { setSearch(""); setCategory("Barchasi"); }} className="mt-3 text-[13px] text-violet-400 hover:underline">Filtrni tozalash</button>
+            <p className="text-[15px] text-muted">{t.empty}</p>
+            <button onClick={() => { setSearch(""); setCategory("Barchasi"); }} className="mt-3 text-[13px] text-violet-400 hover:underline">{t.clearFilter}</button>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -134,7 +177,7 @@ export default function CompaniesPage() {
                       {company.name.charAt(0)}
                     </div>
                     <span className="rounded-full border border-border bg-card px-2.5 py-0.5 text-[10px] font-semibold text-muted">
-                      IT Park rezidenti
+                      {t.resident}
                     </span>
                   </div>
 
@@ -167,11 +210,11 @@ export default function CompaniesPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" /></svg>
-                        {company.projects}+ loyiha
+                        {company.projects}+ {t.projects}
                       </span>
                     </div>
                     <a href={`mailto:info@uychi.uz?subject=Bog'lanish: ${encodeURIComponent(company.name)}`} className={`rounded-lg border px-3 py-1 text-[11px] font-semibold transition-all ${c.badge} hover:opacity-80`}>
-                      Bog&apos;lanish
+                      {t.contact}
                     </a>
                   </div>
                 </div>
@@ -184,16 +227,16 @@ export default function CompaniesPage() {
         <div className="mt-16 rounded-2xl border border-violet-400/15 bg-gradient-to-br from-background to-card p-8">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-violet-400">/ IT Park Rezidenti Bo'ling</p>
-              <h3 className="mt-2 text-xl font-bold text-foreground md:text-2xl">Kompaniyangizni Katalogga Qo'shing</h3>
-              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-muted">IT Park rezidenti sifatida soliq imtiyozlari, infratuzilma va biznes rivojlanish xizmatlaridan foydalaning. Uychi tumanidagi 5 sanoat zonasida ofis ochish imkoniyati.</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-violet-400">{t.ctaBadge}</p>
+              <h3 className="mt-2 text-xl font-bold text-foreground md:text-2xl">{t.ctaTitle}</h3>
+              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-muted">{t.ctaDesc}</p>
             </div>
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
               <a href="/apply/startup" className="rounded-full border border-violet-400/30 bg-violet-500/10 px-6 py-3 text-[13px] font-bold text-violet-400 transition-all hover:bg-violet-500/20">
-                Ariza topshirish
+                {t.ctaApply}
               </a>
               <a href="https://itpark.uz" target="_blank" rel="noopener noreferrer" className="rounded-full border border-border bg-card px-6 py-3 text-center text-[13px] font-semibold text-muted transition-all hover:text-foreground">
-                IT Park haqida
+                {t.ctaItpark}
               </a>
             </div>
           </div>

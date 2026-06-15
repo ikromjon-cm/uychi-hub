@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
 import { useApi, apiFormPost } from "@/lib/api"
 import { useLang } from "@/lib/i18n"
+import { CardArt } from "@/components/ui/CardArt"
 import { ArrowRight, ArrowUpRight, Play, Mail, Phone, MapPin, Calendar, Clock, Users, Briefcase, DollarSign, ChevronRight, CheckCircle, Loader2 } from "lucide-react"
 
 const fadeUp = {
@@ -150,8 +151,11 @@ export default function Home() {
                       className="w-full aspect-video object-cover"
                     />
                   ) : (
-                    <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-pink-500/10">
-                      <Play className="h-16 w-16 text-accent/40" />
+                    <div className="relative flex aspect-video items-center justify-center overflow-hidden">
+                      <CardArt seed={3} label="Uychi Hub" className="absolute inset-0" />
+                      <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-card/70 ring-1 ring-accent/20 backdrop-blur-sm transition-transform hover:scale-105">
+                        <Play className="h-7 w-7 translate-x-0.5 text-accent" />
+                      </div>
                     </div>
                   )}
                   <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-accent/10" />
@@ -359,8 +363,8 @@ export default function Home() {
             variants={stagger}
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            {startups.slice(0, 6).map((item) => {
-              const accent = ACCENTS[Math.floor(Math.random() * ACCENTS.length)] as AccentKey
+            {startups.slice(0, 6).map((item, idx) => {
+              const accent = ACCENTS[idx % ACCENTS.length] as AccentKey
               const c = accentClasses[accent]
               const techs = item.tech_stack?.split(",").map(t => t.trim()).filter(Boolean) || []
               return (

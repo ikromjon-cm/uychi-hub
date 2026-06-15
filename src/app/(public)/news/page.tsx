@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useApi } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
+import { CardArt } from "@/components/ui/CardArt";
 
 type NewsItem = {
   id: number;
@@ -102,11 +103,14 @@ export default function NewsPage() {
                     </p>
                     <p className="mt-4 text-[12px] text-muted-foreground">{formatDate(featured.created_at)}</p>
                   </div>
-                  {featured.image && (
-                    <div className="relative min-h-[200px]">
+                  <div className="relative min-h-[200px] order-first md:order-last">
+                    {featured.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={featured.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                    </div>
-                  )}
+                    ) : (
+                      <CardArt seed={featured.id} label={featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_en} className="absolute inset-0" />
+                    )}
+                  </div>
                 </div>
               </Link>
             )}

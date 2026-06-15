@@ -22,5 +22,5 @@ class Command(BaseCommand):
                 cursor.execute("DELETE FROM django_migrations WHERE app='hub'")
                 self.stdout.write(f"removed {len(rows)} stale hub migration records")
         from django.core.management import call_command
-        call_command("migrate", "hub")
+        call_command("migrate", "hub", fake_initial=True)
         self.stdout.write("hub migrations applied")

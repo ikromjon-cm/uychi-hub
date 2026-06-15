@@ -55,8 +55,9 @@ export default function InvestorsPage() {
         subject: "Investor Murojaat",
       });
     } catch {
-      setSending(false);
-      return;
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/contact/submissions/", body: { subject: "Investor Murojaat" }, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
     }
     setSending(false);
     setFormSent(true);

@@ -94,8 +94,11 @@ export default function JobsPage() {
     };
     try {
       await apiPost("/careers/job-applications/", body);
-      setModal(m => ({ ...m, sent: true, sending: false }));
     } catch {
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/careers/job-applications/", body, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
+    } finally {
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }

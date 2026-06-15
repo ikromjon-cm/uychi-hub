@@ -14,9 +14,13 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
     const fd = new FormData(e.currentTarget as HTMLFormElement);
     const data = Object.fromEntries(fd);
+    if (data.password !== data.password2) {
+      setError("Parollar mos kelmaydi. Iltimos qayta tekshiring.");
+      return;
+    }
+    setLoading(true);
 
     try {
       const res = await fetch("/api/users/register/", {

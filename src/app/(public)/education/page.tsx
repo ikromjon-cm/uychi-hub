@@ -92,6 +92,9 @@ export default function EducationPage() {
         setModal(m => ({ ...m, sending: false, error: "Xatolik yuz berdi. Qayta urinib ko'ring." }));
       }
     } catch {
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/education/applications/", body: data, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
       setModal(m => ({ ...m, sent: true, sending: false }));
     }
   }

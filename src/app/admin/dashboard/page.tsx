@@ -50,30 +50,30 @@ export default function AdminDashboard() {
   const activeJobs = jobs.filter(x => x.status === "active").length;
 
   const STATS = [
-    { label: "Startup Applications", value: startups.length,  change: `${approved} approved`,  icon: Rocket,    color: "text-violet-400",  bg: "bg-violet-400/8 border-violet-400/15",  href: "/admin/startups" },
-    { label: "Investors",            value: investors.length,  change: `${activeInv} active`,   icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/8 border-emerald-400/15", href: "/admin/investors" },
-    { label: "Partners",             value: partners.length,   change: "global network",         icon: Globe,      color: "text-yellow-400",  bg: "bg-yellow-400/8 border-yellow-400/15",  href: "/admin/partners" },
-    { label: "News Articles",        value: news.length,       change: `${published} published`, icon: Newspaper,  color: "text-pink-400",    bg: "bg-pink-400/8 border-pink-400/15",      href: "/admin/news" },
-    { label: "Job Postings",         value: jobs.length,       change: `${activeJobs} active`,  icon: Activity,   color: "text-orange-400",  bg: "bg-orange-400/8 border-orange-400/15",  href: "/admin/careers" },
-    { label: "System Logs",          value: logs.length,       change: "last events",            icon: Users,      color: "text-accent",      bg: "bg-accent/8 border-cyan-400/15",        href: "/admin/logs" },
+    { label: "Startup Arizalari",  value: startups.length,  change: `${approved} tasdiqlangan`,  icon: Rocket,    color: "text-violet-400",  bg: "bg-violet-400/8 border-violet-400/15",  href: "/admin/startups" },
+    { label: "Investorlar",        value: investors.length,  change: `${activeInv} faol`,         icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-400/8 border-emerald-400/15", href: "/admin/investors" },
+    { label: "Hamkorlar",          value: partners.length,   change: "global tarmoq",             icon: Globe,      color: "text-yellow-400",  bg: "bg-yellow-400/8 border-yellow-400/15",  href: "/admin/partners" },
+    { label: "Maqolalar",          value: news.length,       change: `${published} chop etilgan`, icon: Newspaper,  color: "text-pink-400",    bg: "bg-pink-400/8 border-pink-400/15",      href: "/admin/news" },
+    { label: "Ish E'lonlari",      value: jobs.length,       change: `${activeJobs} faol`,        icon: Activity,   color: "text-orange-400",  bg: "bg-orange-400/8 border-orange-400/15",  href: "/admin/careers" },
+    { label: "Tizim Jurnali",      value: logs.length,       change: "so'nggi hodisalar",         icon: Users,      color: "text-accent",      bg: "bg-accent/8 border-cyan-400/15",        href: "/admin/logs" },
   ];
 
   const recentLogs = logs.slice(0, 8);
   const [selectedLog, setSelectedLog] = useState<Row | null>(null);
 
   const QUICK = [
-    { label: "Pending Startups",  count: pending,   href: "/admin/startups", color: "text-yellow-400" },
-    { label: "Active Jobs",       count: activeJobs, href: "/admin/careers",  color: "text-accent" },
-    { label: "Draft Articles",    count: drafts,     href: "/admin/news",     color: "text-violet-400" },
-    { label: "Active Partners",   count: partners.filter(p => p.status === "active").length, href: "/admin/partners", color: "text-emerald-400" },
-    { label: "Recent Logs",       count: recentLogs.length, href: "/admin/logs", color: "text-muted" },
+    { label: "Kutayotgan Startaplar",  count: pending,   href: "/admin/startups", color: "text-yellow-400" },
+    { label: "Faol Ish E'lonlari",     count: activeJobs, href: "/admin/careers",  color: "text-accent" },
+    { label: "Qoralama Maqolalar",     count: drafts,     href: "/admin/news",     color: "text-violet-400" },
+    { label: "Faol Hamkorlar",         count: partners.filter(p => p.status === "active").length, href: "/admin/partners", color: "text-emerald-400" },
+    { label: "So'nggi Jurnal",         count: recentLogs.length, href: "/admin/logs", color: "text-muted" },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-foreground">Boshqaruv Paneli</h1>
           <p className="mt-1 text-[13px] text-muted">Django backend — real ma&apos;lumotlar</p>
         </div>
         <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${apiError ? "border-red-500/20 bg-red-500/5" : "border-emerald-500/20 bg-emerald-500/5"}`}>

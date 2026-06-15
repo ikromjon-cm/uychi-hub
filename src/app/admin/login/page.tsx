@@ -95,12 +95,6 @@ export default function AdminLoginPage() {
             {loading ? "Tekshirilmoqda..." : "Kirish"}
           </button>
 
-          <div className="pt-1 text-center">
-            <p className="text-[11px] text-muted-foreground">
-              Admin: <code className="rounded bg-card-hover px-1 text-accent">admin</code>{" "}
-              Parol: <code className="rounded bg-card-hover px-1 text-accent">admin123</code>
-            </p>
-          </div>
         </form>
 
         <p className="mt-6 text-center text-[12px] text-muted-foreground">

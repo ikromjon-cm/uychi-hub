@@ -14,32 +14,32 @@ import { logout, getMe } from "@/lib/api";
 import { useTheme } from "@/lib/theme-provider";
 
 const NAV_MAIN = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Content", href: "/admin/content", icon: FileText },
-  { label: "News", href: "/admin/news", icon: Newspaper },
-  { label: "Startups", href: "/admin/startups", icon: Rocket },
-  { label: "Investors", href: "/admin/investors", icon: TrendingUp },
-  { label: "Partners", href: "/admin/partners", icon: Handshake },
+  { label: "Boshqaruv", href: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Kontent", href: "/admin/content", icon: FileText },
+  { label: "Yangiliklar", href: "/admin/news", icon: Newspaper },
+  { label: "Startaplar", href: "/admin/startups", icon: Rocket },
+  { label: "Investorlar", href: "/admin/investors", icon: TrendingUp },
+  { label: "Hamkorlar", href: "/admin/partners", icon: Handshake },
 ];
 
 const NAV_MANAGE = [
-  { label: "Careers", href: "/admin/careers", icon: Briefcase },
-  { label: "Education", href: "/admin/education", icon: BookOpen },
-  { label: "Events", href: "/admin/events", icon: CalendarDays },
-  { label: "Coworking", href: "/admin/coworking", icon: Building2 },
-  { label: "Students", href: "/admin/students", icon: GraduationCap },
-  { label: "Contact", href: "/admin/contact", icon: MessageSquare },
-  { label: "Newsletter", href: "/admin/newsletter", icon: Mail },
-  { label: "Media Library", href: "/admin/media", icon: Image },
+  { label: "Ish O'rinlari", href: "/admin/careers", icon: Briefcase },
+  { label: "Ta'lim", href: "/admin/education", icon: BookOpen },
+  { label: "Tadbirlar", href: "/admin/events", icon: CalendarDays },
+  { label: "Kovorking", href: "/admin/coworking", icon: Building2 },
+  { label: "Talabalar", href: "/admin/students", icon: GraduationCap },
+  { label: "Aloqa", href: "/admin/contact", icon: MessageSquare },
+  { label: "Xabarnoma", href: "/admin/newsletter", icon: Mail },
+  { label: "Media Kutubxona", href: "/admin/media", icon: Image },
   { label: "SEO", href: "/admin/seo", icon: Search },
-  { label: "Analytics", href: "/admin/analytics", icon: BarChart2 },
+  { label: "Tahlil", href: "/admin/analytics", icon: BarChart2 },
 ];
 
 const NAV_SYSTEM = [
-  { label: "User Roles", href: "/admin/roles", icon: Shield },
-  { label: "Permissions", href: "/admin/permissions", icon: Key },
-  { label: "System Logs", href: "/admin/logs", icon: ScrollText },
-  { label: "Backup Center", href: "/admin/backup", icon: Database },
+  { label: "Foydalanuvchi Rollari", href: "/admin/roles", icon: Shield },
+  { label: "Ruxsatlar", href: "/admin/permissions", icon: Key },
+  { label: "Tizim Jurnali", href: "/admin/logs", icon: ScrollText },
+  { label: "Zaxira Markazi", href: "/admin/backup", icon: Database },
 ];
 
 type Me = { username: string; email: string; first_name: string; last_name: string; is_staff: boolean; is_superuser: boolean };
@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 overflow-y-auto px-2 py-4">
-          <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Main</div>
+          <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Asosiy</div>
           <ul className="space-y-0.5">
             {NAV_MAIN.map(({ label, href, icon: Icon }) => (
               <li key={href}>
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </li>
             ))}
           </ul>
-          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Management</div>
+          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Boshqarish</div>
           <ul className="space-y-0.5">
             {NAV_MANAGE.map(({ label, href, icon: Icon }) => (
               <li key={href}>
@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </li>
             ))}
           </ul>
-          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">System</div>
+          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Tizim</div>
           <ul className="space-y-0.5">
             {NAV_SYSTEM.map(({ label, href, icon: Icon }) => (
               <li key={href}>
@@ -170,7 +170,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-2 lg:flex-1">
             <div className="hidden items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 lg:flex">
               <Search className="h-4 w-4 text-muted" />
-              <input aria-label="Qidirish" type="text" placeholder="Search..." className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
+              <input aria-label="Qidirish" type="text" placeholder="Qidirish..." className="w-48 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted" />
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -184,7 +184,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className={`h-1.5 w-1.5 rounded-full ${
                 apiOnline === null ? "bg-muted animate-pulse" : apiOnline ? "bg-emerald-400 animate-pulse" : "bg-red-400"
               }`} />
-              {apiOnline === null ? "Tekshirilmoqda" : apiOnline ? "API Online" : "API Offline"}
+              {apiOnline === null ? "Tekshirilmoqda" : apiOnline ? "API Ulangan" : "API Uzilgan"}
             </div>
             <button aria-label="Bildirishnomalar" className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Bell className="h-4 w-4" />
@@ -197,7 +197,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Settings className="h-4 w-4" />
             </button>
             <Link href="/" className="rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-muted transition-colors hover:text-foreground">
-              ← Public Site
+              ← Saytga
             </Link>
           </div>
         </header>

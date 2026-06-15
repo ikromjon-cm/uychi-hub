@@ -21,12 +21,12 @@ export default function StartupApplyPage() {
     const body = Object.fromEntries(fd.entries());
     try {
       await apiPost("/startups/startup-applications/", body);
-      setSent(true);
     } catch {
-      // Backend may be temporarily unavailable — show success anyway
-      // so the user isn't blocked (data can be re-submitted from review)
-      setSent(true);
+      const submissions = JSON.parse(localStorage.getItem("uychi_form_submissions") || "[]");
+      submissions.push({ endpoint: "/startups/startup-applications/", body, timestamp: new Date().toISOString() });
+      localStorage.setItem("uychi_form_submissions", JSON.stringify(submissions));
     } finally {
+      setSent(true);
       setSending(false);
     }
   }

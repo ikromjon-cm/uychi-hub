@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
+import { NEWS } from "@/lib/mock-data";
 
 type Article = {
   id: number;
@@ -38,7 +39,26 @@ export default function NewsDetailPage() {
         if (found) setArticle(found);
         else setMissing(true);
       })
-      .catch(() => setMissing(true))
+      .catch(() => {
+        const mock = NEWS.find((n) => n.id === params.slug);
+        if (mock) {
+          setArticle({
+            id: 0,
+            title: mock.title,
+            slug: mock.id,
+            category: mock.category,
+            excerpt: mock.excerpt,
+            content: mock.excerpt,
+            status: "published",
+            views: 0,
+            author_name: "Uychi Hub",
+            published_at: mock.date,
+            created_at: mock.date,
+          });
+        } else {
+          setMissing(true);
+        }
+      })
       .finally(() => setLoading(false));
   }, [params.slug]);
 

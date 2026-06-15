@@ -22,9 +22,12 @@ admin_router.register(r"jobs", views.AdminJobViewSet, basename="admin-job")
 admin_router.register(r"leads", views.AdminLeadViewSet, basename="admin-lead")
 
 urlpatterns = [
-    path("", include(router.urls)),
+    # Specific creation routes must come before the router so that
+    # "startups/apply/" / "jobs/apply/" are not captured by the router's
+    # detail route (pk="apply") on the read-only viewsets.
     path("leads/", views.LeadCreateView.as_view(), name="lead-create"),
     path("startups/apply/", views.StartupCreateView.as_view(), name="startup-apply"),
     path("jobs/apply/", views.JobCreateView.as_view(), name="job-apply"),
     path("admin/", include(admin_router.urls)),
+    path("", include(router.urls)),
 ]

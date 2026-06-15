@@ -61,20 +61,19 @@ export default function JobsPage() {
     if (!modal.job) return;
     setModal(m => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
+    const jobTitle = modal.job.title_en || modal.job.title_uz || modal.job.title_ru;
+    // A job application is captured as a Lead so the applicant's contact
+    // details are stored (admin → Murojaatlar), instead of creating a new
+    // public job posting.
     const body = {
-      title_en: modal.job.title_en,
-      title_uz: modal.job.title_uz,
-      title_ru: modal.job.title_ru,
-      department: modal.job.department,
-      type: modal.job.type,
-      salary: modal.job.salary,
-      full_name: fd.get("full_name"),
+      name: fd.get("full_name"),
       email: fd.get("email"),
       phone: fd.get("phone") || "",
-      cover_letter: fd.get("cover_letter") || "",
+      company: modal.job.department || "",
+      message: `Ish o'rni: ${jobTitle}\n\n${fd.get("cover_letter") || ""}`,
     };
     try {
-      await apiFormPost("/hub/jobs/apply/", body);
+      await apiFormPost("/hub/leads/", body);
     } catch {
       /* silent */
     } finally {

@@ -84,7 +84,31 @@ export default function StartupApplyPage() {
     setSending(true);
     setError("");
     const fd = new FormData(e.currentTarget as HTMLFormElement);
-    const body = Object.fromEntries(fd.entries());
+    const f = Object.fromEntries(fd.entries()) as Record<string, string>;
+    // Map the application form fields onto the Startup model fields,
+    // preserving founder contact and extra meta in the solution text since
+    // the Startup model has no dedicated columns for them.
+    const details = [
+      f.founder_name && `Asoschi: ${f.founder_name}`,
+      f.email && `Email: ${f.email}`,
+      f.phone && `Tel: ${f.phone}`,
+      f.country && `Davlat: ${f.country}`,
+      f.stage && `Bosqich: ${f.stage}`,
+      f.funding_needed && `Investitsiya: ${f.funding_needed}`,
+      f.team_size && `Jamoa: ${f.team_size}`,
+      f.website && `Sayt: ${f.website}`,
+    ].filter(Boolean).join(" • ");
+    const body = {
+      title: f.startup_name || "",
+      sector: f.sector || "",
+      problem_en: f.description || "",
+      problem_uz: f.description || "",
+      problem_ru: f.description || "",
+      solution_en: details,
+      solution_uz: details,
+      solution_ru: details,
+      tech_stack: f.tech_stack || "",
+    };
     try {
       await apiFormPost("/hub/startups/apply/", body);
     } catch {

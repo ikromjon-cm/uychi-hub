@@ -3,19 +3,17 @@
 import { useState, useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
-import { NEWS } from "@/lib/mock-data";
+import { useLang } from "@/lib/i18n";
 
-type Article = {
+type HubNews = {
   id: number;
-  title: string;
-  slug: string;
-  category: string;
-  excerpt: string;
-  content: string;
-  status: string;
-  views: number;
-  author_name: string;
-  published_at: string | null;
+  title_en: string;
+  title_uz: string;
+  title_ru: string;
+  body_en: string;
+  body_uz: string;
+  body_ru: string;
+  image: string | null;
   created_at: string;
 };
 
@@ -26,41 +24,28 @@ function formatDate(str: string | null): string {
 
 export default function NewsDetailPage() {
   const params = useParams<{ slug: string }>();
-  const [article, setArticle] = useState<Article | null>(null);
+  const { lang } = useLang();
+  const [article, setArticle] = useState<HubNews | null>(null);
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/news/articles/?slug=${params.slug}`)
-      .then((r) => r.json())
-      .then((data) => {
-        const list: Article[] = data.results ?? data;
-        const found = list[0] ?? null;
-        if (found) setArticle(found);
+    fetch(`/api/hub/news/${params.slug}/`)
+      .then((r) => {
+        if (!r.ok) throw new Error("not found");
+        return r.json();
+      })
+      .then((data: HubNews) => {
+        if (data && data.id) setArticle(data);
         else setMissing(true);
       })
-      .catch(() => {
-        const mock = NEWS.find((n) => n.id === params.slug);
-        if (mock) {
-          setArticle({
-            id: 0,
-            title: mock.title,
-            slug: mock.id,
-            category: mock.category,
-            excerpt: mock.excerpt,
-            content: mock.excerpt,
-            status: "published",
-            views: 0,
-            author_name: "Uychi Hub",
-            published_at: mock.date,
-            created_at: mock.date,
-          });
-        } else {
-          setMissing(true);
-        }
-      })
+      .catch(() => setMissing(true))
       .finally(() => setLoading(false));
   }, [params.slug]);
+
+  const l = lang.toLowerCase() as "en" | "uz" | "ru";
+  const title = article ? article[`title_${l}`] || article.title_en : "";
+  const body = article ? article[`body_${l}`] || article.body_en : "";
 
   if (missing) notFound();
 
@@ -99,32 +84,25 @@ export default function NewsDetailPage() {
 
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="inline-flex items-center rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
-              {article.category}
+              Yangilik
             </span>
             <time className="text-[12px] text-muted">
-              {formatDate(article.published_at || article.created_at)}
+              {formatDate(article.created_at)}
             </time>
-            {article.author_name && (
-              <span className="text-[12px] text-muted">{article.author_name}</span>
-            )}
-            {article.views > 0 && (
-              <span className="text-[12px] text-muted">{article.views} ko&apos;rish</span>
-            )}
           </div>
 
           <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            {article.title}
+            {title}
           </h1>
 
-          {article.excerpt && (
-            <p className="mt-6 text-[15px] leading-relaxed text-muted border-l-2 border-accent/30 pl-4 italic">
-              {article.excerpt}
-            </p>
+          {article.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={article.image} alt={title} className="mt-8 w-full rounded-2xl border border-border object-cover" />
           )}
 
-          {article.content && (
+          {body && (
             <div className="mt-8 text-[15px] leading-relaxed text-foreground space-y-4 whitespace-pre-line">
-              {article.content}
+              {body}
             </div>
           )}
 
@@ -136,7 +114,7 @@ export default function NewsDetailPage() {
               ← Barcha yangiliklar
             </Link>
             <span className="text-[11px] text-muted">
-              {formatDate(article.published_at || article.created_at)}
+              {formatDate(article.created_at)}
             </span>
           </div>
         </div>

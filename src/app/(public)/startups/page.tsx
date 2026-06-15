@@ -111,7 +111,7 @@ export default function StartupsPage() {
               const problem = s[`problem_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || s.problem_en;
               const solution = s[`solution_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || s.solution_en;
               return (
-                <div key={s.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
+                <Link key={s.id} href={`/startups/${s.id}`} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer ${c.border} ${c.glow}`}>
                   <div className="flex items-start justify-between">
                     <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${c.badge}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> {s.sector}
@@ -139,7 +139,7 @@ export default function StartupsPage() {
                   <div className={`mt-3 flex items-center gap-1 text-[11px] font-semibold ${c.text}`}>
                     Batafsil ko&apos;rish →
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

@@ -90,7 +90,7 @@ export default function NewsPage() {
         ) : !loading && (
           <>
             {featured && (
-              <div className="mb-10 overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1">
+              <Link href={`/news/${featured.id}`} className="mb-10 block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1">
                 <div className="grid md:grid-cols-2">
                   <div className="p-8">
                     <span className={`badge ${A[getAccent(0)].badge}`}>Yangilik</span>
@@ -108,7 +108,7 @@ export default function NewsPage() {
                     </div>
                   )}
                 </div>
-              </div>
+              </Link>
             )}
 
             {filtered.length > 1 && (
@@ -122,7 +122,7 @@ export default function NewsPage() {
                   {filtered.slice(1).map((item, idx) => {
                     const c = A[getAccent(idx + 1)];
                     return (
-                      <div key={item.id} className={`group flex flex-col rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1 cursor-pointer ${c.border}`}>
+                      <Link key={item.id} href={`/news/${item.id}`} className={`group flex flex-col rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1 cursor-pointer ${c.border}`}>
                         <span className={`inline-flex items-center gap-1.5 self-start rounded-full border px-2.5 py-1 text-[10px] font-bold ${c.badge}`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> Yangilik
                         </span>
@@ -133,7 +133,7 @@ export default function NewsPage() {
                           {item[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.body_en}
                         </p>
                         <p className="mt-3 text-[11px] text-muted-foreground">{formatDate(item.created_at)}</p>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

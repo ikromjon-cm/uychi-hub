@@ -6,6 +6,14 @@ import { useApi } from "@/lib/api";
 
 type StatItem = { id: number; label: string; value: string; suffix: string; order: number };
 
+const MOCK_STATS: StatItem[] = [
+  { id: 1, label: "Rezident Startaplar", value: "30", suffix: "+", order: 1 },
+  { id: 2, label: "IT Mutaxassislar",    value: "500", suffix: "+", order: 2 },
+  { id: 3, label: "Ish O'rinlari",       value: "1200", suffix: "+", order: 3 },
+  { id: 4, label: "Xalqaro Hamkorlar",   value: "30", suffix: "+", order: 4 },
+  { id: 5, label: "AI Yechimlar",        value: "25", suffix: "+", order: 5 },
+];
+
 const ACCENTS = ["cyan", "violet", "emerald", "cyan", "violet"] as const;
 type AccentKey = "cyan" | "violet" | "emerald";
 
@@ -36,7 +44,7 @@ function CountUp({ to, suffix, active }: { to: number; suffix: string; active: b
 export function StatsSection() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const { data: stats, loading } = useApi<StatItem[]>("/core/stats/", []);
+  const { data: stats, loading } = useApi<StatItem[]>("/core/stats/", [], MOCK_STATS);
 
   const sorted = [...stats].sort((a, b) => a.order - b.order);
 

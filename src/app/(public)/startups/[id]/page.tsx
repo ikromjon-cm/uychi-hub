@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
+import { MOCK_STARTUPS } from "@/lib/mock-data";
 
 type Startup = {
   id: number;
@@ -58,7 +59,31 @@ export default function StartupDetailPage() {
         return r.json();
       })
       .then((data: Startup) => setStartup(data))
-      .catch(() => setMissing(true))
+      .catch(() => {
+        const idx = parseInt(id, 10) - 1;
+        const mock = MOCK_STARTUPS[idx];
+        if (mock) {
+          setStartup({
+            id: parseInt(id, 10),
+            startup_name: mock.name,
+            sector: mock.sector,
+            stage: mock.stage,
+            status: "approved",
+            founder_name: mock.founder,
+            email: "",
+            phone: "",
+            team_size: mock.teamSize,
+            funding_needed: mock.fundingNeeded,
+            description: mock.desc,
+            tech_stack: mock.techStack,
+            website: "",
+            country: "O'zbekiston",
+            created_at: new Date().toISOString(),
+          });
+        } else {
+          setMissing(true);
+        }
+      })
       .finally(() => setLoading(false));
   }, [params.id]);
 

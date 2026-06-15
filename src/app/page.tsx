@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -10,6 +10,7 @@ import { useApi } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 import { NEWS as MOCK_NEWS } from "@/lib/mock-data";
 import { UychiMap } from "@/components/UychiMap";
+import { StatsSection } from "@/components/sections/StatsSection";
 import {
   ArrowRight, ArrowUpRight, Building2, Brain, Rocket, GraduationCap,
   CheckCircle, ChevronRight, AlertCircle, MapPin, Phone, Mail,
@@ -37,15 +38,15 @@ const slideRight = {
 
 /* ─── CountUp ──────────────────────────────────────────────────────── */
 function CountUp({ to }: { to: string }) {
-  const ref     = useRef<HTMLSpanElement>(null);
-  const inView  = useInView(ref, { once: true });
-  const num     = parseFloat(to.replace(/[^\d.]/g, "")) || 0;
-  const suffix  = to.replace(/[\d.,]/g, "");
+  const ref    = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const num    = parseFloat(to.replace(/[^\d.]/g, "")) || 0;
+  const suffix = to.replace(/[\d.,]/g, "");
   const [val, setVal] = useState(0);
-  const started = useRef(false);
 
-  if (inView && !started.current) {
-    started.current = true;
+  useEffect(() => {
+    if (!inView) return;
+    let raf: number;
     let start: number | null = null;
     const dur = 1600;
     const step = (ts: number) => {
@@ -53,10 +54,11 @@ function CountUp({ to }: { to: string }) {
       const prog = Math.min((ts - start) / dur, 1);
       const ease = 1 - Math.pow(1 - prog, 3);
       setVal(Math.round(ease * num));
-      if (prog < 1) requestAnimationFrame(step);
+      if (prog < 1) raf = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
-  }
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, num]);
 
   return <span ref={ref}>{to.includes(",") ? val.toLocaleString() : val}{suffix}</span>;
 }
@@ -457,6 +459,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ══ LIVE STATS ══════════════════════════════════════════════════ */}
+      <StatsSection />
 
       {/* ══ STARTUPS ════════════════════════════════════════════════════ */}
       <section id="startups" className="relative border-t border-border-subtle py-24 md:py-32">

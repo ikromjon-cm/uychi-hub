@@ -10,6 +10,30 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 def health_check(request):
     return JsonResponse({"status": "ok"})
 
+
+def api_root(request):
+    return JsonResponse({
+        "status": "ok",
+        "version": "1.0",
+        "endpoints": {
+            "health": "/api/health/",
+            "core": "/api/core/",
+            "startups": "/api/startups/",
+            "investors": "/api/investors/",
+            "partners": "/api/partners/",
+            "news": "/api/news/",
+            "careers": "/api/careers/",
+            "education": "/api/education/",
+            "events": "/api/events/",
+            "contact": "/api/contact/",
+            "meetings": "/api/meetings/",
+            "newsletter": "/api/newsletter/",
+            "users": "/api/users/",
+            "auth": "/api/auth/",
+            "docs": "/api/docs/",
+        }
+    })
+
 core_patterns = [
     path("core/", include("apps.core.urls")),
     path("startups/", include("apps.startups.urls")),
@@ -38,6 +62,7 @@ auth_patterns = [
 
 urlpatterns = [
     path("api/health/", health_check, name="health-check"),
+    path("api/", api_root, name="api-root"),
     path("admin/", admin.site.urls),
     path("api/", include(core_patterns)),
     path("api/auth/", include(auth_patterns)),

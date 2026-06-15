@@ -44,8 +44,8 @@ export default function NewsDetailPage() {
   }, [params.slug]);
 
   const l = lang.toLowerCase() as "en" | "uz" | "ru";
-  const title = article ? article[`title_${l}`] || article.title_en : "";
-  const body = article ? article[`body_${l}`] || article.body_en : "";
+  const title = article ? article[`title_${l}`] || article.title_uz || article.title_en : "";
+  const body = article ? article[`body_${l}`] || article.body_uz || article.body_en : "";
 
   if (missing) notFound();
 

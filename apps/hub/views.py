@@ -1,12 +1,39 @@
 from rest_framework import viewsets, permissions, generics
-from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner, SiteSettings
 from .serializers import (
     HeroVideoSerializer, NewsSerializer, AnnouncementSerializer,
     StartupSerializer, JobSerializer, LeadSerializer,
-    StatSerializer, PartnerSerializer,
+    StatSerializer, PartnerSerializer, SiteSettingsSerializer,
     AdminNewsSerializer, AdminAnnouncementSerializer,
     AdminStartupSerializer, AdminJobSerializer,
 )
+
+
+class SiteSettingsView(APIView):
+    """GET (public) and PATCH/PUT (admin) the single site-settings row."""
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get(self, request):
+        obj, _ = SiteSettings.objects.get_or_create(pk=1)
+        return Response(SiteSettingsSerializer(obj).data)
+
+    def patch(self, request):
+        obj, _ = SiteSettings.objects.get_or_create(pk=1)
+        ser = SiteSettingsSerializer(obj, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return Response(ser.data)
+
+    def put(self, request):
+        return self.patch(request)
 
 
 class StatViewSet(viewsets.ReadOnlyModelViewSet):
@@ -69,6 +96,15 @@ class JobCreateView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 
+class AutoApproveMixin:
+    """Content created or edited through the admin panel is trusted, so it is
+    published (status='approved') immediately instead of waiting for review.
+    This is what makes admin additions appear on the public site at once."""
+
+    def perform_create(self, serializer):
+        serializer.save(status="approved")
+
+
 class AdminStatViewSet(viewsets.ModelViewSet):
     queryset = Stat.objects.all()
     serializer_class = StatSerializer
@@ -85,27 +121,28 @@ class AdminHeroVideoViewSet(viewsets.ModelViewSet):
     queryset = HeroVideo.objects.all()
     serializer_class = HeroVideoSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
 
-class AdminNewsViewSet(viewsets.ModelViewSet):
+class AdminNewsViewSet(AutoApproveMixin, viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = AdminNewsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AdminAnnouncementViewSet(viewsets.ModelViewSet):
+class AdminAnnouncementViewSet(AutoApproveMixin, viewsets.ModelViewSet):
     queryset = Announcement.objects.all()
     serializer_class = AdminAnnouncementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AdminStartupViewSet(viewsets.ModelViewSet):
+class AdminStartupViewSet(AutoApproveMixin, viewsets.ModelViewSet):
     queryset = Startup.objects.all()
     serializer_class = AdminStartupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AdminJobViewSet(viewsets.ModelViewSet):
+class AdminJobViewSet(AutoApproveMixin, viewsets.ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = AdminJobSerializer
     permission_classes = [permissions.IsAuthenticated]

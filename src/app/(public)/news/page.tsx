@@ -43,8 +43,8 @@ export default function NewsPage() {
   const [search, setSearch] = useState("");
 
   const filtered = allArticles.filter((n) => {
-    const title = n[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || n.title_en;
-    const body = n[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || n.body_en;
+    const title = n[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || n.title_uz || n.title_en;
+    const body = n[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || n.body_uz || n.body_en;
     const matchCat = activeCategory === "Barchasi";
     const matchSearch = !search ||
       title.toLowerCase().includes(search.toLowerCase()) ||
@@ -96,10 +96,10 @@ export default function NewsPage() {
                   <div className="p-8">
                     <span className={`badge ${A[getAccent(0)].badge}`}>Yangilik</span>
                     <h2 className="mt-3 text-2xl font-bold text-foreground leading-tight">
-                      {featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_en}
+                      {featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_uz || featured.title_en}
                     </h2>
                     <p className="mt-3 text-[14px] leading-relaxed text-muted">
-                      {featured[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.body_en}
+                      {featured[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.body_uz || featured.body_en}
                     </p>
                     <p className="mt-4 text-[12px] text-muted-foreground">{formatDate(featured.created_at)}</p>
                   </div>
@@ -108,7 +108,7 @@ export default function NewsPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={featured.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
-                      <CardArt seed={featured.id} label={featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_en} className="absolute inset-0" />
+                      <CardArt seed={featured.id} label={featured[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || featured.title_uz || featured.title_en} className="absolute inset-0" />
                     )}
                   </div>
                 </div>
@@ -131,10 +131,10 @@ export default function NewsPage() {
                           <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} /> Yangilik
                         </span>
                         <h3 className={`mt-3 text-[15px] font-bold leading-snug text-foreground group-hover:${c.text} transition-colors`}>
-                          {item[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.title_en}
+                          {item[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.title_uz || item.title_en}
                         </h3>
                         <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted line-clamp-3">
-                          {item[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.body_en}
+                          {item[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.body_uz || item.body_en}
                         </p>
                         <p className="mt-3 text-[11px] text-muted-foreground">{formatDate(item.created_at)}</p>
                       </Link>

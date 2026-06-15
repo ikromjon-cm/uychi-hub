@@ -28,6 +28,7 @@ urlpatterns = [
     path("leads/", views.LeadCreateView.as_view(), name="lead-create"),
     path("startups/apply/", views.StartupCreateView.as_view(), name="startup-apply"),
     path("jobs/apply/", views.JobCreateView.as_view(), name="job-apply"),
+    path("settings/", views.SiteSettingsView.as_view(), name="site-settings"),
     path("admin/", include(admin_router.urls)),
     path("", include(router.urls)),
 ]

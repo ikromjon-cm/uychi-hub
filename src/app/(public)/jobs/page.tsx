@@ -83,7 +83,7 @@ export default function JobsPage() {
 
   const filtered = allJobs.filter((j) => {
     const matchType = typeFilter === "all" || j.type === typeFilter;
-    const title = j[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || j.title_en;
+    const title = j[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || j.title_uz || j.title_en;
     const matchSearch = !search ||
       title.toLowerCase().includes(search.toLowerCase()) ||
       j.department.toLowerCase().includes(search.toLowerCase());
@@ -147,7 +147,7 @@ export default function JobsPage() {
           <div className="space-y-4">
             {filtered.map((job, idx) => {
               const c = A[ACCENTS[idx % 3]];
-              const title = job[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || job.title_en;
+              const title = job[`title_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || job.title_uz || job.title_en;
               const typeColor = `text-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-400" : job.type === "contract" ? "amber-400" : "emerald-400"} border-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-400" : job.type === "contract" ? "amber-400" : "emerald-400"}/20 bg-${job.type === "fulltime" ? "accent" : job.type === "remote" ? "violet-500" : job.type === "contract" ? "amber-500" : "emerald-500"}/8`;
               return (
                 <div key={job.id} className={`group flex flex-col rounded-2xl border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 sm:flex-row sm:items-center sm:gap-6 ${c.border}`}>

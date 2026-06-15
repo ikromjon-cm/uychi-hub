@@ -23,8 +23,6 @@ const publicRoutes = [
   "/media",
   "/apply/investor",
   "/apply/startup",
-  "/startups/1",
-  "/news/12",
 ];
 
 // Admin routes

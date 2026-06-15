@@ -108,6 +108,20 @@ export async function apiFormPost(endpoint: string, body: unknown) {
   }
 }
 
+export async function apiUpload(endpoint: string, formData: FormData) {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function apiPatch(endpoint: string, body: unknown) {
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: "PATCH",

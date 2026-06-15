@@ -31,6 +31,7 @@ const NAV_HUB = [
   { label: "Ish O'rinlari", href: "/admin/hub/jobs", icon: Briefcase },
   { label: "Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
   { label: "Murojaatlar", href: "/admin/hub/leads", icon: Mail },
+  { label: "Sozlamalar", href: "/admin/hub/settings", icon: Settings },
 ];
 
 const NAV_MANAGE = [
@@ -207,16 +208,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }`} />
               {apiOnline === null ? "Tekshirilmoqda" : apiOnline ? "API Ulangan" : "API Uzilgan"}
             </div>
-            <button aria-label="Bildirishnomalar" className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
+            <Link href="/admin/hub/leads" aria-label="Bildirishnomalar (murojaatlar)" className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Bell className="h-4 w-4" />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
-            </button>
+            </Link>
             <button onClick={toggleTheme} aria-label="Tema almashtirish" className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted transition-colors hover:text-foreground">
               {themeMounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
             </button>
-            <button aria-label="Sozlamalar" className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
+            <Link href="/admin/hub/settings" aria-label="Sozlamalar" className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted hover:text-foreground">
               <Settings className="h-4 w-4" />
-            </button>
+            </Link>
             <Link href="/" className="rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-muted transition-colors hover:text-foreground">
               ← Saytga
             </Link>

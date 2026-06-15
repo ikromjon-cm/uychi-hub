@@ -55,10 +55,13 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
     e.preventDefault();
     setSaving(true);
     setError("");
-    const body = { ...form };
+    const body: Record<string, unknown> = {};
     for (const f of fields) {
-      if (body[f.key] === "true") body[f.key] = true as unknown as string;
-      if (body[f.key] === "false") body[f.key] = false as unknown as string;
+      const v = form[f.key];
+      if (v === "" || v === undefined) continue; // omit empty optional fields
+      if (v === "true") body[f.key] = true;
+      else if (v === "false") body[f.key] = false;
+      else body[f.key] = v;
     }
     try {
       const res = selected
@@ -249,8 +252,8 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
 
       {/* Add/Edit Modal */}
       {showAdd && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm">
+          <div className="my-8 max-h-[calc(100vh-4rem)] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-6">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-[16px] font-bold text-foreground">
                 {selected ? "Tahrirlash" : "Yangi Qo'shish"}
@@ -291,7 +294,7 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
                         <input
                           value={form[f.key] || ""}
                           onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
-                          required={!selected}
+                          required={!selected && f.key === visibleFields[0]?.key}
                           className={inputClass}
                         />
                       )}

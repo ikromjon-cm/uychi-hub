@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer"
 import { useApi, apiFormPost } from "@/lib/api"
 import { useLang } from "@/lib/i18n"
 import { CardArt } from "@/components/ui/CardArt"
+import { UychiMap } from "@/components/UychiMap"
 import { ArrowRight, ArrowUpRight, Play, Mail, Phone, MapPin, Calendar, Clock, Users, Briefcase, DollarSign, ChevronRight, CheckCircle, Loader2 } from "lucide-react"
 
 const fadeUp = {
@@ -502,6 +503,23 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <section className="section">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-10"
+          >
+            <span className="badge">/ Geografiya</span>
+            <h2 className="title mt-3">Uychi tumani xaritasi</h2>
+            <p className="desc">Uychi tumani Namangan viloyatining shimoli-sharqida joylashgan — chegaradosh hududlar va tuman markazi.</p>
+          </motion.div>
+          <UychiMap />
+        </div>
+      </section>
 
       <section id="contact" className="section">
         <div className="mx-auto max-w-7xl">

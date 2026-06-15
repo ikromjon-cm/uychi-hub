@@ -46,7 +46,7 @@ class News(models.Model):
     body_en = models.TextField(blank=True)
     body_uz = models.TextField(blank=True)
     body_ru = models.TextField(blank=True)
-    image = models.ImageField(upload_to="news/", blank=True)
+    image = models.URLField(max_length=500, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -64,7 +64,7 @@ class Announcement(models.Model):
     body_en = models.TextField(blank=True)
     body_uz = models.TextField(blank=True)
     body_ru = models.TextField(blank=True)
-    image = models.ImageField(upload_to="announcements/", blank=True)
+    image = models.URLField(max_length=500, blank=True)
     date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
@@ -84,7 +84,7 @@ class Startup(models.Model):
     solution_en = models.TextField(blank=True)
     solution_uz = models.TextField(blank=True)
     solution_ru = models.TextField(blank=True)
-    image = models.ImageField(upload_to="startups/", blank=True)
+    image = models.URLField(max_length=500, blank=True)
     tech_stack = models.CharField(max_length=500, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
@@ -101,7 +101,7 @@ class Job(models.Model):
     title_uz = models.CharField(max_length=255, blank=True)
     title_ru = models.CharField(max_length=255, blank=True)
     department = models.CharField(max_length=100, blank=True)
-    image = models.ImageField(upload_to="jobs/", blank=True)
+    image = models.URLField(max_length=500, blank=True)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="fulltime")
     salary = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
@@ -111,6 +111,25 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title_en
+
+
+class SiteSettings(models.Model):
+    """Singleton-style settings row managed from the admin panel and read by
+    the public footer/site (social links + contact details)."""
+    telegram_url = models.URLField(max_length=500, blank=True)
+    youtube_url = models.URLField(max_length=500, blank=True)
+    instagram_url = models.URLField(max_length=500, blank=True)
+    facebook_url = models.URLField(max_length=500, blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+    contact_email = models.EmailField(blank=True)
+    address = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = "Site settings"
+        verbose_name_plural = "Site settings"
+
+    def __str__(self):
+        return "Site settings"
 
 
 class Lead(models.Model):

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useApi, apiPost } from "@/lib/api";
-import { PARTNERS_LIST } from "@/lib/mock-data";
 import { useLang } from "@/lib/i18n";
 
 const T = {
@@ -62,7 +61,6 @@ const T = {
   },
 };
 
-type Partner = { id: number; name: string; country: string; category: string; tier: string };
 
 const PERKS = [
   { symbol: "↓", title: "Xarajat afzalligi", desc: "Mintaqaviy texnologiya markazlariga nisbatan operatsion xarajatlar 60–70% past. Texnika importiga bojsiz kirish.", highlight: "60–70% arzonroq", accent: "cyan" },
@@ -84,22 +82,9 @@ export default function InvestorsPage() {
   const { lang } = useLang();
   const t = T[lang];
 
-  const CATEGORY_MAP: Record<string, string> = {
-    government: "Government",
-    university: "University",
-    international: "International",
-    tech: "Corporate",
-    investor: "Accelerator",
-  };
-  const mockPartners: Partner[] = PARTNERS_LIST.map((p, i) => ({
-    id: i + 1,
-    name: p.name,
-    country: p.country,
-    category: CATEGORY_MAP[p.category] || p.category,
-    tier: "Gold",
-  }));
-  const { data: partners } = useApi<Partner[]>("/partners/partners/", [], mockPartners);
-  const investors = partners.filter(p => ["Corporate", "Accelerator", "International"].includes(p.category));
+  // Investors are managed from the admin panel (/admin/investors) and shown here.
+  const { data: investorList } = useApi<{ id: number; company: string; country: string }[]>("/investors/investors/", []);
+  const investors = investorList.map((i) => ({ id: i.id, name: i.company, country: i.country }));
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

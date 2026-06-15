@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner, STATUS_CHOICES
+from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner, SiteSettings, STATUS_CHOICES
+
+
+class SiteSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSettings
+        fields = "__all__"
 
 
 class HeroVideoSerializer(serializers.ModelSerializer):

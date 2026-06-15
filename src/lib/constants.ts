@@ -21,7 +21,7 @@ export const SITE: SiteConfig = {
 };
 
 export const SOCIAL = {
-  whatsapp: "https://wa.me/998901234567",
+  whatsapp: "https://wa.me/998792240000",
   telegram: "https://t.me/uychi_hub",
   linkedin: "https://linkedin.com/company/uychi-hub",
   twitter: "https://twitter.com/uychi_hub",

@@ -41,10 +41,15 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
     e.preventDefault();
     setSaving(true);
     setError("");
+    const body = { ...form };
+    for (const f of fields) {
+      if (body[f.key] === "true") body[f.key] = true as unknown as string;
+      if (body[f.key] === "false") body[f.key] = false as unknown as string;
+    }
     try {
       const res = selected
-        ? await apiPatch(`${endpoint}${selected.id}/`, form)
-        : await apiPost(endpoint, form);
+        ? await apiPatch(`${endpoint}${selected.id}/`, body)
+        : await apiPost(endpoint, body);
       if (selected) {
         setLocal(items.map((i) => (i.id === selected.id ? { ...i, ...res } : i)));
       } else {

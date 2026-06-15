@@ -124,7 +124,7 @@ export default function PartnersPage() {
             {FILTER_OPTIONS.slice(1).map((cat) => (
               <div key={cat.key} className="rounded-xl border border-border bg-card px-5 py-3">
                 <p className="text-xl font-bold text-foreground">{loading ? "—" : countByCategory[cat.key] || 0}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-muted">{cat.label}</p>
+                <p className="mt-0.5 text-[11px] font-medium text-muted">{t.filters[cat.key as keyof typeof t.filters] ?? cat.label}</p>
               </div>
             ))}
           </div>
@@ -164,7 +164,7 @@ export default function PartnersPage() {
                   </div>
                   <div className="mt-4 flex items-center justify-between">
                     <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${colorClass}`}>
-                      {CATEGORY_LABELS[partner.category] || partner.category}
+                      {t.filters[partner.category as keyof typeof t.filters] || partner.category}
                     </span>
                     {partner.website ? (
                       <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted hover:text-violet-400">{t.website}</a>

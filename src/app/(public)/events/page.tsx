@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useApi } from "@/lib/api";
+import { useLang } from "@/lib/i18n";
 import { X, CheckCircle } from "lucide-react";
 
 const EVENT_TYPES = ["Hackathon", "Meetup", "Bootcamp", "Conference", "Training", "Workshop"] as const;
@@ -36,6 +37,111 @@ const TYPE_ICONS: Record<string, React.ReactElement> = {
   Workshop:   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" /></svg>,
 };
 
+const T = {
+  UZ: {
+    heroBadge: "/ Tadbirlar Kalendari",
+    title1: "IT Tadbirlari &",
+    title2: "Musobaqalar",
+    subtitle: "Hackathonlar, bootcamplar, konferentsiyalar va ustaxonalar — Uychi IT Hubdagi barcha tadbirlar.",
+    statUpcoming: "Kelayotgan tadbirlar",
+    statParticipants: "Ishtirokchilar",
+    statPerYear: "Yillik tadbir",
+    all: "Barchasi",
+    upcoming: "Kelayotgan tadbirlar",
+    past: "O'tgan tadbirlar",
+    today: "Bugun!",
+    daysLeft: "kun qoldi",
+    prize: "Mukofot",
+    registered: "ro'yxatdan o'tgan",
+    full: "Joy band",
+    register: "Ro'yxatdan o'tish",
+    notFound: "Tadbir topilmadi",
+    showAll: "Barchasini ko'rsatish",
+    ctaBadge: "/ O'z tadbiringizni o'tkazing",
+    ctaTitle: "Uychi IT Hubda Tadbir Tashkillash",
+    ctaDesc: "Konferentsiya, bootcamp yoki hackathon o'tkazmoqchimisiz? IT Hub infratuzilmasi va Uychi hamjamiyatidan foydalaning.",
+    ctaBtn: "Murojaat qilish",
+    modalBadge: "Tadbirga ro'yxatdan o'tish",
+    fullName: "Ism Familya",
+    fullNamePh: "Ism Familyangiz",
+    email: "Email",
+    phone: "Telefon",
+    successTitle: "Ro'yxatdan o'tdingiz!",
+    successDesc: "24 soat ichida aloqaga chiqamiz.",
+    close: "Yopish",
+    sending: "Yuborilmoqda...",
+    submit: "Ariza Yuborish →",
+  },
+  RU: {
+    heroBadge: "/ Календарь Событий",
+    title1: "IT Мероприятия &",
+    title2: "Соревнования",
+    subtitle: "Хакатоны, буткемпы, конференции и мастерские — все мероприятия Uychi IT Hub.",
+    statUpcoming: "Предстоящих событий",
+    statParticipants: "Участников",
+    statPerYear: "Событий в год",
+    all: "Все",
+    upcoming: "Предстоящие события",
+    past: "Прошедшие события",
+    today: "Сегодня!",
+    daysLeft: "дней осталось",
+    prize: "Приз",
+    registered: "зарегистрировано",
+    full: "Мест нет",
+    register: "Зарегистрироваться",
+    notFound: "Мероприятия не найдены",
+    showAll: "Показать все",
+    ctaBadge: "/ Проведите своё мероприятие",
+    ctaTitle: "Организуйте мероприятие в Uychi IT Hub",
+    ctaDesc: "Хотите провести конференцию, буткемп или хакатон? Используйте инфраструктуру IT Hub и сообщество Уйчи.",
+    ctaBtn: "Связаться",
+    modalBadge: "Регистрация на мероприятие",
+    fullName: "Имя Фамилия",
+    fullNamePh: "Ваше имя и фамилия",
+    email: "Email",
+    phone: "Телефон",
+    successTitle: "Вы зарегистрированы!",
+    successDesc: "Мы свяжемся с вами в течение 24 часов.",
+    close: "Закрыть",
+    sending: "Отправка...",
+    submit: "Отправить Заявку →",
+  },
+  EN: {
+    heroBadge: "/ Events Calendar",
+    title1: "IT Events &",
+    title2: "Competitions",
+    subtitle: "Hackathons, bootcamps, conferences and workshops — all events at Uychi IT Hub.",
+    statUpcoming: "Upcoming events",
+    statParticipants: "Participants",
+    statPerYear: "Events per year",
+    all: "All",
+    upcoming: "Upcoming events",
+    past: "Past events",
+    today: "Today!",
+    daysLeft: "days left",
+    prize: "Prize",
+    registered: "registered",
+    full: "Full",
+    register: "Register",
+    notFound: "No events found",
+    showAll: "Show all",
+    ctaBadge: "/ Host your event",
+    ctaTitle: "Organise an Event at Uychi IT Hub",
+    ctaDesc: "Planning a conference, bootcamp or hackathon? Use the IT Hub infrastructure and Uychi community.",
+    ctaBtn: "Get in touch",
+    modalBadge: "Event registration",
+    fullName: "Full Name",
+    fullNamePh: "Your full name",
+    email: "Email",
+    phone: "Phone",
+    successTitle: "You are registered!",
+    successDesc: "We will be in touch within 24 hours.",
+    close: "Close",
+    sending: "Sending...",
+    submit: "Submit →",
+  },
+} as const;
+
 function getDaysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - new Date().getTime()) / 86400000);
 }
@@ -43,8 +149,10 @@ function getDaysUntil(dateStr: string): number {
 type RegisterModal = { open: boolean; event: EventItem | null; sent: boolean; sending: boolean; error: string };
 
 export default function EventsPage() {
+  const { lang } = useLang();
+  const t = T[lang];
   const { data: allEvents, loading } = useApi<EventItem[]>("/events/events/", [], MOCK_EVENTS);
-  const [activeType, setActiveType] = useState<string>("Barchasi");
+  const [activeType, setActiveType] = useState<string>("__all__");
   const [modal, setModal] = useState<RegisterModal>({ open: false, event: null, sent: false, sending: false, error: "" });
 
   function openModal(event: EventItem) {
@@ -88,7 +196,7 @@ export default function EventsPage() {
   }
 
   const events = allEvents.filter(e => e.status !== "cancelled");
-  const filtered = activeType === "Barchasi" ? events : events.filter(e => e.event_type === activeType);
+  const filtered = activeType === "__all__" ? events : events.filter(e => e.event_type === activeType);
   const upcoming = filtered.filter(e => e.status !== "past" && getDaysUntil(e.date) >= 0);
   const past = filtered.filter(e => e.status === "past" || getDaysUntil(e.date) < 0);
 
@@ -97,19 +205,17 @@ export default function EventsPage() {
       <section className="relative border-b border-border-subtle px-6 py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(52,211,153,0.10)_0%,transparent_60%)]" />
         <div className="relative mx-auto max-w-7xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ Tadbirlar Kalendari</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">{t.heroBadge}</p>
           <h1 className="mt-3 text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight tracking-tight text-foreground">
-            IT Tadbirlari &amp;<br />
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-400 bg-clip-text text-transparent">Musobaqalar</span>
+            {t.title1}<br />
+            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-400 bg-clip-text text-transparent">{t.title2}</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            Hackathonlar, bootcamplar, konferentsiyalar va ustaxonalar — Uychi IT Hubdagi barcha tadbirlar.
-          </p>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">{t.subtitle}</p>
           <div className="mt-8 flex flex-wrap gap-4">
             {[
-              { label: "Kelayotgan tadbirlar", value: loading ? "..." : String(upcoming.length), color: "text-emerald-400" },
-              { label: "Ishtirokchilar", value: "1,800+", color: "text-accent" },
-              { label: "Yillik tadbir", value: "24+", color: "text-violet-400" },
+              { label: t.statUpcoming, value: loading ? "..." : String(upcoming.length), color: "text-emerald-400" },
+              { label: t.statParticipants, value: "1,800+", color: "text-accent" },
+              { label: t.statPerYear, value: "24+", color: "text-violet-400" },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card px-5 py-3 text-center">
                 <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -122,11 +228,11 @@ export default function EventsPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-10 flex flex-wrap gap-2">
-          {["Barchasi", ...EVENT_TYPES].map((type) => (
-            <button key={type} onClick={() => setActiveType(type)}
-              className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[12px] font-semibold transition-all ${activeType === type ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400" : "border-border bg-card text-muted hover:text-foreground"}`}>
-              {type !== "Barchasi" && TYPE_ICONS[type]}
-              {type}
+          {[{ key: "__all__", label: t.all }, ...EVENT_TYPES.map(tp => ({ key: tp, label: tp }))].map((item) => (
+            <button key={item.key} onClick={() => setActiveType(item.key)}
+              className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[12px] font-semibold transition-all ${activeType === item.key ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-400" : "border-border bg-card text-muted hover:text-foreground"}`}>
+              {item.key !== "__all__" && TYPE_ICONS[item.key]}
+              {item.label}
             </button>
           ))}
         </div>
@@ -139,7 +245,7 @@ export default function EventsPage() {
           <>
             {upcoming.length > 0 && (
               <>
-                <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">Kelayotgan tadbirlar</h2>
+                <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">{t.upcoming}</h2>
                 <div className="mb-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                   {upcoming.map((event) => {
                     const accent = (event.accent as AccentKey) in A ? event.accent as AccentKey : "cyan";
@@ -156,7 +262,7 @@ export default function EventsPage() {
                           </span>
                           {days <= 7 && days >= 0 && (
                             <span className="rounded-full border border-orange-400/20 bg-orange-400/10 px-2 py-0.5 text-[10px] font-bold text-orange-400">
-                              {days === 0 ? "Bugun!" : `${days} kun qoldi`}
+                              {days === 0 ? t.today : `${days} ${t.daysLeft}`}
                             </span>
                           )}
                         </div>
@@ -180,13 +286,13 @@ export default function EventsPage() {
                         <p className="mt-3 flex-1 text-[12px] leading-relaxed text-muted line-clamp-3">{event.description}</p>
                         {event.prize && (
                           <div className={`mt-3 rounded-lg border ${c.border} ${c.bg} px-3 py-2`}>
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Mukofot: </span>
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">{t.prize}: </span>
                             <span className={`text-[12px] font-bold ${c.text}`}>{event.prize}</span>
                           </div>
                         )}
                         <div className="mt-4">
                           <div className="flex items-center justify-between text-[11px] text-muted">
-                            <span>{event.registered_count}/{event.seats} ro&apos;yxatdan o&apos;tgan</span>
+                            <span>{event.registered_count}/{event.seats} {t.registered}</span>
                             <span>{Math.min(pct, 100)}%</span>
                           </div>
                           <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-card-hover">
@@ -200,11 +306,11 @@ export default function EventsPage() {
                         </div>
                         {isFull ? (
                           <button disabled className="mt-5 w-full cursor-not-allowed rounded-xl border border-border bg-card py-2.5 text-[13px] font-bold text-muted">
-                            Joy band
+                            {t.full}
                           </button>
                         ) : (
                           <button onClick={() => openModal(event)} className={`mt-5 block w-full rounded-xl border py-2.5 text-center text-[13px] font-bold transition-all ${c.badge} ${c.text} hover:opacity-80`}>
-                            Ro&apos;yxatdan o&apos;tish
+                            {t.register}
                           </button>
                         )}
                       </div>
@@ -216,7 +322,7 @@ export default function EventsPage() {
 
             {past.length > 0 && (
               <>
-                <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">O&apos;tgan tadbirlar</h2>
+                <h2 className="mb-5 text-[13px] font-bold uppercase tracking-[0.15em] text-muted">{t.past}</h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {past.map((event) => {
                     const accent = (event.accent as AccentKey) in A ? event.accent as AccentKey : "cyan";
@@ -231,7 +337,7 @@ export default function EventsPage() {
                           <span className="text-[11px] text-muted">{event.date}</span>
                         </div>
                         <h3 className="mt-3 text-[14px] font-semibold text-muted">{event.title}</h3>
-                        <p className="mt-1 text-[12px] text-muted">{event.location} · {event.registered_count} ishtirokchi</p>
+                        <p className="mt-1 text-[12px] text-muted">{event.location} · {event.registered_count} {t.registered}</p>
                       </div>
                     );
                   })}
@@ -241,30 +347,30 @@ export default function EventsPage() {
 
             {upcoming.length === 0 && past.length === 0 && (
               <div className="flex flex-col items-center py-20 text-center">
-                <p className="text-[15px] text-muted">Tadbir topilmadi</p>
-                <button onClick={() => setActiveType("Barchasi")} className="mt-3 text-[13px] text-emerald-400 hover:underline">Barchasini ko&apos;rsatish</button>
+                <p className="text-[15px] text-muted">{t.notFound}</p>
+                <button onClick={() => setActiveType("__all__")} className="mt-3 text-[13px] text-emerald-400 hover:underline">{t.showAll}</button>
               </div>
             )}
           </>
         )}
 
         <div className="mt-16 rounded-2xl border border-emerald-400/15 bg-gradient-to-br from-background to-card p-8 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">/ O&apos;z tadbiringizni o&apos;tkazing</p>
-          <h3 className="mt-2 text-2xl font-bold text-foreground">Uychi IT Hubda Tadbir Tashkillash</h3>
-          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">Konferentsiya, bootcamp yoki hackathon o&apos;tkazmoqchimisiz? IT Hub infratuzilmasi va Uychi hamjamiyatidan foydalaning.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">{t.ctaBadge}</p>
+          <h3 className="mt-2 text-2xl font-bold text-foreground">{t.ctaTitle}</h3>
+          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted">{t.ctaDesc}</p>
           <a href="mailto:events@uychi.uz?subject=Tadbir tashkillash murojaat" className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-8 py-3.5 text-[14px] font-bold text-emerald-400 transition-all hover:border-emerald-400/50 hover:bg-emerald-500/15">
-            Murojaat qilish
+            {t.ctaBtn}
           </a>
         </div>
       </div>
-      {/* Registration Modal */}
+
       {modal.open && modal.event && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-md rounded-2xl border border-border bg-card shadow-2xl"
+            className="relative my-8 w-full max-w-md rounded-2xl border border-border bg-card shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -280,31 +386,30 @@ export default function EventsPage() {
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10">
                     <CheckCircle className="h-8 w-8 text-emerald-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">Ro&apos;yxatdan o&apos;tdingiz!</h3>
+                  <h3 className="text-xl font-bold text-foreground">{t.successTitle}</h3>
                   <p className="mt-2 text-[13px] text-muted">
-                    <strong className="text-foreground">{modal.event.title}</strong> tadbiri uchun ariza qabul qilindi.
-                    24 soat ichida aloqaga chiqamiz.
+                    <strong className="text-foreground">{modal.event.title}</strong> — {t.successDesc}
                   </p>
                   <button
                     onClick={closeModal}
                     className="mt-6 rounded-full bg-accent px-8 py-2.5 text-[13px] font-bold text-white"
                   >
-                    Yopish
+                    {t.close}
                   </button>
                 </div>
               ) : (
                 <>
                   <div className="mb-5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-accent">Tadbirga ro&apos;yxatdan o&apos;tish</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-accent">{t.modalBadge}</p>
                     <h3 className="mt-1 text-[16px] font-bold text-foreground">{modal.event.title}</h3>
                     <p className="mt-0.5 text-[12px] text-muted">{modal.event.date} · {modal.event.location}</p>
                   </div>
 
                   <form onSubmit={handleRegister} className="space-y-3">
                     {[
-                      { name: "full_name",   label: "Ism Familya", placeholder: "Ism Familyangiz",   required: true },
-                      { name: "email",       label: "Email",       placeholder: "example@mail.com",  required: true, type: "email" },
-                      { name: "phone",       label: "Telefon",     placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
+                      { name: "full_name", label: t.fullName, placeholder: t.fullNamePh, required: true },
+                      { name: "email",     label: t.email,    placeholder: "example@mail.com", required: true, type: "email" },
+                      { name: "phone",     label: t.phone,    placeholder: "+998 XX XXX XX XX", required: true, type: "tel" },
                     ].map((f) => (
                       <div key={f.name}>
                         <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -331,7 +436,7 @@ export default function EventsPage() {
                       disabled={modal.sending}
                       className="mt-1 w-full rounded-full bg-accent py-3 text-[13px] font-bold text-white shadow-[0_4px_16px_rgba(79,70,229,0.3)] transition-all hover:bg-accent-dark disabled:opacity-60"
                     >
-                      {modal.sending ? "Yuborilmoqda..." : "Ariza Yuborish →"}
+                      {modal.sending ? t.sending : t.submit}
                     </button>
                   </form>
                 </>

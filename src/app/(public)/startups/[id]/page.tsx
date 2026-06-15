@@ -19,6 +19,45 @@ type HubStartup = {
   tech_stack: string;
 };
 
+const T = {
+  UZ: {
+    back: "Startaplar ro'yxatiga qaytish",
+    problem: "Muammo",
+    solution: "Yechim",
+    techStack: "Texnologiya Steki",
+    info: "Ma'lumotlar",
+    sector: "Sektori",
+    joinTitle: "Bu startapga qo'shiling",
+    joinDesc: "Sarmoya kiritish yoki hamkor bo'lish uchun murojaat qiling.",
+    investorBtn: "Investor Arizasi →",
+    contactBtn: "Bog'lanish",
+  },
+  RU: {
+    back: "Вернуться к списку стартапов",
+    problem: "Проблема",
+    solution: "Решение",
+    techStack: "Технологический стек",
+    info: "Информация",
+    sector: "Сектор",
+    joinTitle: "Присоединяйтесь к стартапу",
+    joinDesc: "Свяжитесь с нами для инвестирования или партнёрства.",
+    investorBtn: "Заявка инвестора →",
+    contactBtn: "Связаться",
+  },
+  EN: {
+    back: "Back to startups list",
+    problem: "Problem",
+    solution: "Solution",
+    techStack: "Tech Stack",
+    info: "Details",
+    sector: "Sector",
+    joinTitle: "Join this startup",
+    joinDesc: "Contact us to invest or become a partner.",
+    investorBtn: "Investor Application →",
+    contactBtn: "Get in touch",
+  },
+} as const;
+
 function Avatar({ name }: { name: string }) {
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   return (
@@ -32,6 +71,7 @@ function Avatar({ name }: { name: string }) {
 
 export default function StartupDetailPage() {
   const { lang } = useLang();
+  const t = T[lang];
   const params = useParams<{ id: string }>();
   const [startup, setStartup] = useState<HubStartup | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,9 +106,10 @@ export default function StartupDetailPage() {
   }
   if (!startup) return null;
 
-  const problem = startup[`problem_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || startup.problem_en;
-  const solution = startup[`solution_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || startup.solution_en;
-  const techTags = startup.tech_stack ? startup.tech_stack.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const l = lang.toLowerCase() as "en" | "uz" | "ru";
+  const problem = startup[`problem_${l}`] || startup.problem_en;
+  const solution = startup[`solution_${l}`] || startup.solution_en;
+  const techTags = startup.tech_stack ? startup.tech_stack.split(",").map((tag) => tag.trim()).filter(Boolean) : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,7 +120,7 @@ export default function StartupDetailPage() {
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
-            Startaplar ro&apos;yxatiga qaytish
+            {t.back}
           </Link>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex-1">
@@ -103,18 +144,18 @@ export default function StartupDetailPage() {
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-muted">Muammo</h3>
+              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-muted">{t.problem}</h3>
               <p className="text-[14px] leading-relaxed text-foreground">{problem}</p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-muted">Yechim</h3>
+              <h3 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-muted">{t.solution}</h3>
               <p className="text-[14px] leading-relaxed text-foreground">{solution}</p>
             </div>
             {techTags.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h3 className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
-                  Texnologiya Steki
+                  {t.techStack}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {techTags.map((tag) => (
@@ -128,10 +169,10 @@ export default function StartupDetailPage() {
           </div>
           <div className="space-y-4">
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="mb-4 text-[12px] font-bold uppercase tracking-wider text-muted">Ma&apos;lumotlar</h3>
+              <h3 className="mb-4 text-[12px] font-bold uppercase tracking-wider text-muted">{t.info}</h3>
               <div className="space-y-3">
                 {[
-                  { label: "Sektori", value: startup.sector },
+                  { label: t.sector, value: startup.sector },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between gap-3 border-b border-border-subtle pb-3 last:border-0 last:pb-0">
                     <span className="text-[13px] text-muted">{label}</span>
@@ -141,13 +182,13 @@ export default function StartupDetailPage() {
               </div>
             </div>
             <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/8 to-cyan-500/5 p-6">
-              <h3 className="text-[15px] font-bold text-foreground">Bu startapga qo&apos;shiling</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted">Sarmoya kiritish yoki hamkor bo&apos;lish uchun murojaat qiling.</p>
+              <h3 className="text-[15px] font-bold text-foreground">{t.joinTitle}</h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">{t.joinDesc}</p>
               <Link href="/apply/investor" className="mt-4 block w-full rounded-full bg-accent py-3 text-center text-[13px] font-bold text-white shadow-[0_4px_16px_rgba(79,70,229,0.3)] transition-all hover:bg-accent-dark">
-                Investor Arizasi →
+                {t.investorBtn}
               </Link>
               <Link href="/#contact" className="mt-2 block w-full rounded-full border border-border py-3 text-center text-[13px] font-semibold text-muted transition-all hover:bg-card hover:text-foreground">
-                Bog&apos;lanish
+                {t.contactBtn}
               </Link>
             </div>
           </div>

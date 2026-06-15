@@ -17,6 +17,24 @@ type HubNews = {
   created_at: string;
 };
 
+const T = {
+  UZ: {
+    back: "Yangiliklarga qaytish",
+    tag: "Yangilik",
+    allNews: "← Barcha yangiliklar",
+  },
+  RU: {
+    back: "Вернуться к новостям",
+    tag: "Новость",
+    allNews: "← Все новости",
+  },
+  EN: {
+    back: "Back to news",
+    tag: "News",
+    allNews: "← All news",
+  },
+} as const;
+
 function formatDate(str: string | null): string {
   if (!str) return "";
   return str.slice(0, 10);
@@ -25,6 +43,7 @@ function formatDate(str: string | null): string {
 export default function NewsDetailPage() {
   const params = useParams<{ slug: string }>();
   const { lang } = useLang();
+  const t = T[lang];
   const [article, setArticle] = useState<HubNews | null>(null);
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
@@ -79,12 +98,12 @@ export default function NewsDetailPage() {
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
-            Yangiliklarga qaytish
+            {t.back}
           </Link>
 
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="inline-flex items-center rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
-              Yangilik
+              {t.tag}
             </span>
             <time className="text-[12px] text-muted">
               {formatDate(article.created_at)}
@@ -111,7 +130,7 @@ export default function NewsDetailPage() {
               href="/news"
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent hover:opacity-70 transition-opacity"
             >
-              ← Barcha yangiliklar
+              {t.allNews}
             </Link>
             <span className="text-[11px] text-muted">
               {formatDate(article.created_at)}

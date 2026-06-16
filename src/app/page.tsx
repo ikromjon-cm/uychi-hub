@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, useInView } from "framer-motion"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
@@ -32,9 +33,9 @@ const accentClasses: Record<AccentKey, { bg: string; border: string; num: string
   amber:   { bg: "bg-amber-500/5",    border: "border-amber-400/15",    num: "text-amber-400",    glow: "hover:shadow-[0_0_50px_-10px_rgba(251,191,36,0.22)]" },
 }
 
-type NewsItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; created_at: string }
-type AnnouncementItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; date: string }
-type StartupItem = { id: number; title: string; sector: string; problem_en: string; problem_uz: string; problem_ru: string; solution_en: string; solution_uz: string; solution_ru: string; image: string; tech_stack: string }
+type NewsItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; images: string[]; links: { title: string; url: string }[]; created_at: string }
+type AnnouncementItem = { id: number; title_en: string; title_uz: string; title_ru: string; body_en: string; body_uz: string; body_ru: string; image: string; images: string[]; links: { title: string; url: string }[]; date: string }
+type StartupItem = { id: number; title: string; sector: string; problem_en: string; problem_uz: string; problem_ru: string; solution_en: string; solution_uz: string; solution_ru: string; image: string; tech_stack: string; developer_images: string[]; links: { title: string; url: string }[] }
 type JobItem = { id: number; title_en: string; title_uz: string; title_ru: string; department: string; image: string; type: string; salary: string }
 type StatItem = { id: number; title: string; value: string }
 
@@ -61,6 +62,7 @@ function CountUp({ to, suffix = "", active }: { to: number; suffix?: string; act
 
 export default function Home() {
   const { lang, t } = useLang()
+  const router = useRouter()
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
   const [formError, setFormError] = useState("")
@@ -167,6 +169,23 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-10"
+          >
+            <span className="badge">/ Geografiya</span>
+            <h2 className="title mt-3">Uychi tumani xaritasi</h2>
+            <p className="desc">Uychi tumani Namangan viloyatining shimoli-sharqida joylashgan</p>
+          </motion.div>
+          <UychiMap />
+        </div>
+      </section>
+
       <section className="section cyber-grid-glow">
         <div className="mx-auto max-w-7xl">
           <motion.div
@@ -260,7 +279,8 @@ export default function Home() {
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
             {news.slice(0, 6).map((item) => (
-              <motion.div key={item.id} variants={fadeUp} className="card group">
+              <motion.div key={item.id} variants={fadeUp} className="card group relative">
+                <Link href={`/news/${item.id}`} className="absolute inset-0 z-10" aria-label={tl({ en: item.title_en, uz: item.title_uz, ru: item.title_ru })} />
                 {item.image && (
                   <img src={item.image} alt="" className="card-image" loading="lazy" />
                 )}
@@ -275,6 +295,13 @@ export default function Home() {
                 <p className="mt-2 text-[13px] text-muted line-clamp-2">
                   {tl({ en: item.body_en, uz: item.body_uz, ru: item.body_ru })}
                 </p>
+                {item.images?.length > 0 && (
+                  <div className="mt-3 flex gap-2 overflow-x-auto">
+                    {item.images.slice(0, 3).map((url, i) => (
+                      <img key={i} src={url} alt="" className="h-14 w-20 shrink-0 rounded-lg border border-border object-cover" />
+                    ))}
+                  </div>
+                )}
                 <div className="mt-auto pt-3">
                   <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-accent opacity-0 transition-all group-hover:opacity-100">
                     {t.news.more} <ChevronRight className="h-3 w-3" />
@@ -336,6 +363,23 @@ export default function Home() {
                   <p className="mt-2 text-[13px] text-muted line-clamp-3">
                     {tl({ en: item.body_en, uz: item.body_uz, ru: item.body_ru })}
                   </p>
+                  {item.images?.length > 0 && (
+                    <div className="mt-3 flex gap-2 overflow-x-auto">
+                      {item.images.slice(0, 3).map((url, i) => (
+                        <img key={i} src={url} alt="" className="h-14 w-20 shrink-0 rounded-lg border border-border object-cover" />
+                      ))}
+                    </div>
+                  )}
+                  {item.links?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {item.links.slice(0, 2).map((link, i) => (
+                        <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] text-muted hover:border-accent/30 hover:text-accent">
+                          {link.title || link.url}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </motion.div>
@@ -369,7 +413,11 @@ export default function Home() {
               const c = accentClasses[accent]
               const techs = item.tech_stack?.split(",").map(t => t.trim()).filter(Boolean) || []
               return (
-                <motion.div key={item.id} variants={fadeUp} className={`card ${c.border} ${c.glow}`}>
+                <motion.div
+                  key={item.id} variants={fadeUp}
+                  className={`card ${c.border} ${c.glow} relative`}
+                >
+                  <Link href={`/startups/${item.id}`} className="absolute inset-0 z-10" aria-label={item.title} />
                   {item.image && <img src={item.image} alt="" className="card-image" loading="lazy" />}
                   <span className={`badge ${c.bg} ${c.border}`}>{item.sector}</span>
                   <h3 className="mt-3 text-[15px] font-bold text-foreground">{item.title}</h3>
@@ -387,6 +435,24 @@ export default function Home() {
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {techs.map((tech) => (
                         <span key={tech} className={`rounded-lg border ${c.border} px-2.5 py-1 text-[11px] font-medium ${c.num}`}>{tech}</span>
+                      ))}
+                    </div>
+                  )}
+                  {item.developer_images?.length > 0 && (
+                    <div className="mt-3 flex gap-2 overflow-x-auto">
+                      {item.developer_images.map((url, i) => (
+                        <img key={i} src={url} alt="" className="h-20 w-20 shrink-0 rounded-xl border border-border object-cover" />
+                      ))}
+                    </div>
+                  )}
+                  {item.links?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {item.links.slice(0, 3).map((link, i) => (
+                        <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] text-muted hover:border-accent/30 hover:text-accent">
+                          {link.title || link.url}
+                        </a>
                       ))}
                     </div>
                   )}
@@ -435,7 +501,11 @@ export default function Home() {
               className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
             >
               {jobs.slice(0, 6).map((item) => (
-                <motion.div key={item.id} variants={fadeUp} className="card">
+                <motion.div
+                  key={item.id} variants={fadeUp}
+                  className="card relative"
+                >
+                  <Link href="/jobs" className="absolute inset-0 z-10" aria-label={tl({ en: item.title_en, uz: item.title_uz, ru: item.title_ru })} />
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-background text-[14px] font-bold text-accent">
@@ -503,23 +573,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <section className="section">
-        <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-10"
-          >
-            <span className="badge">/ Geografiya</span>
-            <h2 className="title mt-3">Uychi tumani xaritasi</h2>
-            <p className="desc">Uychi tumani Namangan viloyatining shimoli-sharqida joylashgan — chegaradosh hududlar va tuman markazi.</p>
-          </motion.div>
-          <UychiMap />
-        </div>
-      </section>
 
       <section id="contact" className="section">
         <div className="mx-auto max-w-7xl">

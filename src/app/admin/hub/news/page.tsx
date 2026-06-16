@@ -7,7 +7,9 @@ const fields = [
   { key: "body_en", label: "Body (EN)", type: "textarea" as const, span: 2 as const },
   { key: "body_uz", label: "Body (UZ)", type: "textarea" as const, span: 2 as const },
   { key: "body_ru", label: "Body (RU)", type: "textarea" as const, span: 2 as const },
-  { key: "image", label: "Rasm URL", span: 2 as const },
+  { key: "image", label: "Asosiy rasm URL", span: 2 as const },
+  { key: "images", label: "Rasmlar", type: "images" as const, span: 2 as const },
+  { key: "links", label: "Havolalar", type: "links-list" as const, span: 2 as const },
 ]
 
 export default function Page() {
@@ -17,7 +19,7 @@ export default function Page() {
       title="Yangiliklar"
       description="Hub yangiliklari"
       fields={fields}
-      emptyForm={{ title_en: "", title_uz: "", title_ru: "", body_en: "", body_uz: "", body_ru: "", image: "" }}
+      emptyForm={{ title_en: "", title_uz: "", title_ru: "", body_en: "", body_uz: "", body_ru: "", image: "", images: [], links: [] }}
     />
   )
 }

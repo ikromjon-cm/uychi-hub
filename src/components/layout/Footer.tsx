@@ -24,8 +24,8 @@ const FOOTER_LINKS = {
   ],
   Resurslar: [
     { label: "Ta'lim",        href: "/education" },
-    { label: "Kutubxona",     href: "/library" },
-    { label: "Galereya",      href: "/media" },
+    { label: "Coworking",     href: "/coworking" },
+    { label: "Talabalar",     href: "/students" },
     { label: "Ish & Stajyorlik", href: "/jobs" },
   ],
   Investorlar: [
@@ -33,6 +33,12 @@ const FOOTER_LINKS = {
     { label: "Investor arizasi", href: "/apply/investor" },
     { label: "Startap arizasi", href: "/apply/startup" },
     { label: "Tadbirlar",     href: "/events" },
+  ],
+  Infratuzilma: [
+    { label: "Kutubxona",     href: "/library" },
+    { label: "Galereya",      href: "/media" },
+    { label: "AI Markaz",     href: "/ai-center" },
+    { label: "AI Features",   href: "/ai-features" },
   ],
   Kompaniya: [
     { label: "Yangiliklar",   href: "/news" },

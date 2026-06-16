@@ -14,6 +14,8 @@ type HubNews = {
   body_uz: string;
   body_ru: string;
   image: string | null;
+  images: string[];
+  links: { title: string; url: string }[];
   created_at: string;
 };
 
@@ -22,16 +24,22 @@ const T = {
     back: "Yangiliklarga qaytish",
     tag: "Yangilik",
     allNews: "← Barcha yangiliklar",
+    images: "Rasmlar",
+    links: "Havolalar",
   },
   RU: {
     back: "Вернуться к новостям",
     tag: "Новость",
     allNews: "← Все новости",
+    images: "Изображения",
+    links: "Ссылки",
   },
   EN: {
     back: "Back to news",
     tag: "News",
     allNews: "← All news",
+    images: "Images",
+    links: "Links",
   },
 } as const;
 
@@ -41,7 +49,7 @@ function formatDate(str: string | null): string {
 }
 
 export default function NewsDetailPage() {
-  const params = useParams<{ slug: string }>();
+  const params = useParams<{ id: string }>();
   const { lang } = useLang();
   const t = T[lang];
   const [article, setArticle] = useState<HubNews | null>(null);
@@ -49,7 +57,7 @@ export default function NewsDetailPage() {
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/hub/news/${params.slug}/`)
+    fetch(`/api/hub/news/${params.id}/`)
       .then((r) => {
         if (!r.ok) throw new Error("not found");
         return r.json();
@@ -60,7 +68,7 @@ export default function NewsDetailPage() {
       })
       .catch(() => setMissing(true))
       .finally(() => setLoading(false));
-  }, [params.slug]);
+  }, [params.id]);
 
   const l = lang.toLowerCase() as "en" | "uz" | "ru";
   const title = article ? article[`title_${l}`] || article.title_uz || article.title_en : "";
@@ -122,6 +130,33 @@ export default function NewsDetailPage() {
           {body && (
             <div className="mt-8 text-[15px] leading-relaxed text-foreground space-y-4 whitespace-pre-line">
               {body}
+            </div>
+          )}
+
+          {article.images?.length > 0 && (
+            <div className="mt-8">
+              <h3 className="mb-4 text-[12px] font-bold uppercase tracking-wider text-muted">{t.images}</h3>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {article.images.map((url, i) => (
+                  <img key={i} src={url} alt="" className="aspect-video w-full rounded-xl border border-border object-cover" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {article.links?.length > 0 && (
+            <div className="mt-8">
+              <h3 className="mb-4 text-[12px] font-bold uppercase tracking-wider text-muted">{t.links}</h3>
+              <div className="space-y-2">
+                {article.links.map((link, i) => (
+                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-[13px] text-foreground hover:border-accent/30 hover:text-accent transition-colors">
+                    <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
+                    <span className="flex-1">{link.title || link.url}</span>
+                    <svg className="h-3.5 w-3.5 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" /></svg>
+                  </a>
+                ))}
+              </div>
             </div>
           )}
 

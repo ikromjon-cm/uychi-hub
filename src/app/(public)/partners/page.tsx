@@ -101,7 +101,7 @@ export default function PartnersPage() {
     website: p.website,
     logo: p.logo,
   }));
-  const { data: partners, loading } = useApi<Partner[]>("/partners/partners/", [], mockPartners);
+  const { data: partners, loading } = useApi<Partner[]>("/hub/partners/", [], mockPartners);
   const [filter, setFilter] = useState("all");
 
   const filtered = partners.filter(p => filter === "all" || p.category === filter);

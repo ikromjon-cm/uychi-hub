@@ -1,4 +1,7 @@
-from rest_framework import viewsets, permissions, generics
+import os
+import uuid
+from django.conf import settings
+from rest_framework import viewsets, permissions, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -153,3 +156,22 @@ class AdminLeadViewSet(viewsets.ModelViewSet):
     serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ["get", "delete"]
+
+
+class FileUploadView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        ext = os.path.splitext(file.name)[1]
+        filename = f"uploads/{uuid.uuid4().hex}{ext}"
+        filepath = settings.MEDIA_ROOT / filename
+        os.makedirs(filepath.parent, exist_ok=True)
+        with open(filepath, "wb+") as f:
+            for chunk in file.chunks():
+                f.write(chunk)
+        url = f"{settings.MEDIA_URL}{filename}"
+        return Response({"url": url}, status=status.HTTP_201_CREATED)

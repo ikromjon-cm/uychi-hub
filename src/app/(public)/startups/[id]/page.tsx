@@ -17,6 +17,8 @@ type HubStartup = {
   solution_ru: string;
   image: string | null;
   tech_stack: string;
+  developer_images: string[];
+  links: { title: string; url: string }[];
 };
 
 const T = {
@@ -27,6 +29,8 @@ const T = {
     techStack: "Texnologiya Steki",
     info: "Ma'lumotlar",
     sector: "Sektori",
+    images: "Dasturchilar",
+    links: "Havolalar",
     joinTitle: "Bu startapga qo'shiling",
     joinDesc: "Sarmoya kiritish yoki hamkor bo'lish uchun murojaat qiling.",
     investorBtn: "Investor Arizasi →",
@@ -39,6 +43,8 @@ const T = {
     techStack: "Технологический стек",
     info: "Информация",
     sector: "Сектор",
+    images: "Разработчики",
+    links: "Ссылки",
     joinTitle: "Присоединяйтесь к стартапу",
     joinDesc: "Свяжитесь с нами для инвестирования или партнёрства.",
     investorBtn: "Заявка инвестора →",
@@ -51,6 +57,8 @@ const T = {
     techStack: "Tech Stack",
     info: "Details",
     sector: "Sector",
+    images: "Developers",
+    links: "Links",
     joinTitle: "Join this startup",
     joinDesc: "Contact us to invest or become a partner.",
     investorBtn: "Investor Application →",
@@ -162,6 +170,37 @@ export default function StartupDetailPage() {
                     <span key={tag} className="rounded-lg border border-violet-500/20 bg-violet-500/8 px-3 py-1.5 font-mono text-[12px] font-medium text-violet-400">
                       {tag}
                     </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {startup.developer_images?.length > 0 && (
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h3 className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                  {t.images}
+                </h3>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {startup.developer_images.map((url, i) => (
+                    <img key={i} src={url} alt="" className="aspect-square w-full rounded-xl border border-border object-cover" />
+                  ))}
+                </div>
+              </div>
+            )}
+            {startup.links?.length > 0 && (
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <h3 className="mb-4 flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
+                  {t.links}
+                </h3>
+                <div className="space-y-2">
+                  {startup.links.map((link, i) => (
+                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-[13px] text-foreground hover:border-accent/30 hover:text-accent transition-colors">
+                      <svg className="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
+                      <span className="flex-1">{link.title || link.url}</span>
+                      <svg className="h-3.5 w-3.5 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" /></svg>
+                    </a>
                   ))}
                 </div>
               </div>

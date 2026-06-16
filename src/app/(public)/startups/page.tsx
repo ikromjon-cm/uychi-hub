@@ -17,6 +17,8 @@ type HubStartup = {
   solution_ru: string;
   image: string | null;
   tech_stack: string;
+  developer_images: string[];
+  links: { title: string; url: string }[];
 };
 
 const ACCENTS = ["emerald", "cyan", "violet"] as const;
@@ -143,6 +145,22 @@ export default function StartupsPage() {
                   {techTags.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {techTags.map((t, i) => <span key={i} className="rounded bg-card-hover px-2 py-0.5 font-mono text-[10px] text-muted">{t.trim()}</span>)}
+                    </div>
+                  )}
+                  {s.developer_images?.length > 0 && (
+                    <div className="mt-3 flex gap-2 overflow-x-auto">
+                      {s.developer_images.map((url, i) => (
+                        <img key={i} src={url} alt="" className="h-20 w-20 shrink-0 rounded-xl border border-border object-cover" />
+                      ))}
+                    </div>
+                  )}
+                  {s.links?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {s.links.slice(0, 3).map((link, i) => (
+                        <span key={i} className="flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-[11px] text-muted">
+                          {link.title || link.url}
+                        </span>
+                      ))}
                     </div>
                   )}
                   <div className={`mt-3 flex items-center gap-1 text-[11px] font-semibold ${c.text}`}>

@@ -50,6 +50,10 @@ const nextConfig: NextConfig = {
         source: "/api/:path*",
         destination: `${BACKEND_URL}/api/:path*/`,
       },
+      {
+        source: "/media/:path*",
+        destination: `${BACKEND_URL}/media/:path*`,
+      },
     ];
   },
 };

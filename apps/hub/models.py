@@ -47,6 +47,8 @@ class News(models.Model):
     body_uz = models.TextField(blank=True)
     body_ru = models.TextField(blank=True)
     image = models.URLField(max_length=500, blank=True)
+    images = models.JSONField(default=list, blank=True)
+    links = models.JSONField(default=list, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -65,6 +67,8 @@ class Announcement(models.Model):
     body_uz = models.TextField(blank=True)
     body_ru = models.TextField(blank=True)
     image = models.URLField(max_length=500, blank=True)
+    images = models.JSONField(default=list, blank=True)
+    links = models.JSONField(default=list, blank=True)
     date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
@@ -86,6 +90,8 @@ class Startup(models.Model):
     solution_ru = models.TextField(blank=True)
     image = models.URLField(max_length=500, blank=True)
     tech_stack = models.CharField(max_length=500, blank=True)
+    developer_images = models.JSONField(default=list, blank=True)
+    links = models.JSONField(default=list, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
     class Meta:
@@ -133,12 +139,18 @@ class SiteSettings(models.Model):
 
 
 class Lead(models.Model):
+    LEAD_TYPE_CHOICES = [
+        ("contact", "Contact"),
+        ("investor", "Investor"),
+        ("startup", "Startup"),
+    ]
     name = models.CharField(max_length=255)
     company = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
     email = models.EmailField()
     phone = models.CharField(max_length=50, blank=True)
     message = models.TextField(blank=True)
+    lead_type = models.CharField(max_length=20, choices=LEAD_TYPE_CHOICES, blank=True, default="contact")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

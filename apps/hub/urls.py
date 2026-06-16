@@ -29,6 +29,7 @@ urlpatterns = [
     path("startups/apply/", views.StartupCreateView.as_view(), name="startup-apply"),
     path("jobs/apply/", views.JobCreateView.as_view(), name="job-apply"),
     path("settings/", views.SiteSettingsView.as_view(), name="site-settings"),
+    path("upload/", views.FileUploadView.as_view(), name="file-upload"),
     path("admin/", include(admin_router.urls)),
     path("", include(router.urls)),
 ]

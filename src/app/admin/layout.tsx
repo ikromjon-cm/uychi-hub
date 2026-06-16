@@ -3,96 +3,49 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard, FileText, Newspaper, Rocket, TrendingUp,
-  Handshake, Briefcase, Image, Search, BarChart2, Shield,
-  Key, ScrollText, Database, Menu, X, Bell, Settings, LogOut,
-  Sun, Moon, BookOpen, CalendarDays, Building2, GraduationCap,
-  MessageSquare, Mail, Video, Megaphone,
-} from "lucide-react";
-import { logout, getMe } from "@/lib/api";
+import { LayoutDashboard, Newspaper, Rocket, BookOpen, Mail, Settings, Menu, X, Bell, LogOut, Sun, Moon, Search, Megaphone, Lock } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 
-const NAV_MAIN = [
+const NAV_ITEMS = [
   { label: "Boshqaruv", href: "/admin/dashboard", icon: LayoutDashboard },
-  { label: "Kontent", href: "/admin/content", icon: FileText },
-  { label: "Yangiliklar", href: "/admin/news", icon: Newspaper },
-  { label: "Startaplar", href: "/admin/startups", icon: Rocket },
-  { label: "Investorlar", href: "/admin/investors", icon: TrendingUp },
-  { label: "Hamkorlar", href: "/admin/partners", icon: Handshake },
-];
-
-const NAV_HUB = [
-  { label: "Statistika", href: "/admin/hub/stats", icon: BarChart2 },
-  { label: "Hero Video", href: "/admin/hub/hero-video", icon: Video },
   { label: "Yangiliklar", href: "/admin/hub/news", icon: Newspaper },
   { label: "E'lonlar", href: "/admin/hub/announcements", icon: Megaphone },
   { label: "Startaplar", href: "/admin/hub/startups", icon: Rocket },
-  { label: "Ish O'rinlari", href: "/admin/hub/jobs", icon: Briefcase },
-  { label: "Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
+  { label: "Ta'lim", href: "/admin/education", icon: BookOpen },
   { label: "Murojaatlar", href: "/admin/hub/leads", icon: Mail },
   { label: "Sozlamalar", href: "/admin/hub/settings", icon: Settings },
 ];
 
-const NAV_MANAGE = [
-  { label: "Ish O'rinlari", href: "/admin/careers", icon: Briefcase },
-  { label: "Ta'lim", href: "/admin/education", icon: BookOpen },
-  { label: "Tadbirlar", href: "/admin/events", icon: CalendarDays },
-  { label: "Kovorking", href: "/admin/coworking", icon: Building2 },
-  { label: "Talabalar", href: "/admin/students", icon: GraduationCap },
-  { label: "Aloqa", href: "/admin/contact", icon: MessageSquare },
-  { label: "Xabarnoma", href: "/admin/newsletter", icon: Mail },
-  { label: "Media Kutubxona", href: "/admin/media", icon: Image },
-  { label: "SEO", href: "/admin/seo", icon: Search },
-  { label: "Tahlil", href: "/admin/analytics", icon: BarChart2 },
-];
-
-const NAV_SYSTEM = [
-  { label: "Foydalanuvchi Rollari", href: "/admin/roles", icon: Shield },
-  { label: "Ruxsatlar", href: "/admin/permissions", icon: Key },
-  { label: "Tizim Jurnali", href: "/admin/logs", icon: ScrollText },
-  { label: "Zaxira Markazi", href: "/admin/backup", icon: Database },
-];
-
-type Me = { username: string; email: string; first_name: string; last_name: string; is_staff: boolean; is_superuser: boolean };
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [me, setMe] = useState<Me | null>(null);
+  const [unlocked, setUnlocked] = useState(false);
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { theme, mounted: themeMounted, toggle: toggleTheme } = useTheme();
-  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
-    if (isLoginPage) { setChecking(false); return; }
-    setChecking(true);
-    getMe().then((user) => {
-      if (!user || !user.is_staff) {
-        router.replace("/admin/login");
-      } else {
-        setMe(user);
-      }
-      setChecking(false);
-    });
-  }, [pathname, isLoginPage, router]);
+    const val = typeof window !== "undefined" && localStorage.getItem("uychi_admin");
+    if (val === "1") {
+      setUnlocked(true);
+    } else {
+      router.replace("/");
+    }
+    setChecking(false);
+  }, [router]);
 
   useEffect(() => {
-    if (isLoginPage) return;
     fetch("/api/startups/startup-applications/", { signal: AbortSignal.timeout(4000) })
       .then((r) => setApiOnline(r.ok || r.status === 401))
       .catch(() => setApiOnline(false));
-  }, [isLoginPage]);
+  }, []);
 
-  function handleLogout() {
-    logout();
-    setMe(null);
-    router.push("/admin/login");
+  function handleLock() {
+    localStorage.removeItem("uychi_admin");
+    setUnlocked(false);
+    router.push("/");
   }
-
-  if (isLoginPage) return <>{children}</>;
 
   if (checking) {
     return (
@@ -105,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!me) return null;
+  if (!unlocked) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -124,39 +77,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 overflow-y-auto px-2 py-4">
-          <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Asosiy</div>
           <ul className="space-y-0.5">
-            {NAV_MAIN.map(({ label, href, icon: Icon }) => (
-              <li key={href}>
-                <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
-                  <Icon className="h-4 w-4 flex-shrink-0" />{label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Hub</div>
-          <ul className="space-y-0.5">
-            {NAV_HUB.map(({ label, href, icon: Icon }) => (
-              <li key={href}>
-                <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
-                  <Icon className="h-4 w-4 flex-shrink-0" />{label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Boshqarish</div>
-          <ul className="space-y-0.5">
-            {NAV_MANAGE.map(({ label, href, icon: Icon }) => (
-              <li key={href}>
-                <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
-                  <Icon className="h-4 w-4 flex-shrink-0" />{label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mb-2 mt-5 px-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Tizim</div>
-          <ul className="space-y-0.5">
-            {NAV_SYSTEM.map(({ label, href, icon: Icon }) => (
+            {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
               <li key={href}>
                 <Link href={href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${pathname === href ? "bg-accent/10 text-accent" : "text-muted hover:bg-card-hover hover:text-foreground"}`}>
                   <Icon className="h-4 w-4 flex-shrink-0" />{label}
@@ -169,16 +91,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="border-t border-border p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/20 text-[12px] font-bold text-accent">
-              {me.username[0].toUpperCase()}
+              U
             </div>
             <div className="flex-1 min-w-0">
-              <p className="truncate text-[13px] font-semibold text-foreground">
-                {me.first_name ? `${me.first_name} ${me.last_name}`.trim() : me.username}
-              </p>
-              <p className="truncate text-[11px] text-muted">{me.email || me.username}</p>
+              <p className="truncate text-[13px] font-semibold text-foreground">Admin</p>
+              <p className="truncate text-[11px] text-muted">admin@uychi.uz</p>
             </div>
-            <button onClick={handleLogout} aria-label="Chiqish" className="text-muted hover:text-red-400 transition-colors">
-              <LogOut className="h-4 w-4" />
+            <button onClick={handleLock} aria-label="Yopish" className="text-muted hover:text-red-400 transition-colors">
+              <Lock className="h-4 w-4" />
             </button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { collectionOf, idOf, lsGet, lsSet, lsAdd, lsUpdate, lsRemove } from "./local-store";
+import { useEffect, useState, useCallback } from "react";
+import { collectionOf, idOf, lsAdd, lsUpdate, lsRemove } from "./local-store";
 
 const API_BASE = "/api";
 
@@ -17,63 +17,59 @@ function authHeaders(): Record<string, string> {
     : { "Content-Type": "application/json" };
 }
 
+let fetchId = 0;
+
 export function useApi<T>(endpoint: string, fallback: T, mockFallback?: T) {
   const [data, setData] = useState<T>(fallback);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
+    const onFocus = () => setRefreshKey(k => k + 1);
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
+  const doFetch = useCallback((signal: AbortSignal) => {
     const url = `${API_BASE}${endpoint}`;
     const token = getToken();
 
-    const doFetch = (withAuth: boolean): Promise<unknown> =>
-      fetch(url, { cache: "no-store", headers: withAuth && token ? { Authorization: `Bearer ${token}` } : {} })
+    const fetchWithAuth = (withAuth: boolean): Promise<unknown> =>
+      fetch(url, { signal, cache: "no-store", headers: withAuth && token ? { Authorization: `Bearer ${token}` } : {} })
         .then((r) => {
-          if (r.status === 401 && withAuth) return doFetch(false);
+          if (r.status === 401 && withAuth) return fetchWithAuth(false);
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           return r.json() as Promise<unknown>;
         });
 
-    doFetch(!!token)
+    return fetchWithAuth(!!token);
+  }, [endpoint]);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    const controller = new AbortController();
+
+    doFetch(controller.signal)
       .then((json: unknown) => {
-        if (!cancelled) {
-          const j = json as Record<string, unknown>;
-          const result = (j.results ?? json) as T;
-          if (Array.isArray(result) && result.length === 0) {
-            // API returned empty — check local store before mock
-            const stored = lsGet<unknown>(endpoint);
-            if (stored && stored.length > 0) {
-              setData(stored as T);
-            } else if (mockFallback) {
-              setData(mockFallback);
-            }
-          } else {
-            setData(result);
-            // Cache non-empty API results for offline use
-            if (Array.isArray(result) && result.length > 0) {
-              lsSet(endpoint, result as Record<string, unknown>[]);
-            }
-          }
-        }
+        if (controller.signal.aborted) return;
+        const j = json as Record<string, unknown>;
+        const result = (j.results ?? json) as T;
+        setData(result);
       })
       .catch((e: Error) => {
-        if (!cancelled) {
-          setError(e.message);
-          // On error: check local store, then mock
-          const stored = lsGet<unknown>(endpoint);
-          if (stored && stored.length > 0) {
-            setData(stored as T);
-          } else if (mockFallback) {
-            setData(mockFallback);
-          }
-        }
+        if (controller.signal.aborted) return;
+        setError(e.message);
+        if (mockFallback) setData(mockFallback);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       });
-    return () => { cancelled = true; };
-  }, [endpoint]);
+
+    return () => controller.abort();
+  }, [endpoint, doFetch, refreshKey]);
 
   return { data, loading, error };
 }

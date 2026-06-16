@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useSyncExternalStore } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 export type Lang = "UZ" | "RU" | "EN";
 
@@ -11,6 +11,8 @@ const translations = {
       education: "Ta'lim",
       news: "Yangiliklar",
       partners: "Hamkorlar",
+      coworking: "Coworking",
+      students: "Talabalar",
       jobs: "Ish",
       events: "Tadbirlar",
       login: "Kirish",
@@ -140,6 +142,8 @@ const translations = {
       education: "Обучение",
       news: "Новости",
       partners: "Партнёры",
+      coworking: "Коворкинг",
+      students: "Студенты",
       jobs: "Работа",
       events: "События",
       login: "Войти",
@@ -269,6 +273,8 @@ const translations = {
       education: "Education",
       news: "News",
       partners: "Partners",
+      coworking: "Coworking",
+      students: "Students",
       jobs: "Jobs",
       events: "Events",
       login: "Sign In",
@@ -401,32 +407,51 @@ interface LangContextValue {
   t: Translations;
 }
 
+const VALID: Lang[] = ["UZ", "RU", "EN"];
+
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setCookie(name: string, value: string) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=${encodeURIComponent(value)};path=/;max-age=${60*60*24*365};SameSite=Lax`;
+}
+
+function getStored(): Lang {
+  const c = getCookie("uychi-lang") as Lang | null;
+  if (c && VALID.includes(c)) return c;
+  const v = localStorage.getItem("uychi-lang") as Lang | null;
+  return v && VALID.includes(v) ? v : "UZ";
+}
+
 const LangContext = createContext<LangContextValue>({
   lang: "UZ",
   setLang: () => {},
   t: translations.UZ,
 });
 
-const VALID: Lang[] = ["UZ", "RU", "EN"];
-
-function subscribe(cb: () => void) {
-  window.addEventListener("storage", cb);
-  return () => window.removeEventListener("storage", cb);
-}
-function getSnapshot(): Lang {
-  const v = localStorage.getItem("uychi-lang") as Lang | null;
-  return VALID.includes(v as Lang) ? (v as Lang) : "UZ";
-}
-function getServerSnapshot(): Lang {
-  return "UZ";
-}
-
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [lang, setLangState] = useState<Lang>("UZ");
+
+  useEffect(() => {
+    setLangState(getStored());
+
+    const handler = () => {
+      const stored = getStored();
+      if (stored !== lang) setLangState(stored);
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
 
   const setLang = (l: Lang) => {
+    setLangState(l);
     localStorage.setItem("uychi-lang", l);
-    window.dispatchEvent(new StorageEvent("storage", { key: "uychi-lang", newValue: l }));
+    setCookie("uychi-lang", l);
+    window.dispatchEvent(new Event("storage"));
   };
 
   return (

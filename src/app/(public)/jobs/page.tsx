@@ -173,7 +173,7 @@ export default function JobsPage() {
       message: `Ish o'rni: ${jobTitle}\n\n${fd.get("cover_letter") || ""}`,
     };
     try {
-      await apiFormPost("/hub/leads/", body);
+      await apiFormPost("/hub/leads/", { ...body, lead_type: "contact" });
     } catch {
       /* silent */
     } finally {

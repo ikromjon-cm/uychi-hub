@@ -11,6 +11,8 @@ const fields = [
   { key: "solution_ru", label: "Solution (RU)", type: "textarea" as const, span: 2 as const },
   { key: "image", label: "Rasm URL", span: 2 as const },
   { key: "tech_stack", label: "Texnologiyalar", span: 2 as const },
+  { key: "developer_images", label: "Developer rasmlari", type: "images" as const, span: 2 as const },
+  { key: "links", label: "Startup linklari", type: "links-list" as const, span: 2 as const },
 ]
 
 export default function Page() {
@@ -20,7 +22,7 @@ export default function Page() {
       title="Startaplar"
       fields={fields}
       description="Hub startaplari"
-      emptyForm={{ title: "", sector: "", problem_en: "", problem_uz: "", problem_ru: "", solution_en: "", solution_uz: "", solution_ru: "", image: "", tech_stack: "" }}
+      emptyForm={{ title: "", sector: "", problem_en: "", problem_uz: "", problem_ru: "", solution_en: "", solution_uz: "", solution_ru: "", image: "", tech_stack: "", developer_images: [], links: [] }}
     />
   )
 }

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useApi, apiPost, apiPatch, apiDelete } from "@/lib/api";
-import { Search, Plus, X, Loader2, Trash2, Eye, Check, XCircle } from "lucide-react";
+import { Search, Plus, X, Loader2, Trash2, Eye, Check, XCircle, Sparkles, Upload, Link } from "lucide-react";
 
 type FieldDef = {
   key: string;
   label: string;
-  type?: "text" | "number" | "textarea" | "select";
+  type?: "text" | "number" | "textarea" | "select" | "images" | "links-list";
   options?: { label: string; value: string }[];
   span?: 1 | 2;
 };
@@ -17,8 +17,12 @@ type Props = {
   title: string;
   description: string;
   fields: FieldDef[];
-  emptyForm: Record<string, string>;
+  emptyForm: Record<string, unknown>;
 };
+
+function initForm(empty: Record<string, unknown>): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(empty));
+}
 
 export function AdminHubList({ endpoint, title, description, fields, emptyForm }: Props) {
   const { data: raw, loading } = useApi<Record<string, unknown>[]>(endpoint, []);
@@ -26,9 +30,54 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
   const [local, setLocal] = useState<Record<string, unknown>[] | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [selected, setSelected] = useState<Record<string, unknown> | null>(null);
-  const [form, setForm] = useState({ ...emptyForm });
+  const [form, setForm] = useState<Record<string, unknown>>(initForm(emptyForm));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [translating, setTranslating] = useState<Set<string>>(new Set());
+  const [uploadingKeys, setUploadingKeys] = useState<Set<string>>(new Set());
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  const translateField = useCallback(async (uzKey: string, text: string) => {
+    const base = uzKey.replace(/_uz$/, "");
+    const enKey = `${base}_en`;
+    const ruKey = `${base}_ru`;
+    if (!fields.find((f) => f.key === enKey) || !fields.find((f) => f.key === ruKey)) return;
+
+    setTranslating((prev) => new Set(prev).add(uzKey));
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ textUz: text }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.en || data.ru) {
+        setForm((p) => ({
+          ...p,
+          [enKey]: p[enKey] || data.en,
+          [ruKey]: p[ruKey] || data.ru,
+        }));
+      }
+    } catch {
+      // silent
+    } finally {
+      setTranslating((prev) => {
+        const next = new Set(prev);
+        next.delete(uzKey);
+        return next;
+      });
+    }
+  }, [fields]);
+
+  function handleUzChange(uzKey: string, value: string) {
+    setForm((p) => ({ ...p, [uzKey]: value }));
+    if (!value.trim()) return;
+    if (debounceTimers.current[uzKey]) clearTimeout(debounceTimers.current[uzKey]);
+    debounceTimers.current[uzKey] = setTimeout(() => {
+      translateField(uzKey, value);
+    }, 1200);
+  }
 
   const items = local ?? raw;
   const filtered = items.filter((item) =>
@@ -51,6 +100,62 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
     return <span className="rounded-full bg-yellow-500/10 px-2 py-0.5 text-[11px] font-semibold text-yellow-400">Pending</span>;
   }
 
+  async function handleUpload(key: string, file: File) {
+    setUploadingKeys((prev) => new Set(prev).add(key));
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/hub/upload/", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${localStorage.getItem("uychi_access_token")}` },
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setForm((p) => {
+        const current = Array.isArray(p[key]) ? (p[key] as string[]) : [];
+        return { ...p, [key]: [...current, data.url] };
+      });
+    } catch {
+      setError("Rasm yuklashda xatolik");
+    } finally {
+      setUploadingKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }
+  }
+
+  function removeImage(key: string, idx: number) {
+    setForm((p) => {
+      const current = Array.isArray(p[key]) ? (p[key] as string[]) : [];
+      return { ...p, [key]: current.filter((_, i) => i !== idx) };
+    });
+  }
+
+  function addLink(key: string) {
+    setForm((p) => {
+      const current = Array.isArray(p[key]) ? (p[key] as { title: string; url: string }[]) : [];
+      return { ...p, [key]: [...current, { title: "", url: "" }] };
+    });
+  }
+
+  function updateLink(key: string, idx: number, field: "title" | "url", value: string) {
+    setForm((p) => {
+      const current = Array.isArray(p[key]) ? (p[key] as { title: string; url: string }[]) : [];
+      const next = current.map((item, i) => (i === idx ? { ...item, [field]: value } : item));
+      return { ...p, [key]: next };
+    });
+  }
+
+  function removeLink(key: string, idx: number) {
+    setForm((p) => {
+      const current = Array.isArray(p[key]) ? (p[key] as { title: string; url: string }[]) : [];
+      return { ...p, [key]: current.filter((_, i) => i !== idx) };
+    });
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -58,7 +163,11 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
     const body: Record<string, unknown> = {};
     for (const f of fields) {
       const v = form[f.key];
-      if (v === "" || v === undefined) continue; // omit empty optional fields
+      if (f.type === "images" || f.type === "links-list") {
+        body[f.key] = Array.isArray(v) ? v : [];
+        continue;
+      }
+      if (v === "" || v === undefined) continue;
       if (v === "true") body[f.key] = true;
       else if (v === "false") body[f.key] = false;
       else body[f.key] = v;
@@ -74,7 +183,7 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
       }
       setShowAdd(false);
       setSelected(null);
-      setForm({ ...emptyForm });
+      setForm(initForm(emptyForm));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Xatolik");
     } finally {
@@ -93,7 +202,18 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
 
   function openEdit(item: Record<string, unknown>) {
     setSelected(item);
-    setForm(Object.fromEntries(fields.map((f) => [f.key, String(item[f.key] || "")])));
+    const init: Record<string, unknown> = {};
+    for (const f of fields) {
+      const val = item[f.key];
+      if (f.type === "images") {
+        init[f.key] = Array.isArray(val) ? val : [];
+      } else if (f.type === "links-list") {
+        init[f.key] = Array.isArray(val) ? val : [];
+      } else {
+        init[f.key] = String(val ?? "");
+      }
+    }
+    setForm(init);
     setShowAdd(true);
   }
 
@@ -199,16 +319,39 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
             <div className="mt-5 space-y-3">
               {fields
                 .filter((f) => f.key !== "id")
-                .map((f) => (
-                  <div key={f.key}>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-                      {f.label}
-                    </span>
-                    <p className="mt-1 text-[13px] text-foreground">
-                      {String(selected[f.key] || "—")}
-                    </p>
-                  </div>
-                ))}
+                .map((f) => {
+                  const val = selected[f.key];
+                  return (
+                    <div key={f.key}>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                        {f.label}
+                      </span>
+                      {f.type === "images" ? (
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          {Array.isArray(val) && (val as string[]).length > 0
+                            ? (val as string[]).map((url, i) => (
+                                <img key={i} src={url} alt="" className="h-14 w-14 cursor-pointer rounded-lg border border-border object-cover" onClick={() => window.open(url, "_blank")} />
+                              ))
+                            : <p className="mt-1 text-[13px] text-muted">—</p>}
+                        </div>
+                      ) : f.type === "links-list" ? (
+                        <div className="mt-1 space-y-1">
+                          {Array.isArray(val) && (val as { title: string; url: string }[]).length > 0
+                            ? (val as { title: string; url: string }[]).map((link, i) => (
+                                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[13px] text-accent hover:underline">
+                                  <Link className="h-3 w-3" /> {link.title || link.url}
+                                </a>
+                              ))
+                            : <p className="mt-1 text-[13px] text-muted">—</p>}
+                        </div>
+                      ) : (
+                        <p className="mt-1 text-[13px] text-foreground">
+                          {String(val || "—")}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
             {selected.status ? (
               <div className="mt-4">
@@ -270,19 +413,111 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
                 {visibleFields.map((f) => {
                   const inputClass =
                     "w-full rounded-xl border border-border bg-card px-3 py-2 text-[13px] text-foreground outline-none focus:border-accent/40";
+                  const isUzField = f.key.endsWith("_uz");
+                  const isImages = f.type === "images";
+                  const isLinks = f.type === "links-list";
                   return (
                     <div key={f.key} className={f.span === 2 ? "col-span-2" : ""}>
-                      <label className="mb-1 block text-[11px] text-muted">{f.label}</label>
-                      {f.type === "textarea" ? (
-                        <textarea
-                          value={form[f.key] || ""}
-                          onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
-                          rows={3}
-                          className={`${inputClass} resize-none`}
-                        />
+                      <label className="mb-1 flex items-center gap-1.5 text-[11px] text-muted">
+                        {f.label}
+                        {isUzField && <Sparkles className="h-3 w-3 text-accent" />}
+                      </label>
+                      {isImages ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-accent/40 px-3 py-2 text-[12px] text-accent hover:bg-accent/5">
+                              <Upload className="h-3.5 w-3.5" />
+                              Yuklash
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                disabled={uploadingKeys.has(f.key)}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleUpload(f.key, file);
+                                  e.target.value = "";
+                                }}
+                              />
+                            </label>
+                            {uploadingKeys.has(f.key) && <Loader2 className="h-4 w-4 animate-spin text-accent" />}
+                          </div>
+                          {(Array.isArray(form[f.key]) ? form[f.key] as string[] : []).length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {(Array.isArray(form[f.key]) ? form[f.key] as string[] : []).map((url, idx) => (
+                                <div key={idx} className="group relative overflow-hidden rounded-lg border border-border">
+                                  <img src={url} alt="" className="h-16 w-16 cursor-pointer object-cover" onClick={() => window.open(url, "_blank")} />
+                                  <button
+                                    type="button"
+                                    onClick={() => window.open(url, "_blank")}
+                                    className="absolute bottom-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent/80 text-[8px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                                  >
+                                    <Eye className="h-2.5 w-2.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeImage(f.key, idx)}
+                                    className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500/80 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                                  >
+                                    <X className="h-2.5 w-2.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : isLinks ? (
+                        <div className="space-y-1.5">
+                          {(Array.isArray(form[f.key]) ? form[f.key] as { title: string; url: string }[] : []).map((link, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5">
+                              <input
+                                value={link.title || ""}
+                                onChange={(e) => updateLink(f.key, idx, "title", e.target.value)}
+                                placeholder="Nomi"
+                                className="w-1/2 rounded-lg border border-border bg-card px-2 py-1.5 text-[12px] text-foreground outline-none focus:border-accent/40"
+                              />
+                              <input
+                                value={link.url || ""}
+                                onChange={(e) => updateLink(f.key, idx, "url", e.target.value)}
+                                placeholder="https://..."
+                                className="w-1/2 rounded-lg border border-border bg-card px-2 py-1.5 text-[12px] text-foreground outline-none focus:border-accent/40"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeLink(f.key, idx)}
+                                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-red-500/10 hover:text-red-400"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => addLink(f.key)}
+                            className="flex items-center gap-1.5 text-[12px] text-accent hover:text-accent-dark"
+                          >
+                            <Plus className="h-3 w-3" /> Link qo'shish
+                          </button>
+                        </div>
+                      ) : f.type === "textarea" ? (
+                        <div className="relative">
+                          <textarea
+                            value={String(form[f.key] || "")}
+                            onChange={(e) =>
+                              isUzField
+                                ? handleUzChange(f.key, e.target.value)
+                                : setForm((p) => ({ ...p, [f.key]: e.target.value }))
+                            }
+                            rows={3}
+                            className={`${inputClass} resize-none pr-8`}
+                          />
+                          {translating.has(f.key) && (
+                            <Loader2 className="absolute right-2.5 top-2.5 h-4 w-4 animate-spin text-accent" />
+                          )}
+                        </div>
                       ) : f.type === "select" && f.options ? (
                         <select
-                          value={form[f.key] || ""}
+                          value={String(form[f.key] || "")}
                           onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
                           className={inputClass}
                         >
@@ -291,12 +526,21 @@ export function AdminHubList({ endpoint, title, description, fields, emptyForm }
                           ))}
                         </select>
                       ) : (
-                        <input
-                          value={form[f.key] || ""}
-                          onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
-                          required={!selected && f.key === visibleFields[0]?.key}
-                          className={inputClass}
-                        />
+                        <div className="relative">
+                          <input
+                            value={String(form[f.key] || "")}
+                            onChange={(e) =>
+                              isUzField
+                                ? handleUzChange(f.key, e.target.value)
+                                : setForm((p) => ({ ...p, [f.key]: e.target.value }))
+                            }
+                            required={!selected && f.key === visibleFields[0]?.key}
+                            className={`${inputClass} pr-8`}
+                          />
+                          {translating.has(f.key) && (
+                            <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-accent" />
+                          )}
+                        </div>
                       )}
                     </div>
                   );

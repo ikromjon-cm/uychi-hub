@@ -15,6 +15,8 @@ type NewsItem = {
   body_uz: string;
   body_ru: string;
   image: string | null;
+  images: string[];
+  links: { title: string; url: string }[];
   created_at: string;
 };
 
@@ -143,6 +145,13 @@ export default function NewsPage() {
                         <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted line-clamp-3">
                           {item[`body_${lang.toLowerCase() as 'en'|'uz'|'ru'}`] || item.body_uz || item.body_en}
                         </p>
+                        {item.images?.length > 0 && (
+                          <div className="mt-3 flex gap-2 overflow-x-auto">
+                            {item.images.slice(0, 3).map((url, i) => (
+                              <img key={i} src={url} alt="" className="h-16 w-24 shrink-0 rounded-lg border border-border object-cover" />
+                            ))}
+                          </div>
+                        )}
                         <p className="mt-3 text-[11px] text-muted-foreground">{formatDate(item.created_at)}</p>
                       </Link>
                     );

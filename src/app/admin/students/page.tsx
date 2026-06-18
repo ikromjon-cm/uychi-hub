@@ -116,57 +116,65 @@ export default function AdminStudents() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              <th className="px-6 py-4">Talaba</th>
-              <th className="px-6 py-4">Rol</th>
-              <th className="px-6 py-4">Ixtisoslik</th>
-              <th className="px-6 py-4">Ball</th>
-              <th className="px-6 py-4">Loyihalar</th>
-              <th className="px-6 py-4">GitHub</th>
-              <th className="px-6 py-4">Featured</th>
-              <th className="px-6 py-4 text-right">Amallar</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-subtle">
-            {(loading ? Array.from({ length: 6 }) : filtered).map((s, i) =>
-              loading ? (
-                <tr key={i}><td colSpan={8} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-              ) : (
-                <tr key={String((s as Student).id)} className="group text-[13px] transition-colors hover:bg-accent/5">
-                  <td className="px-6 py-4">
-                    <p className="font-medium text-foreground">{String((s as Student).full_name)}</p>
-                    <p className="text-[12px] text-muted">{String((s as Student).email)}</p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${ROLE_COLORS[String((s as Student).role)] || "bg-card-hover text-muted"}`}>{String((s as Student).role)}</span>
-                  </td>
-                  <td className="px-6 py-4 text-muted max-w-[140px] truncate">{String((s as Student).specialization || "—")}</td>
-                  <td className="px-6 py-4"><span className="flex items-center gap-1 font-semibold text-foreground"><Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />{Number((s as Student).score)}</span></td>
-                  <td className="px-6 py-4 text-muted">{Number((s as Student).projects_count)} ta</td>
-                  <td className="px-6 py-4">
-                    {(s as Student).github_url ? (
-                      <a href={String((s as Student).github_url)} target="_blank" rel="noreferrer" className="text-accent hover:underline flex items-center gap-1"><GitBranch className="h-3.5 w-3.5" />GitHub</a>
-                    ) : <span className="text-muted">—</span>}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button onClick={() => toggleFeatured(Number((s as Student).id), Boolean((s as Student).is_featured))} className={`flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all ${(s as Student).is_featured ? "border-yellow-400/30 text-yellow-400 bg-yellow-400/10" : "border-border text-muted hover:border-yellow-400/30"}`}>
-                      <Trophy className="h-3 w-3" />{(s as Student).is_featured ? "Ha" : "Yo'q"}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      <button onClick={() => openEdit(s as Student)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => deleteStudent(Number((s as Student).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
-                    </div>
-                  </td>
-                </tr>
-              )
-            )}
-          </tbody>
-        </table>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {(loading ? Array.from({ length: 6 }) : filtered).map((s, i) =>
+          loading ? (
+            <div key={i} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+              <div className="h-5 w-3/5 animate-pulse rounded bg-card-hover" />
+              <div className="h-3 w-full animate-pulse rounded bg-card-hover" />
+              <div className="h-3 w-1/2 animate-pulse rounded bg-card-hover" />
+              <div className="flex gap-2">
+                <div className="h-8 w-full animate-pulse rounded-xl bg-card-hover" />
+                <div className="h-8 w-full animate-pulse rounded-xl bg-card-hover" />
+              </div>
+            </div>
+          ) : (
+            <div key={String((s as Student).id)} className="group rounded-2xl border border-border bg-card p-5 space-y-3 transition-colors hover:bg-accent/[0.02]">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-foreground">{String((s as Student).full_name)}</p>
+                  <p className="truncate text-[12px] text-muted">{String((s as Student).email)}</p>
+                </div>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${ROLE_COLORS[String((s as Student).role)] || "bg-card-hover text-muted"}`}>{String((s as Student).role)}</span>
+              </div>
+
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12px]">
+                <span className="flex items-center gap-1 font-semibold text-foreground">
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />{Number((s as Student).score)}
+                </span>
+                <span className="text-muted">{(s as Student).course ? String((s as Student).course) : "—"}</span>
+                <span className="truncate text-muted">{(s as Student).specialization ? String((s as Student).specialization) : "—"}</span>
+              </div>
+
+              <div className="flex gap-3 text-[12px] text-muted-foreground">
+                <span>Loyiha: {Number((s as Student).projects_count)}</span>
+                <span>Sertifikat: {Number((s as Student).certificates_count)}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {(s as Student).github_url ? (
+                  <a href={String((s as Student).github_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[12px] text-accent hover:underline">
+                    <GitBranch className="h-3.5 w-3.5" />GitHub
+                  </a>
+                ) : <span className="text-[12px] text-muted">—</span>}
+              </div>
+
+              {(s as Student).bio ? (
+                <p className="line-clamp-2 text-[12px] leading-relaxed text-muted">{String((s as Student).bio)}</p>
+              ) : null}
+
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <button onClick={() => toggleFeatured(Number((s as Student).id), Boolean((s as Student).is_featured))} className={`flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all ${(s as Student).is_featured ? "border-yellow-400/30 text-yellow-400 bg-yellow-400/10" : "border-border text-muted hover:border-yellow-400/30"}`}>
+                  <Trophy className="h-3 w-3" />{(s as Student).is_featured ? "Ha" : "Yo'q"}
+                </button>
+                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  <button onClick={() => openEdit(s as Student)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => deleteStudent(Number((s as Student).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+              </div>
+            </div>
+          )
+        )}
       </div>
 
       {showAdd && (

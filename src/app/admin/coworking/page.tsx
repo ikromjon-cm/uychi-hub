@@ -126,7 +126,7 @@ export default function AdminCoworking() {
             loadS ? (
               <div key={i} className="h-48 animate-pulse rounded-2xl border border-border bg-card" />
             ) : (
-              <div key={String((s as Space).id)} className="rounded-2xl border border-border-subtle bg-card p-5 transition-all hover:border-accent/30">
+              <div key={String((s as Space).id)} className="rounded-2xl border border-border bg-card p-5 transition-all hover:border-accent/30">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10"><Building2 className="h-5 w-5 text-accent" /></div>
@@ -139,12 +139,12 @@ export default function AdminCoworking() {
                     {(s as Space).is_active ? "Aktiv" : "Yopiq"}
                   </span>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border-subtle pt-4 text-[13px]">
+                <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4 text-[13px]">
                   <div><p className="text-muted text-[11px]">Sig&apos;im</p><p className="font-semibold text-foreground">{String((s as Space).capacity)} kishi</p></div>
                   <div><p className="text-muted text-[11px]">Soatlik</p><p className="font-semibold text-foreground">{Number((s as Space).price_per_hour).toLocaleString()} so&apos;m</p></div>
                   <div className="col-span-2"><p className="text-muted text-[11px]">Kunlik</p><p className="font-semibold text-foreground">{Number((s as Space).price_per_day).toLocaleString()} so&apos;m</p></div>
                 </div>
-                <div className="mt-4 flex gap-2 border-t border-border-subtle pt-4">
+                <div className="mt-4 flex gap-2 border-t border-border pt-4">
                   <button onClick={() => openEdit(s as Space)} className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2 text-[12px] text-muted hover:border-accent/30 hover:text-accent">
                     <Edit3 className="h-3.5 w-3.5" /> Tahrirlash
                   </button>
@@ -159,49 +159,37 @@ export default function AdminCoworking() {
       )}
 
       {tab === "bookings" && (
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-4">Mijoz</th>
-                <th className="px-6 py-4">Joy</th>
-                <th className="px-6 py-4">Sana</th>
-                <th className="px-6 py-4">Vaqt</th>
-                <th className="px-6 py-4">Holat</th>
-                <th className="px-6 py-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {(loadB ? Array.from({ length: 5 }) : filteredB).map((b, i) =>
-                loadB ? (
-                  <tr key={i}><td colSpan={6} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-                ) : (
-                  <tr key={String((b as Booking).id)} className="group text-[13px] transition-colors hover:bg-accent/5">
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-foreground">{String((b as Booking).full_name)}</p>
-                      <p className="text-[12px] text-muted">{String((b as Booking).email)}</p>
-                    </td>
-                    <td className="px-6 py-4 text-muted">{String((b as Booking).space_name || (b as Booking).space || "—")}</td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted"><Calendar className="h-3 w-3" />{String((b as Booking).date)}</span></td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted"><Clock className="h-3 w-3" />{String((b as Booking).start_time)} – {String((b as Booking).end_time)}</span></td>
-                    <td className="px-6 py-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((b as Booking).status)] || "bg-card-hover text-muted"}`}>{String((b as Booking).status)}</span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        {["confirmed", "pending", "cancelled", "completed"].map(st => (
-                          <button key={st} onClick={() => updateBookingStatus(Number((b as Booking).id), st)}
-                            className={`rounded-lg border px-2 py-1 text-[10px] font-semibold transition-all ${String((b as Booking).status) === st ? (STATUS_COLORS[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30"}`}>
-                            {st === "confirmed" ? "✓" : st === "cancelled" ? "✗" : st === "completed" ? "✔✔" : "⏳"}
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(loadB ? Array.from({ length: 6 }) : filteredB).map((b, i) =>
+            loadB ? (
+              <div key={i} className="h-48 animate-pulse rounded-2xl border border-border bg-card" />
+            ) : (
+              <div key={String((b as Booking).id)} className="rounded-2xl border border-border bg-card p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-[14px] font-bold text-foreground">{String((b as Booking).full_name)}</h3>
+                    <p className="text-[12px] text-muted">{String((b as Booking).email)}</p>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((b as Booking).status)] || "bg-card-hover text-muted"}`}>
+                    {String((b as Booking).status)}
+                  </span>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4 text-[13px]">
+                  <div><p className="text-muted text-[11px]">Joy</p><p className="font-semibold text-foreground">{String((b as Booking).space_name || (b as Booking).space || "—")}</p></div>
+                  <div><p className="text-muted text-[11px]">Sana</p><p className="flex items-center gap-1 font-semibold text-foreground"><Calendar className="h-3 w-3" />{String((b as Booking).date)}</p></div>
+                  <div className="col-span-2"><p className="text-muted text-[11px]">Vaqt</p><p className="flex items-center gap-1 font-semibold text-foreground"><Clock className="h-3 w-3" />{String((b as Booking).start_time)} – {String((b as Booking).end_time)}</p></div>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
+                  {["confirmed", "pending", "cancelled", "completed"].map(st => (
+                    <button key={st} onClick={() => updateBookingStatus(Number((b as Booking).id), st)}
+                      className={`rounded-lg border px-2 py-1 text-[10px] font-semibold transition-all ${String((b as Booking).status) === st ? (STATUS_COLORS[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30"}`}>
+                      {st === "confirmed" ? "✓" : st === "cancelled" ? "✗" : st === "completed" ? "✔✔" : "⏳"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
         </div>
       )}
 

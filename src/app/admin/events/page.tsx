@@ -87,6 +87,20 @@ export default function AdminEvents() {
     } catch { /* silent */ }
   }
 
+  async function confirmRegistration(id: number) {
+    try {
+      await apiPatch(`/events/registrations/${id}/`, { status: "confirmed" });
+      setLocalR(regs.map(r => r.id === id ? { ...r, status: "confirmed" } : r));
+    } catch { /* silent */ }
+  }
+
+  async function cancelRegistration(id: number) {
+    try {
+      await apiPatch(`/events/registrations/${id}/`, { status: "cancelled" });
+      setLocalR(regs.map(r => r.id === id ? { ...r, status: "cancelled" } : r));
+    } catch { /* silent */ }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -129,80 +143,74 @@ export default function AdminEvents() {
       </div>
 
       {tab === "events" && (
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-4">Tadbir</th>
-                <th className="px-6 py-4">Tur</th>
-                <th className="px-6 py-4">Sana</th>
-                <th className="px-6 py-4">Joylashuv</th>
-                <th className="px-6 py-4">O&apos;rinlar</th>
-                <th className="px-6 py-4">Holat</th>
-                <th className="px-6 py-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {(loadE ? Array.from({ length: 5 }) : filteredE).map((e, i) =>
-                loadE ? (
-                  <tr key={i}><td colSpan={7} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-                ) : (
-                  <tr key={String((e as Event).id)} className="group text-[13px] transition-colors hover:bg-accent/5">
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-foreground">{String((e as Event).title)}</p>
-                      {(e as Event).speaker && <p className="text-[12px] text-muted">{String((e as Event).speaker)}</p>}
-                    </td>
-                    <td className="px-6 py-4 text-muted">{String((e as Event).event_type)}</td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted"><Calendar className="h-3 w-3" />{String((e as Event).date)}</span></td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted truncate max-w-[150px]"><MapPin className="h-3 w-3 shrink-0" />{String((e as Event).location)}</span></td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted"><Users className="h-3 w-3" />{Number((e as Event).registered_count)}/{Number((e as Event).seats)}</span></td>
-                    <td className="px-6 py-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((e as Event).status)] || "bg-card-hover text-muted"}`}>{String((e as Event).status)}</span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button onClick={() => openEdit(e as Event)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
-                        <button onClick={() => deleteEvent(Number((e as Event).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(loadE ? Array.from({ length: 6 }) : filteredE).map((e, i) =>
+            loadE ? (
+              <div key={i} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                <div className="h-5 w-3/4 animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-1/2 animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-full animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-card-hover" />
+              </div>
+            ) : (
+              <div key={String((e as Event).id)} className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-medium text-foreground truncate">{String((e as Event).title)}</h3>
+                    <span className={`inline-block mt-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((e as Event).status)] || "bg-card-hover text-muted"}`}>{String((e as Event).status)}</span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => openEdit(e as Event)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => deleteEvent(Number((e as Event).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </div>
+                </div>
+                <span className="rounded-full bg-accent/10 text-accent self-start px-2.5 py-0.5 text-[10px] font-bold uppercase">{String((e as Event).event_type)}</span>
+                <div className="flex items-center gap-4 text-[12px] text-muted flex-wrap">
+                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{String((e as Event).date)}{(e as Event).end_date ? ` — ${String((e as Event).end_date)}` : ""}</span>
+                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3 shrink-0" />{String((e as Event).location)}</span>
+                </div>
+                {(e as Event).speaker && <p className="text-[12px] text-muted"><span className="text-foreground">Speaker:</span> {String((e as Event).speaker)}</p>}
+                <div className="flex items-center gap-1 text-[12px] text-muted"><Users className="h-3 w-3" />{Number((e as Event).registered_count)} / {Number((e as Event).seats)} o&apos;rin</div>
+                {(e as Event).description && <p className="text-[12px] text-muted line-clamp-2">{String((e as Event).description)}</p>}
+              </div>
+            )
+          )}
         </div>
       )}
 
       {tab === "registrations" && (
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-4">Ism</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Telefon</th>
-                <th className="px-6 py-4">Kompaniya</th>
-                <th className="px-6 py-4">Tadbir</th>
-                <th className="px-6 py-4">Sana</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {(loadR ? Array.from({ length: 5 }) : filteredR).map((r, i) =>
-                loadR ? (
-                  <tr key={i}><td colSpan={6} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-                ) : (
-                  <tr key={String((r as Registration).id)} className="text-[13px] transition-colors hover:bg-accent/5">
-                    <td className="px-6 py-4 font-medium text-foreground">{String((r as Registration).full_name)}</td>
-                    <td className="px-6 py-4 text-muted">{String((r as Registration).email)}</td>
-                    <td className="px-6 py-4 text-muted">{String((r as Registration).phone || "—")}</td>
-                    <td className="px-6 py-4 text-muted">{String((r as Registration).company || "—")}</td>
-                    <td className="px-6 py-4 text-muted">{String((r as Registration).event_title || (r as Registration).event || "—")}</td>
-                    <td className="px-6 py-4 text-muted">{String((r as Registration).created_at || "").slice(0, 10)}</td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(loadR ? Array.from({ length: 6 }) : filteredR).map((r, i) =>
+            loadR ? (
+              <div key={i} className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                <div className="h-5 w-2/3 animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-full animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-3/4 animate-pulse rounded bg-card-hover" />
+              </div>
+            ) : (
+              <div key={String((r as Registration).id)} className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-medium text-foreground truncate">{String((r as Registration).full_name)}</h3>
+                    <p className="text-[12px] text-muted truncate">{String((r as Registration).email)}</p>
+                  </div>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase shrink-0 ${String((r as Registration).status) === "pending" ? "bg-yellow-400/10 text-yellow-400" : String((r as Registration).status) === "confirmed" ? "bg-emerald-400/10 text-emerald-400" : "bg-red-400/10 text-red-400"}`}>{String((r as Registration).status)}</span>
+                </div>
+                <div className="flex items-center gap-4 text-[12px] text-muted flex-wrap">
+                  {String((r as Registration).phone) && <span>{String((r as Registration).phone)}</span>}
+                  {String((r as Registration).company) && <span>{String((r as Registration).company)}</span>}
+                </div>
+                <p className="text-[12px] text-muted"><span className="text-foreground">Tadbir:</span> {String((r as Registration).event_title || (r as Registration).event || "—")}</p>
+                <p className="text-[12px] text-muted">{String((r as Registration).created_at || "").slice(0, 10)}</p>
+                {String((r as Registration).status) === "pending" && (
+                  <div className="flex gap-2 mt-1">
+                    <button onClick={() => confirmRegistration(Number((r as Registration).id))} className="flex-1 rounded-lg bg-emerald-400/10 py-1.5 text-[11px] font-bold text-emerald-400 hover:bg-emerald-400/20">Tasdiqlash</button>
+                    <button onClick={() => cancelRegistration(Number((r as Registration).id))} className="flex-1 rounded-lg bg-red-400/10 py-1.5 text-[11px] font-bold text-red-400 hover:bg-red-400/20">Bekor qilish</button>
+                  </div>
+                )}
+              </div>
+            )
+          )}
         </div>
       )}
 

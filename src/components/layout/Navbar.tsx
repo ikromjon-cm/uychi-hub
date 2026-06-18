@@ -35,6 +35,8 @@ export function Navbar() {
         localStorage.setItem("uychi_admin", "1")
         router.push("/admin/dashboard")
       })
+    } else {
+      router.push("/")
     }
   }, [router])
 

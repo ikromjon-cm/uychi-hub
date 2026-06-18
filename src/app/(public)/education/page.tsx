@@ -469,6 +469,11 @@ export default function EducationPage() {
                       </div>
                     ))}
 
+                    {modal.error && (
+                      <p className="rounded-xl border border-rose-500/20 bg-rose-500/8 px-3 py-2 text-[12px] text-rose-500">
+                        {modal.error}
+                      </p>
+                    )}
                     <button
                       type="submit"
                       disabled={modal.sending}

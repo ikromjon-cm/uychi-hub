@@ -139,103 +139,117 @@ export default function AdminEducation() {
         )}
       </div>
 
-      {/* Courses Table */}
+      {/* Courses Grid */}
       {tab === "courses" && (
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-4">Kurs</th>
-                <th className="px-6 py-4">O&apos;qituvchi</th>
-                <th className="px-6 py-4">Daraja</th>
-                <th className="px-6 py-4">Narx</th>
-                <th className="px-6 py-4">O&apos;quvchilar</th>
-                <th className="px-6 py-4">Reyting</th>
-                <th className="px-6 py-4">Holat</th>
-                <th className="px-6 py-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {(loadC ? Array.from({ length: 5 }) : filteredC).map((c, i) =>
-                loadC ? (
-                  <tr key={i}><td colSpan={8} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-                ) : (
-                  <tr key={String((c as Course).id)} className="group text-[13px] transition-colors hover:bg-accent/5">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10"><BookOpen className="h-4 w-4 text-accent" /></div>
-                        <div>
-                          <p className="font-medium text-foreground">{String((c as Course).title)}</p>
-                          <p className="text-[12px] text-muted">{String((c as Course).category)} · {String((c as Course).lang)}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-muted">{String((c as Course).instructor)}</td>
-                    <td className="px-6 py-4 capitalize text-muted">{String((c as Course).level)}</td>
-                    <td className="px-6 py-4 text-muted">{(c as Course).is_free ? <span className="text-emerald-400 font-semibold">Bepul</span> : `${Number((c as Course).price).toLocaleString()} so'm`}</td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-muted"><Users className="h-3 w-3" />{Number((c as Course).enrolled_count).toLocaleString()}</span></td>
-                    <td className="px-6 py-4"><span className="flex items-center gap-1 text-yellow-400"><Star className="h-3 w-3 fill-yellow-400" />{String((c as Course).rating)}</span></td>
-                    <td className="px-6 py-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((c as Course).status)] || "bg-card-hover text-muted"}`}>{String((c as Course).status)}</span>
-                    </td>
-                    <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button onClick={() => openEdit(c as Course)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
-                        <button onClick={() => deleteCourse(Number((c as Course).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(loadC ? Array.from({ length: 6 }) : filteredC).map((c, i) =>
+            loadC ? (
+              <div key={i} className="rounded-xl border border-border bg-card p-5">
+                <div className="mb-3 h-4 w-3/4 animate-pulse rounded bg-card-hover" />
+                <div className="mb-2 h-3 w-1/2 animate-pulse rounded bg-card-hover" />
+                <div className="mb-4 h-3 w-2/3 animate-pulse rounded bg-card-hover" />
+                <div className="flex gap-2">
+                  <div className="h-8 flex-1 animate-pulse rounded-lg bg-card-hover" />
+                  <div className="h-8 w-8 animate-pulse rounded-lg bg-card-hover" />
+                </div>
+              </div>
+            ) : (
+              <div key={String((c as Course).id)} className="group cursor-pointer rounded-xl border border-border bg-card p-5 transition-colors hover:bg-accent/5">
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
+                      <BookOpen className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">{String((c as Course).title)}</p>
+                      <p className="text-[12px] text-muted">{String((c as Course).category)} · {String((c as Course).lang)}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => openEdit(c as Course)} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-accent/30 hover:text-accent"><Edit3 className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => deleteCourse(Number((c as Course).id))} className="rounded-lg border border-border bg-card p-1.5 text-muted hover:border-red-500/30 hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </div>
+                </div>
+                <div className="space-y-2 text-[13px]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">O&apos;qituvchi</span>
+                    <span className="text-foreground">{String((c as Course).instructor)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Daraja</span>
+                    <span className="capitalize text-foreground">{String((c as Course).level)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Narx</span>
+                    <span className="text-foreground">{(c as Course).is_free ? <span className="text-emerald-400 font-semibold">Bepul</span> : `${Number((c as Course).price).toLocaleString()} so'm`}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">O&apos;quvchilar</span>
+                    <span className="flex items-center gap-1 text-foreground"><Users className="h-3 w-3 text-muted" />{Number((c as Course).enrolled_count).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Reyting</span>
+                    <span className="flex items-center gap-1 text-yellow-400"><Star className="h-3 w-3 fill-yellow-400" />{String((c as Course).rating)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Davomiyligi</span>
+                    <span className="text-foreground">{String((c as Course).duration)}</span>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_COLORS[String((c as Course).status)] || "bg-card-hover text-muted"}`}>{String((c as Course).status)}</span>
+                </div>
+              </div>
+            )
+          )}
         </div>
       )}
 
-      {/* Applications Table */}
+      {/* Applications Grid */}
       {tab === "applications" && (
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-card">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-4">Ariza Beruvchi</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Telefon</th>
-                <th className="px-6 py-4">Kurs</th>
-                <th className="px-6 py-4">Sana</th>
-                <th className="px-6 py-4">Holat</th>
-                <th className="px-6 py-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-subtle">
-              {(loadA ? Array.from({ length: 5 }) : filteredA).map((a, i) =>
-                loadA ? (
-                  <tr key={i}><td colSpan={7} className="px-6 py-4"><div className="h-4 animate-pulse rounded bg-card-hover" /></td></tr>
-                ) : (
-                  <tr key={String((a as Application).id)} className="group text-[13px] transition-colors hover:bg-accent/5">
-                    <td className="px-6 py-4 font-medium text-foreground">{String((a as Application).full_name)}</td>
-                    <td className="px-6 py-4 text-muted">{String((a as Application).email)}</td>
-                    <td className="px-6 py-4 text-muted">{String((a as Application).phone || "—")}</td>
-                    <td className="px-6 py-4 text-muted">{String((a as Application).course_title || (a as Application).course || "—")}</td>
-                    <td className="px-6 py-4 text-muted">{String((a as Application).created_at || "").slice(0, 10)}</td>
-                    <td className="px-6 py-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${APP_STATUS_COLORS[String((a as Application).status)] || "bg-card-hover text-muted"}`}>{String((a as Application).status)}</span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        {["approved", "pending", "rejected"].map(st => (
-                          <button key={st} onClick={() => updateAppStatus(Number((a as Application).id), st)}
-                            className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all ${String((a as Application).status) === st ? (APP_STATUS_COLORS[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30"}`}>
-                            {st === "approved" ? "✓" : st === "rejected" ? "✗" : "⏳"}
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(loadA ? Array.from({ length: 3 }) : filteredA).map((a, i) =>
+            loadA ? (
+              <div key={i} className="rounded-xl border border-border bg-card p-5">
+                <div className="mb-3 h-4 w-2/3 animate-pulse rounded bg-card-hover" />
+                <div className="mb-2 h-3 w-full animate-pulse rounded bg-card-hover" />
+                <div className="mb-2 h-3 w-3/4 animate-pulse rounded bg-card-hover" />
+                <div className="h-3 w-1/2 animate-pulse rounded bg-card-hover" />
+              </div>
+            ) : (
+              <div key={String((a as Application).id)} className="group cursor-pointer rounded-xl border border-border bg-card p-5 transition-colors hover:bg-accent/5">
+                <div className="mb-3">
+                  <p className="font-semibold text-foreground">{String((a as Application).full_name)}</p>
+                  <a href={`mailto:${String((a as Application).email)}`} className="text-[13px] text-accent hover:underline">{String((a as Application).email)}</a>
+                </div>
+                <div className="space-y-2 text-[13px]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Telefon</span>
+                    <span className="text-foreground">{String((a as Application).phone || "—")}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Kurs</span>
+                    <span className="text-right text-foreground">{String((a as Application).course_title || (a as Application).course || "—")}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted">Sana</span>
+                    <span className="text-foreground">{String((a as Application).created_at || "").slice(0, 10)}</span>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${APP_STATUS_COLORS[String((a as Application).status)] || "bg-card-hover text-muted"}`}>{String((a as Application).status)}</span>
+                  <div className="flex gap-1">
+                    {["approved", "pending", "rejected"].map(st => (
+                      <button key={st} onClick={() => updateAppStatus(Number((a as Application).id), st)}
+                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition-all ${String((a as Application).status) === st ? (APP_STATUS_COLORS[st] || "") + " border-current" : "border-border text-muted hover:border-accent/30"}`}>
+                        {st === "approved" ? "✓" : st === "rejected" ? "✗" : "⏳"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )
+          )}
         </div>
       )}
 

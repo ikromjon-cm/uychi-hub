@@ -97,7 +97,7 @@ export default function CoworkingPage() {
   const { data: spaces, loading } = useApi<CoworkingSpace[]>("/coworking/coworking-spaces/", []);
   const [typeFilter, setTypeFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [modal, setModal] = useState<{ open: boolean; space: CoworkingSpace | null; sent: boolean; sending: boolean }>({ open: false, space: null, sent: false, sending: false });
+  const [modal, setModal] = useState<{ open: boolean; space: CoworkingSpace | null; sent: boolean; sending: boolean; error: string }>({ open: false, space: null, sent: false, sending: false, error: "" });
 
   const filtered = spaces.filter((s) => {
     const matchType = typeFilter === "all" || s.space_type === typeFilter;
@@ -106,7 +106,7 @@ export default function CoworkingPage() {
   });
 
   function openModal(space: CoworkingSpace) {
-    setModal({ open: true, space, sent: false, sending: false });
+    setModal({ open: true, space, sent: false, sending: false, error: "" });
     document.body.style.overflow = "hidden";
   }
 
@@ -118,7 +118,7 @@ export default function CoworkingPage() {
   async function handleBook(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!modal.space) return;
-    setModal((m) => ({ ...m, sending: true }));
+    setModal((m) => ({ ...m, sending: true, error: "" }));
     const fd = new FormData(e.currentTarget);
     try {
       await apiFormPost("/coworking/bookings/", {
@@ -132,10 +132,9 @@ export default function CoworkingPage() {
         end_time: fd.get("end_time"),
         purpose: fd.get("purpose") || "",
       });
-    } catch {
-      /* silent */
-    } finally {
       setModal((m) => ({ ...m, sent: true, sending: false }));
+    } catch {
+      setModal((m) => ({ ...m, sending: false, error: "Xatolik yuz berdi. Qayta urinib ko'ring." }));
     }
   }
 
@@ -299,6 +298,11 @@ export default function CoworkingPage() {
                       <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-muted">{t.purpose}</label>
                       <textarea name="purpose" rows={2} className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/40" />
                     </div>
+                    {modal.error && (
+                      <p className="rounded-xl border border-rose-500/20 bg-rose-500/8 px-3 py-2 text-[12px] text-rose-500">
+                        {modal.error}
+                      </p>
+                    )}
                     <button type="submit" disabled={modal.sending}
                       className="mt-1 w-full rounded-full bg-accent py-3 text-[13px] font-bold text-white shadow-[0_4px_16px_rgba(79,70,229,0.3)] transition-all hover:bg-accent-dark disabled:opacity-60">
                       {modal.sending ? t.sending : t.submit}

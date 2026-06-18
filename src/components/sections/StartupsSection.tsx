@@ -62,7 +62,7 @@ const accentMap: Record<string, {
 
 function StartupCard({ startup, className = "" }: { startup: HStartup; className?: string }) {
   const c = accentMap.cyan;
-  const techTags = startup.technologies.split(",").map(t => t.trim()).filter(Boolean);
+  const techTags = (startup.technologies ?? "").split(",").map(t => t.trim()).filter(Boolean);
 
   return (
     <motion.div

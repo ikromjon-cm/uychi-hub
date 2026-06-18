@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Newspaper, Rocket, BookOpen, Mail, Settings, Menu, X, Bell, LogOut, Sun, Moon, Search, Megaphone, Lock } from "lucide-react";
+import { LayoutDashboard, Newspaper, Rocket, BookOpen, Mail, Settings, Menu, X, Bell, LogOut, Sun, Moon, Search, Megaphone, Lock, Building2, Calendar, Users, Briefcase, Handshake, BarChart3 } from "lucide-react";
 import { useTheme } from "@/lib/theme-provider";
 
 const NAV_ITEMS = [
@@ -12,6 +12,12 @@ const NAV_ITEMS = [
   { label: "E'lonlar", href: "/admin/hub/announcements", icon: Megaphone },
   { label: "Startaplar", href: "/admin/hub/startups", icon: Rocket },
   { label: "Ta'lim", href: "/admin/education", icon: BookOpen },
+  { label: "Coworking", href: "/admin/coworking", icon: Building2 },
+  { label: "Tadbirlar", href: "/admin/events", icon: Calendar },
+  { label: "Studentlar", href: "/admin/students", icon: Users },
+  { label: "Ish O'rinlari", href: "/admin/hub/jobs", icon: Briefcase },
+  { label: "Hamkorlar", href: "/admin/hub/partners", icon: Handshake },
+  { label: "Statistika", href: "/admin/hub/stats", icon: BarChart3 },
   { label: "Murojaatlar", href: "/admin/hub/leads", icon: Mail },
   { label: "Sozlamalar", href: "/admin/hub/settings", icon: Settings },
 ];

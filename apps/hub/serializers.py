@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner, SiteSettings, STATUS_CHOICES
+from .models import HeroVideo, News, Announcement, Startup, Job, Lead, Stat, Partner, SiteSettings
 
 
 class SiteSettingsSerializer(serializers.ModelSerializer):
@@ -83,3 +83,6 @@ class AdminJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = "__all__"
+
+
+
